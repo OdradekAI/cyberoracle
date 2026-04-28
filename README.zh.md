@@ -28,17 +28,17 @@
 
 ## 技术栈
 
-| 层级 | 技术方案 |
-|---|---|
-| 工程管理 | pnpm workspaces + Turborepo |
-| 网页端 | Next.js 14 (React 18) |
-| 桌面端 | Tauri 2.0 + Vite + React 18 |
-| API 服务 | Next.js Route Handlers (standalone Docker) |
-| AI 管线 | VLM（视觉观察）→ LLM（解读撰写），流式 JSON |
-| 长图渲染 | satori + resvg (JSX → SVG → PNG) |
-| 桌面伙伴 | PixiJS 6 + pixi-live2d-display |
-| 样式系统 | Tailwind CSS v3 + 设计 token |
-| 编程语言 | TypeScript 5.7+, Rust 1.82+ |
+| 层级     | 技术方案                                    |
+| -------- | ------------------------------------------- |
+| 工程管理 | pnpm workspaces + Turborepo                 |
+| 网页端   | Next.js 14 (React 18)                       |
+| 桌面端   | Tauri 2.0 + Vite + React 18                 |
+| API 服务 | Next.js Route Handlers (standalone Docker)  |
+| AI 管线  | VLM（视觉观察）→ LLM（解读撰写），流式 JSON |
+| 长图渲染 | satori + resvg (JSX → SVG → PNG)            |
+| 桌面伙伴 | PixiJS 6 + pixi-live2d-display              |
+| 样式系统 | Tailwind CSS v3 + 设计 token                |
+| 编程语言 | TypeScript 5.7+, Rust 1.82+                 |
 
 ## 项目结构
 
@@ -84,16 +84,16 @@ cp apps/server/.env.example apps/server/.env.local
 
 ### 常用命令
 
-| 命令 | 说明 |
-|---|---|
-| `pnpm dev` | 启动所有 app |
-| `pnpm dev:web` | 仅 web + server |
+| 命令               | 说明                |
+| ------------------ | ------------------- |
+| `pnpm dev`         | 启动所有 app        |
+| `pnpm dev:web`     | 仅 web + server     |
 | `pnpm dev:desktop` | 仅 desktop + server |
-| `pnpm typecheck` | 全仓类型检查 |
-| `pnpm lint` | 全仓代码检查 |
-| `pnpm test` | 全仓测试 |
-| `pnpm format` | Prettier 格式化 |
-| `pnpm clean` | 清理构建产物与缓存 |
+| `pnpm typecheck`   | 全仓类型检查        |
+| `pnpm lint`        | 全仓代码检查        |
+| `pnpm test`        | 全仓测试            |
+| `pnpm format`      | Prettier 格式化     |
+| `pnpm clean`       | 清理构建产物与缓存  |
 
 ### 桌面端开发
 

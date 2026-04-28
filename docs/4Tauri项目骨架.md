@@ -2488,13 +2488,21 @@ export const api = {
     return invoke<void>('cancel_analyze', { id });
   },
   renderPoster(id: string) {
-    return invoke<{ localPath: string; assetUrl: string }>('render_poster', { id });
+    return invoke<{ localPath: string; assetUrl: string }>('render_poster', {
+      id,
+    });
   },
   listHistory(limit = 50) {
-    return invoke<Array<{ id: string; kind: string; created_at: string }>>('list_history', { limit });
+    return invoke<Array<{ id: string; kind: string; created_at: string }>>(
+      'list_history',
+      { limit },
+    );
   },
   getHistory(id: string) {
-    return invoke<{ id: string; kind: string; created_at: string; data: any }>('get_history', { id });
+    return invoke<{ id: string; kind: string; created_at: string; data: any }>(
+      'get_history',
+      { id },
+    );
   },
   deleteHistory(id: string) {
     return invoke<void>('delete_history', { id });
@@ -2515,7 +2523,9 @@ export const api = {
     return invoke<void>('set_cursor_passthrough', { passthrough });
   },
   importWebHistory(code: string) {
-    return invoke<{ imported: number }>('import_web_history', { args: { code } });
+    return invoke<{ imported: number }>('import_web_history', {
+      args: { code },
+    });
   },
 };
 
@@ -2523,7 +2533,10 @@ export const api = {
  * 事件订阅的轻封装：返回 unlisten 函数便于 useEffect 清理。
  */
 export const events = {
-  on<T = any>(name: string, handler: (payload: T) => void): Promise<UnlistenFn> {
+  on<T = any>(
+    name: string,
+    handler: (payload: T) => void,
+  ): Promise<UnlistenFn> {
     return listen<T>(name, (e) => handler(e.payload));
   },
 };
@@ -2544,7 +2557,9 @@ export function ResultPage() {
   const setCompanionState = useCompanionStore((s) => s.setState);
   const speak = useCompanionStore((s) => s.speak);
 
-  const [stage, setStage] = useState<'thinking' | 'rendered' | 'failed'>('thinking');
+  const [stage, setStage] = useState<'thinking' | 'rendered' | 'failed'>(
+    'thinking',
+  );
   const [imageUrl, setImageUrl] = useState<string>('');
 
   useEffect(() => {
@@ -2552,20 +2567,26 @@ export function ResultPage() {
     setCompanionState('thinking');
     const unlisteners: Array<Promise<() => void>> = [];
 
-    unlisteners.push(events.on<{ data: any }>('analyze:chunk', (p) => {
-      const text: string | undefined = p?.data?.delta;
-      if (text) speak(text);
-    }));
-    unlisteners.push(events.on('analyze:done', async () => {
-      setCompanionState('celebrate');
-      const r = await api.renderPoster(id);
-      setImageUrl(r.assetUrl);
-      setStage('rendered');
-    }));
-    unlisteners.push(events.on('analyze:error', () => {
-      setCompanionState('sad');
-      setStage('failed');
-    }));
+    unlisteners.push(
+      events.on<{ data: any }>('analyze:chunk', (p) => {
+        const text: string | undefined = p?.data?.delta;
+        if (text) speak(text);
+      }),
+    );
+    unlisteners.push(
+      events.on('analyze:done', async () => {
+        setCompanionState('celebrate');
+        const r = await api.renderPoster(id);
+        setImageUrl(r.assetUrl);
+        setStage('rendered');
+      }),
+    );
+    unlisteners.push(
+      events.on('analyze:error', () => {
+        setCompanionState('sad');
+        setStage('failed');
+      }),
+    );
 
     api.analyzeStream(id).catch(() => setStage('failed'));
 
@@ -2648,6 +2669,7 @@ fn main() {
 最后给一份签名/打包的快速参考，避免你团队真到上线那天临时翻文档：
 
 **生成更新签名密钥对**：
+
 ```bash
 pnpm tauri signer generate -w ~/.tauri/cyberoracle.key
 # 公钥贴到 tauri.conf.json 的 plugins.updater.pubkey
@@ -2655,6 +2677,7 @@ pnpm tauri signer generate -w ~/.tauri/cyberoracle.key
 ```
 
 **macOS 代码签名 + Notarize**：
+
 ```bash
 export APPLE_SIGNING_IDENTITY="Developer ID Application: YourName (TEAMID)"
 export APPLE_ID="your@apple.id"
@@ -2664,12 +2687,14 @@ pnpm tauri build --target universal-apple-darwin
 ```
 
 **Windows EV 签名**：
+
 ```bash
 # 把 EV 证书指纹填入 tauri.conf.json 的 bundle.windows.certificateThumbprint
 pnpm tauri build --target x86_64-pc-windows-msvc
 ```
 
 **Linux**：
+
 ```bash
 pnpm tauri build --target x86_64-unknown-linux-gnu
 # AppImage / deb 双产物

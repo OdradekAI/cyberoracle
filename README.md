@@ -29,17 +29,17 @@ Live2D fortune-telling character named "Xingzi" (星子).
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Monorepo | pnpm workspaces + Turborepo |
-| Web | Next.js 14 (React 18) |
-| Desktop | Tauri 2.0 + Vite + React 18 |
-| API Server | Next.js Route Handlers (standalone Docker) |
-| AI Pipeline | VLM (vision) → LLM (writing), streamed JSON |
-| Poster Rendering | satori + resvg (JSX → SVG → PNG) |
-| Desktop Companion | PixiJS 6 + pixi-live2d-display |
-| Styling | Tailwind CSS v3 + design tokens |
-| Language | TypeScript 5.7+, Rust 1.82+ |
+| Layer             | Technology                                  |
+| ----------------- | ------------------------------------------- |
+| Monorepo          | pnpm workspaces + Turborepo                 |
+| Web               | Next.js 14 (React 18)                       |
+| Desktop           | Tauri 2.0 + Vite + React 18                 |
+| API Server        | Next.js Route Handlers (standalone Docker)  |
+| AI Pipeline       | VLM (vision) → LLM (writing), streamed JSON |
+| Poster Rendering  | satori + resvg (JSX → SVG → PNG)            |
+| Desktop Companion | PixiJS 6 + pixi-live2d-display              |
+| Styling           | Tailwind CSS v3 + design tokens             |
+| Language          | TypeScript 5.7+, Rust 1.82+                 |
 
 ## Project Structure
 
@@ -85,16 +85,16 @@ cp apps/server/.env.example apps/server/.env.local
 
 ### Common Commands
 
-| Command | Description |
-|---|---|
-| `pnpm dev` | Start all apps |
-| `pnpm dev:web` | Web + server only |
-| `pnpm dev:desktop` | Desktop + server only |
-| `pnpm typecheck` | Type-check all packages |
-| `pnpm lint` | Lint all packages |
-| `pnpm test` | Run all tests |
-| `pnpm format` | Format code with Prettier |
-| `pnpm clean` | Clean build outputs & caches |
+| Command            | Description                  |
+| ------------------ | ---------------------------- |
+| `pnpm dev`         | Start all apps               |
+| `pnpm dev:web`     | Web + server only            |
+| `pnpm dev:desktop` | Desktop + server only        |
+| `pnpm typecheck`   | Type-check all packages      |
+| `pnpm lint`        | Lint all packages            |
+| `pnpm test`        | Run all tests                |
+| `pnpm format`      | Format code with Prettier    |
+| `pnpm clean`       | Clean build outputs & caches |
 
 ## Documentation
 

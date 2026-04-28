@@ -62,20 +62,20 @@ apps/desktop/public/live2d/
 // 占卜师的"情绪/行为"状态。这是对外暴露的高层 API，
 // 屏蔽了底层 motion group / expression 的细节。
 export type CompanionState =
-  | 'idle'       // 空闲：随机播放 idle 动作 + 眨眼
-  | 'greet'      // 打招呼：用户首次打开/早晨问好
-  | 'thinking'   // 测算中：循环 think 动作 + 头顶光圈
-  | 'talking'    // 正在说话：嘴部 lipsync + talk 动作
-  | 'celebrate'  // 解读完成：celebrate 动作 + 鼓励
-  | 'shy'        // 被点击的彩蛋反应
-  | 'sad';       // 失败/错误兜底
+  | 'idle' // 空闲：随机播放 idle 动作 + 眨眼
+  | 'greet' // 打招呼：用户首次打开/早晨问好
+  | 'thinking' // 测算中：循环 think 动作 + 头顶光圈
+  | 'talking' // 正在说话：嘴部 lipsync + talk 动作
+  | 'celebrate' // 解读完成：celebrate 动作 + 鼓励
+  | 'shy' // 被点击的彩蛋反应
+  | 'sad'; // 失败/错误兜底
 
 export interface CompanionConfig {
-  modelId: string;          // "xingzi"
-  scale: number;            // 0.3 默认
-  position: { x: number; y: number };  // 锚点偏移（百分比）
+  modelId: string; // "xingzi"
+  scale: number; // 0.3 默认
+  position: { x: number; y: number }; // 锚点偏移（百分比）
   enableLipSync: boolean;
-  enableEyeTracking: boolean;  // 眼睛跟随鼠标
+  enableEyeTracking: boolean; // 眼睛跟随鼠标
 }
 
 export interface MotionGroupMap {
@@ -120,8 +120,8 @@ export class Live2DController {
   private container: HTMLDivElement;
   private currentState: CompanionState = 'idle';
   private idleTimer: number | null = null;
-  private mouthTargetValue = 0;     // lipsync 目标张嘴度 0~1
-  private mouthCurrentValue = 0;    // 当前张嘴度（做平滑插值用）
+  private mouthTargetValue = 0; // lipsync 目标张嘴度 0~1
+  private mouthCurrentValue = 0; // 当前张嘴度（做平滑插值用）
   private destroyed = false;
 
   constructor(container: HTMLDivElement) {
@@ -149,7 +149,7 @@ export class Live2DController {
 
     this.container.appendChild(this.app.view as HTMLCanvasElement);
 
-    if (this.destroyed) return;  // 防止初始化过程中被销毁
+    if (this.destroyed) return; // 防止初始化过程中被销毁
 
     // 2. 加载模型
     const modelUrl = `/live2d/models/${config.modelId}/${config.modelId}.model3.json`;
@@ -199,7 +199,8 @@ export class Live2DController {
     if (!this.model) return;
 
     // 嘴型平滑：每帧朝目标值靠近 25%
-    this.mouthCurrentValue += (this.mouthTargetValue - this.mouthCurrentValue) * 0.25;
+    this.mouthCurrentValue +=
+      (this.mouthTargetValue - this.mouthCurrentValue) * 0.25;
 
     // Cubism 4 的嘴张参数名通常是 ParamMouthOpenY，写法因模型而异
     // pixi-live2d-display 提供 internalModel.coreModel.setParameterValueById
@@ -216,7 +217,7 @@ export class Live2DController {
    */
   setState(state: CompanionState) {
     if (this.destroyed || !this.model) return;
-    if (state === this.currentState && state === 'idle') return;  // 避免 idle 重复重置
+    if (state === this.currentState && state === 'idle') return; // 避免 idle 重复重置
 
     this.currentState = state;
     this.clearIdleTimer();
@@ -366,7 +367,11 @@ export class Live2DController {
       this.model = null;
     }
     if (this.app) {
-      this.app.destroy(true, { children: true, texture: true, baseTexture: true });
+      this.app.destroy(true, {
+        children: true,
+        texture: true,
+        baseTexture: true,
+      });
       this.app = null;
     }
   }
@@ -396,7 +401,7 @@ interface CompanionStore {
   controller: Live2DController | null;
   state: CompanionState;
   config: CompanionConfig;
-  
+
   bindController: (c: Live2DController | null) => void;
   setState: (s: CompanionState) => void;
   speak: (text: string) => void;
@@ -422,7 +427,7 @@ export const useCompanionStore = create<CompanionStore>((set, get) => ({
   },
 
   /**
-   * speak 是高层 API：前端任何地方调 useCompanionStore().speak('...') 
+   * speak 是高层 API：前端任何地方调 useCompanionStore().speak('...')
    * 立绘就会嘴动 + 切换到 talking 态。
    * 时长按字数估算（中文约 200 字/分钟 = 300ms/字）
    */
@@ -471,15 +476,18 @@ export function Live2DStage({ className, onTap }: Props) {
     const controller = new Live2DController(containerRef.current);
     controllerRef.current = controller;
 
-    controller.init(config).then(() => {
-      if (cancelled) {
-        controller.destroy();
-        return;
-      }
-      bindController(controller);
-    }).catch((err) => {
-      console.error('[Live2D] init failed:', err);
-    });
+    controller
+      .init(config)
+      .then(() => {
+        if (cancelled) {
+          controller.destroy();
+          return;
+        }
+        bindController(controller);
+      })
+      .catch((err) => {
+        console.error('[Live2D] init failed:', err);
+      });
 
     return () => {
       cancelled = true;
@@ -579,9 +587,7 @@ export function ResultPage({ id }: { id: string }) {
         <Live2DStage />
       </div>
       {/* 右侧：流式渲染的解读卡片 */}
-      <div className="poster-side">
-        {/* ...解读 UI... */}
-      </div>
+      <div className="poster-side">{/* ...解读 UI... */}</div>
     </div>
   );
 }
@@ -670,7 +676,9 @@ export function CompanionWindow() {
       listen<{ kind: string; text?: string }>('companion:event', (e) => {
         // 由全局 store 统一调度
         // 例如 e.payload.kind === 'morning_greet' → 打招呼 + 朗读
-      }).then((fn) => { unlisten = fn; });
+      }).then((fn) => {
+        unlisten = fn;
+      });
     });
     return () => unlisten?.();
   }, []);
@@ -734,14 +742,14 @@ pub async fn set_cursor_passthrough(window: tauri::Window, passthrough: bool) ->
 
 ## 9. 性能与优化清单
 
-| 项 | 做法 |
-|---|---|
-| 模型纹理大小 | 单张不超过 2048×2048，超过的让美术拆成多张 |
-| 渲染帧率 | 桌宠窗口 30fps（够用且省电）；主窗口 60fps |
-| 空闲省电 | 窗口失焦时把 ticker 降到 15fps（用 `app.ticker.maxFPS = 15`） |
-| 内存 | 切换模型时严格 destroy 旧模型再加载新模型 |
-| 启动加速 | 模型懒加载：主窗口先显示 UI，立绘 200ms 后再 init |
-| 资源 | live2dcubismcore.min.js 和模型文件本地打包，不走网络 |
+| 项           | 做法                                                          |
+| ------------ | ------------------------------------------------------------- |
+| 模型纹理大小 | 单张不超过 2048×2048，超过的让美术拆成多张                    |
+| 渲染帧率     | 桌宠窗口 30fps（够用且省电）；主窗口 60fps                    |
+| 空闲省电     | 窗口失焦时把 ticker 降到 15fps（用 `app.ticker.maxFPS = 15`） |
+| 内存         | 切换模型时严格 destroy 旧模型再加载新模型                     |
+| 启动加速     | 模型懒加载：主窗口先显示 UI，立绘 200ms 后再 init             |
+| 资源         | live2dcubismcore.min.js 和模型文件本地打包，不走网络          |
 
 ## 10. 已知坑位 cheat sheet
 

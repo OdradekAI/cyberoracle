@@ -14,14 +14,14 @@ A single Claude Code skill (`cyberoracle-harness`) that drives autonomous, incre
 
 ### 1.2 Key Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Harness type | Development harness (runtime patterns as reference only) | Primary goal is building CyberOracle; runtime patterns inform implementation but no shared abstractions |
-| Testing strategy | TDD for `packages/core` + `packages/poster`; E2E (Playwright) for `apps/web` + `apps/desktop` | Pure-function territory benefits from test-first; UI benefits from browser automation |
-| Scope | Per-milestone invocation (`/cyberoracle-harness M2`) | Existing docs are extremely detailed; per-milestone keeps focus and avoids re-specifying |
-| Agent architecture | 2 agents (initializer + coder) | Planner is redundant given detailed docs; evaluator adds cost without proportional benefit |
-| Runtime harness | Design patterns only (no shared abstractions) | Patterns from Article 3 inform pipeline implementation; premature to scaffold runtime framework |
-| Skill structure | Single monolithic skill | Early-stage project; one file to maintain; refactor later if needed |
+| Decision           | Choice                                                                                        | Rationale                                                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Harness type       | Development harness (runtime patterns as reference only)                                      | Primary goal is building CyberOracle; runtime patterns inform implementation but no shared abstractions |
+| Testing strategy   | TDD for `packages/core` + `packages/poster`; E2E (Playwright) for `apps/web` + `apps/desktop` | Pure-function territory benefits from test-first; UI benefits from browser automation                   |
+| Scope              | Per-milestone invocation (`/cyberoracle-harness M2`)                                          | Existing docs are extremely detailed; per-milestone keeps focus and avoids re-specifying                |
+| Agent architecture | 2 agents (initializer + coder)                                                                | Planner is redundant given detailed docs; evaluator adds cost without proportional benefit              |
+| Runtime harness    | Design patterns only (no shared abstractions)                                                 | Patterns from Article 3 inform pipeline implementation; premature to scaffold runtime framework         |
+| Skill structure    | Single monolithic skill                                                                       | Early-stage project; one file to maintain; refactor later if needed                                     |
 
 ### 1.3 Reference Articles
 
@@ -72,15 +72,15 @@ The initializer runs **once per milestone** when `feature_list.json` doesn't exi
 
 ### 3.1 Milestone-to-Doc Mapping
 
-| Milestone | Source Documents |
-|---|---|
-| M1 共享基建 | `docs/1Monorepo工程骨架.md` + PRD §3.2 |
-| M2 Web 端 MVP | PRD §4.1, §7, §8, §9 + `docs/5完整Prompt文件.md` + `docs/2satori长图组件.md` |
-| M3 云端代理 + 鉴权 | PRD §4.4, §9, §13 |
-| M4 Tauri 客户端骨架 | `docs/4Tauri项目骨架.md` + PRD §5 |
-| M5 桌面伙伴 Live2D | PRD §5.2 + `docs/3Live2D集成完整示例.md` |
-| M6 加密 + 自动更新 + 打包签名 | PRD §5.4, §13.2 |
-| M7 转化漏斗 + 灰度 | PRD §6 |
+| Milestone                     | Source Documents                                                             |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| M1 共享基建                   | `docs/1Monorepo工程骨架.md` + PRD §3.2                                       |
+| M2 Web 端 MVP                 | PRD §4.1, §7, §8, §9 + `docs/5完整Prompt文件.md` + `docs/2satori长图组件.md` |
+| M3 云端代理 + 鉴权            | PRD §4.4, §9, §13                                                            |
+| M4 Tauri 客户端骨架           | `docs/4Tauri项目骨架.md` + PRD §5                                            |
+| M5 桌面伙伴 Live2D            | PRD §5.2 + `docs/3Live2D集成完整示例.md`                                     |
+| M6 加密 + 自动更新 + 打包签名 | PRD §5.4, §13.2                                                              |
+| M7 转化漏斗 + 灰度            | PRD §6                                                                       |
 
 ### 3.2 Feature List Schema
 
@@ -96,11 +96,7 @@ The initializer runs **once per milestone** when `feature_list.json` doesn't exi
       "category": "core|poster|web|desktop",
       "description": "One-sentence description of the feature",
       "testStrategy": "unit|playwright|manual",
-      "acceptanceSteps": [
-        "Step 1: ...",
-        "Step 2: ...",
-        "Step 3: ..."
-      ],
+      "acceptanceSteps": ["Step 1: ...", "Step 2: ...", "Step 3: ..."],
       "priority": 1,
       "dependsOn": [],
       "passes": false
@@ -110,6 +106,7 @@ The initializer runs **once per milestone** when `feature_list.json` doesn't exi
 ```
 
 **Field semantics:**
+
 - `testStrategy: "unit"` → TDD: write failing test first, implement, verify pass (for `packages/core`, `packages/poster`)
 - `testStrategy: "playwright"` → Implement, then verify via Playwright against `acceptanceSteps` (for `apps/web`, `apps/desktop`)
 - `testStrategy: "manual"` → Implement, commit with detailed notes for human review
@@ -170,11 +167,11 @@ For each session:
 
 ### 4.4 Session End Artifacts
 
-| Artifact | Action |
-|---|---|
-| `progress.md` | Append: session date, feature id, what was done, what failed |
-| `feature_list.json` | Flip one `passes: false` → `true` |
-| Git log | One commit: `[M{X}-{id}] {description}` |
+| Artifact            | Action                                                       |
+| ------------------- | ------------------------------------------------------------ |
+| `progress.md`       | Append: session date, feature id, what was done, what failed |
+| `feature_list.json` | Flip one `passes: false` → `true`                            |
+| Git log             | One commit: `[M{X}-{id}] {description}`                      |
 
 ### 4.5 Context Management
 
@@ -188,15 +185,15 @@ For each session:
 
 Built into feature acceptance steps, not a separate evaluator agent.
 
-| Criterion | Applies to | Threshold | How Verified |
-|---|---|---|---|
-| Schema compliance | `packages/core` | Zod validation passes on all LLM output samples | Unit test |
-| Content safety | `packages/core` | No output triggers keyword blacklist | Unit test |
-| Render correctness | `packages/poster` | Snapshot matches golden image (pixel diff < 1%) | Unit test (pixelmatch + pngjs) |
-| SSE streaming | `apps/server` | Chunks arrive in order, connection survives 30s+ | Playwright |
-| Performance budget | `apps/web` | LCP ≤ 2.5s, JS gzip ≤ 220KB | Playwright + Lighthouse |
-| Type safety | All packages | `pnpm typecheck` zero errors | CLI verification |
-| Cross-platform build | `apps/desktop` | `cargo build` succeeds on all 4 targets | CI verification |
+| Criterion            | Applies to        | Threshold                                        | How Verified                   |
+| -------------------- | ----------------- | ------------------------------------------------ | ------------------------------ |
+| Schema compliance    | `packages/core`   | Zod validation passes on all LLM output samples  | Unit test                      |
+| Content safety       | `packages/core`   | No output triggers keyword blacklist             | Unit test                      |
+| Render correctness   | `packages/poster` | Snapshot matches golden image (pixel diff < 1%)  | Unit test (pixelmatch + pngjs) |
+| SSE streaming        | `apps/server`     | Chunks arrive in order, connection survives 30s+ | Playwright                     |
+| Performance budget   | `apps/web`        | LCP ≤ 2.5s, JS gzip ≤ 220KB                      | Playwright + Lighthouse        |
+| Type safety          | All packages      | `pnpm typecheck` zero errors                     | CLI verification               |
+| Cross-platform build | `apps/desktop`    | `cargo build` succeeds on all 4 targets          | CI verification                |
 
 ---
 
@@ -258,11 +255,11 @@ Patterns from Article 3 that the coding agent applies when implementing pipeline
 
 Adapted from Article 1's failure mode table:
 
-| Problem | Mitigation in This Skill |
-|---|---|
-| Agent declares victory too early | Feature list with explicit `passes` field; strongly-worded "never remove features" constraint |
-| Agent leaves environment broken | Session ends with clean git state; next session starts with smoke test; revert if needed |
-| Agent marks features as done prematurely | Verification required: unit tests for core/poster, Playwright for apps; only flip `passes` after verification |
-| Agent wastes time figuring out how to run app | `init.sh` generated per-milestone; coding agent reads it at session start |
-| Context fills during long feature | One feature per session; compaction handles within-session growth; `progress.md` bridges sessions |
-| Generated code has subtle bugs | Playwright verification tests as a human would (Article 1 finding); snapshot tests for poster output |
+| Problem                                       | Mitigation in This Skill                                                                                      |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Agent declares victory too early              | Feature list with explicit `passes` field; strongly-worded "never remove features" constraint                 |
+| Agent leaves environment broken               | Session ends with clean git state; next session starts with smoke test; revert if needed                      |
+| Agent marks features as done prematurely      | Verification required: unit tests for core/poster, Playwright for apps; only flip `passes` after verification |
+| Agent wastes time figuring out how to run app | `init.sh` generated per-milestone; coding agent reads it at session start                                     |
+| Context fills during long feature             | One feature per session; compaction handles within-session growth; `progress.md` bridges sessions             |
+| Generated code has subtle bugs                | Playwright verification tests as a human would (Article 1 finding); snapshot tests for poster output          |

@@ -1,17 +1,8 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalDependencies": [
-    "**/.env.*local",
-    "tsconfig.base.json",
-    ".prettierrc",
-    "eslint.config.js"
-  ],
-  "globalEnv": [
-    "NODE_ENV",
-    "VERCEL_ENV",
-    "CI"
-  ],
+  "globalDependencies": ["**/.env.*local", "tsconfig.base.json", ".prettierrc", "eslint.config.js"],
+  "globalEnv": ["NODE_ENV", "VERCEL_ENV", "CI"],
   "tasks": {
     "dev": {
       "cache": false,
@@ -34,12 +25,7 @@
         "Cargo.toml",
         "src-tauri/**"
       ],
-      "outputs": [
-        "dist/**",
-        ".next/**",
-        "!.next/cache/**",
-        "src-tauri/target/release/bundle/**"
-      ],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "src-tauri/target/release/bundle/**"],
       "env": [
         "API_BASE_URL",
         "NEXT_PUBLIC_*",
@@ -55,36 +41,17 @@
     },
     "lint": {
       "dependsOn": ["^build:dev"],
-      "inputs": [
-        "src/**",
-        "*.ts",
-        "*.tsx",
-        "*.js",
-        "package.json",
-        "eslint.config.js"
-      ],
+      "inputs": ["src/**", "*.ts", "*.tsx", "*.js", "package.json", "eslint.config.js"],
       "outputs": []
     },
     "typecheck": {
       "dependsOn": ["^build:dev"],
-      "inputs": [
-        "src/**",
-        "*.ts",
-        "*.tsx",
-        "tsconfig.json",
-        "tsconfig.base.json"
-      ],
+      "inputs": ["src/**", "*.ts", "*.tsx", "tsconfig.json", "tsconfig.base.json"],
       "outputs": []
     },
     "test": {
       "dependsOn": ["^build:dev"],
-      "inputs": [
-        "src/**",
-        "tests/**",
-        "*.test.ts",
-        "*.test.tsx",
-        "vitest.config.*"
-      ],
+      "inputs": ["src/**", "tests/**", "*.test.ts", "*.test.tsx", "vitest.config.*"],
       "outputs": ["coverage/**"]
     },
     "test:watch": {

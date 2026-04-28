@@ -3,6 +3,7 @@
 ## 一、先理解 satori 的渲染模型与硬性约束
 
 satori 是 Vercel 写的"JSX → SVG"的纯 JS 渲染器，它**不跑浏览器、不跑 DOM、不跑真正的 React 渲染流程**。它做的事情是：
+
 1. 把你写的 JSX 当作"标记 + 内联样式"读一遍；
 2. 用一个内置的 yoga（Facebook 的 flexbox 布局引擎 WASM 版）算出每个节点的位置和大小；
 3. 把每个节点画成 SVG 元素。
@@ -112,15 +113,15 @@ packages/poster/
  * 这套色值经过 WCAG AA 对比度验证。
  */
 export const colors = {
-  paper: '#F8F5EE',         // 主背景：米白宣纸
-  paperDeep: '#F1ECE0',     // 次级背景：用于卡片底
-  ink: '#1F1B16',           // 主文字：墨黑
-  inkSoft: '#4A4338',       // 次级文字
-  inkMuted: '#7A7167',      // 辅助说明
-  gold: '#9A7B3F',          // 暗金：装饰、序号、强调
-  goldSoft: '#C3A878',      // 浅金：分割线、边框
-  line: '#E5DFD2',          // 卡片描边
-  accent: '#7A2C2C',        // 印章红：极少量使用，避免艳俗
+  paper: '#F8F5EE', // 主背景：米白宣纸
+  paperDeep: '#F1ECE0', // 次级背景：用于卡片底
+  ink: '#1F1B16', // 主文字：墨黑
+  inkSoft: '#4A4338', // 次级文字
+  inkMuted: '#7A7167', // 辅助说明
+  gold: '#9A7B3F', // 暗金：装饰、序号、强调
+  goldSoft: '#C3A878', // 浅金：分割线、边框
+  line: '#E5DFD2', // 卡片描边
+  accent: '#7A2C2C', // 印章红：极少量使用，避免艳俗
 } as const;
 
 export type ColorToken = keyof typeof colors;
@@ -135,12 +136,12 @@ export type ColorToken = keyof typeof colors;
  */
 export const typography = {
   family: {
-    serif: '"Noto Serif SC", serif',  // satori 会按你注入的 font 名匹配
+    serif: '"Noto Serif SC", serif', // satori 会按你注入的 font 名匹配
   },
   size: {
-    title: 56,        // 主标题"手相解读指南"
-    subtitle: 22,     // 副标题
-    sectionHeading: 32,  // "掌纹总览"
+    title: 56, // 主标题"手相解读指南"
+    subtitle: 22, // 副标题
+    sectionHeading: 32, // "掌纹总览"
     bodyLarge: 22,
     body: 19,
     caption: 16,
@@ -152,11 +153,11 @@ export const typography = {
   },
   lineHeight: {
     tight: 1.35,
-    normal: 1.7,    // 中文长正文用 1.7 阅读最舒服
+    normal: 1.7, // 中文长正文用 1.7 阅读最舒服
     loose: 1.9,
   },
   letterSpacing: {
-    title: 6,       // 中文标题加大字距更有"题字"感
+    title: 6, // 中文标题加大字距更有"题字"感
     normal: 0,
   },
 } as const;
@@ -183,11 +184,11 @@ export const layout = {
     gapBetween: 24,
   },
   module: {
-    iconSize: 36,        // 心形/脑/叶子小图标
-    sectionGap: 20,      // 模块内子项间距
+    iconSize: 36, // 心形/脑/叶子小图标
+    sectionGap: 20, // 模块内子项间距
   },
   sectionNumber: {
-    size: 40,            // 圆形 01/02 序号
+    size: 40, // 圆形 01/02 序号
     fontSize: 16,
   },
 } as const;
@@ -205,39 +206,59 @@ export const layout = {
 import { z } from 'zod';
 
 export const MainLineIcon = z.enum([
-  'heart', 'brain', 'leaf',           // 手相
-  'eye', 'nose', 'mouth', 'eyebrow', 'face',  // 面相
+  'heart',
+  'brain',
+  'leaf', // 手相
+  'eye',
+  'nose',
+  'mouth',
+  'eyebrow',
+  'face', // 面相
 ]);
 
 export const AuxIcon = z.enum(['signpost', 'wave', 'star', 'mountain']);
 
-export const SummaryIllustration = z.enum(['mountain', 'river', 'cloud', 'lotus']);
+export const SummaryIllustration = z.enum([
+  'mountain',
+  'river',
+  'cloud',
+  'lotus',
+]);
 
-const TextRange = (min: number, max: number) =>
-  z.string().min(min).max(max);
+const TextRange = (min: number, max: number) => z.string().min(min).max(max);
 
 export const PalmReadingResultSchema = z.object({
   meta: z.object({
     id: z.string(),
     type: z.literal('palm'),
     createdAt: z.string(),
-    title: z.string(),                       // "手相解读指南"
-    subtitle: z.string(),                    // "根据你的掌纹与手型做的简洁分析"
+    title: z.string(), // "手相解读指南"
+    subtitle: z.string(), // "根据你的掌纹与手型做的简洁分析"
   }),
   overview: z.object({
-    heading: z.string(),                     // "掌纹总览"
+    heading: z.string(), // "掌纹总览"
     body: TextRange(60, 200),
   }),
-  mainLines: z.array(z.object({
-    name: z.string(),                        // "感情线"
-    icon: MainLineIcon,
-    body: TextRange(40, 180),
-  })).min(2).max(4),
-  auxiliary: z.array(z.object({
-    icon: AuxIcon,
-    label: z.string().max(40),
-    body: TextRange(30, 140),
-  })).min(1).max(3),
+  mainLines: z
+    .array(
+      z.object({
+        name: z.string(), // "感情线"
+        icon: MainLineIcon,
+        body: TextRange(40, 180),
+      }),
+    )
+    .min(2)
+    .max(4),
+  auxiliary: z
+    .array(
+      z.object({
+        icon: AuxIcon,
+        label: z.string().max(40),
+        body: TextRange(30, 140),
+      }),
+    )
+    .min(1)
+    .max(3),
   temperament: z.object({
     heading: z.string(),
     body: TextRange(60, 200),
@@ -447,15 +468,10 @@ export function SectionNumber({ index }: SectionNumberProps) {
       borderRadius={size / 2}
       background={colors.paperDeep}
       style={{
-        flexShrink: 0,  // 防止在窄容器里被挤扁
+        flexShrink: 0, // 防止在窄容器里被挤扁
       }}
     >
-      <Text
-        size="caption"
-        weight="semibold"
-        color="gold"
-        letterSpacing={1}
-      >
+      <Text size="caption" weight="semibold" color="gold" letterSpacing={1}>
         {String(index).padStart(2, '0')}
       </Text>
     </Box>
@@ -650,17 +666,77 @@ export function PalmDiagram({ width = 280, height = 360 }: PalmDiagramProps) {
 
       {/* 右侧标注线 + 文本 */}
       {/* 感情线 */}
-      <line x1={205} y1={178} x2={250} y2={170} stroke={colors.gold} strokeWidth={1} />
-      <text x={252} y={174} fill={colors.ink} fontSize={14} fontFamily="Noto Serif SC">感情线</text>
+      <line
+        x1={205}
+        y1={178}
+        x2={250}
+        y2={170}
+        stroke={colors.gold}
+        strokeWidth={1}
+      />
+      <text
+        x={252}
+        y={174}
+        fill={colors.ink}
+        fontSize={14}
+        fontFamily="Noto Serif SC"
+      >
+        感情线
+      </text>
       {/* 智慧线 */}
-      <line x1={215} y1={238} x2={250} y2={234} stroke={colors.gold} strokeWidth={1} />
-      <text x={252} y={238} fill={colors.ink} fontSize={14} fontFamily="Noto Serif SC">智慧线</text>
+      <line
+        x1={215}
+        y1={238}
+        x2={250}
+        y2={234}
+        stroke={colors.gold}
+        strokeWidth={1}
+      />
+      <text
+        x={252}
+        y={238}
+        fill={colors.ink}
+        fontSize={14}
+        fontFamily="Noto Serif SC"
+      >
+        智慧线
+      </text>
       {/* 生命线 */}
-      <line x1={108} y1={300} x2={250} y2={290} stroke={colors.gold} strokeWidth={1} />
-      <text x={252} y={294} fill={colors.ink} fontSize={14} fontFamily="Noto Serif SC">生命线</text>
+      <line
+        x1={108}
+        y1={300}
+        x2={250}
+        y2={290}
+        stroke={colors.gold}
+        strokeWidth={1}
+      />
+      <text
+        x={252}
+        y={294}
+        fill={colors.ink}
+        fontSize={14}
+        fontFamily="Noto Serif SC"
+      >
+        生命线
+      </text>
       {/* 命运线 */}
-      <line x1={154} y1={262} x2={250} y2={258} stroke={colors.gold} strokeWidth={1} />
-      <text x={252} y={262} fill={colors.ink} fontSize={14} fontFamily="Noto Serif SC">命运线</text>
+      <line
+        x1={154}
+        y1={262}
+        x2={250}
+        y2={258}
+        stroke={colors.gold}
+        strokeWidth={1}
+      />
+      <text
+        x={252}
+        y={262}
+        fill={colors.ink}
+        fontSize={14}
+        fontFamily="Noto Serif SC"
+      >
+        命运线
+      </text>
     </svg>
   );
 }
@@ -732,9 +808,26 @@ import { colors } from '../tokens';
 export function SignpostIcon({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-      <path d="M14 4 L 14 24" stroke={colors.gold} strokeWidth={1.4} strokeLinecap="round" />
-      <path d="M5 8 L 22 8 L 24 10 L 22 12 L 5 12 Z" stroke={colors.gold} strokeWidth={1.4} fill="none" strokeLinejoin="round" />
-      <path d="M22 16 L 5 16 L 3 18 L 5 20 L 22 20 Z" stroke={colors.gold} strokeWidth={1.4} fill="none" strokeLinejoin="round" />
+      <path
+        d="M14 4 L 14 24"
+        stroke={colors.gold}
+        strokeWidth={1.4}
+        strokeLinecap="round"
+      />
+      <path
+        d="M5 8 L 22 8 L 24 10 L 22 12 L 5 12 Z"
+        stroke={colors.gold}
+        strokeWidth={1.4}
+        fill="none"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M22 16 L 5 16 L 3 18 L 5 20 L 22 20 Z"
+        stroke={colors.gold}
+        strokeWidth={1.4}
+        fill="none"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -746,9 +839,27 @@ import { colors } from '../tokens';
 export function WaveIcon({ size = 28 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 28 28" fill="none">
-      <path d="M3 10 Q 8 5, 14 10 T 25 10" stroke={colors.gold} strokeWidth={1.4} fill="none" strokeLinecap="round" />
-      <path d="M3 16 Q 8 11, 14 16 T 25 16" stroke={colors.gold} strokeWidth={1.4} fill="none" strokeLinecap="round" />
-      <path d="M3 22 Q 8 17, 14 22 T 25 22" stroke={colors.gold} strokeWidth={1.4} fill="none" strokeLinecap="round" />
+      <path
+        d="M3 10 Q 8 5, 14 10 T 25 10"
+        stroke={colors.gold}
+        strokeWidth={1.4}
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M3 16 Q 8 11, 14 16 T 25 16"
+        stroke={colors.gold}
+        strokeWidth={1.4}
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M3 22 Q 8 17, 14 22 T 25 22"
+        stroke={colors.gold}
+        strokeWidth={1.4}
+        fill="none"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -760,21 +871,52 @@ export function WaveIcon({ size = 28 }: { size?: number }) {
 // packages/poster/src/icons/MountainScene.tsx
 import { colors } from '../tokens';
 
-export function MountainScene({ width = 220, height = 110 }: { width?: number; height?: number }) {
+export function MountainScene({
+  width = 220,
+  height = 110,
+}: {
+  width?: number;
+  height?: number;
+}) {
   return (
     <svg width={width} height={height} viewBox="0 0 220 110" fill="none">
       {/* 远山 */}
-      <path d="M0 70 Q 30 40 60 60 Q 90 38 130 58 Q 170 30 220 58 L 220 110 L 0 110 Z" 
-            fill={colors.paperDeep} stroke="none" />
+      <path
+        d="M0 70 Q 30 40 60 60 Q 90 38 130 58 Q 170 30 220 58 L 220 110 L 0 110 Z"
+        fill={colors.paperDeep}
+        stroke="none"
+      />
       {/* 中景山 */}
-      <path d="M0 85 L 25 60 L 50 78 L 80 55 L 110 80 L 145 60 L 175 80 L 200 65 L 220 82 L 220 110 L 0 110 Z"
-            stroke={colors.ink} strokeWidth={1.2} fill="none" strokeLinejoin="round" />
+      <path
+        d="M0 85 L 25 60 L 50 78 L 80 55 L 110 80 L 145 60 L 175 80 L 200 65 L 220 82 L 220 110 L 0 110 Z"
+        stroke={colors.ink}
+        strokeWidth={1.2}
+        fill="none"
+        strokeLinejoin="round"
+      />
       {/* 几棵小树 */}
-      <path d="M30 92 L 30 100 M28 96 L 32 96" stroke={colors.ink} strokeWidth={1} />
-      <path d="M55 88 L 55 100 M52 93 L 58 93" stroke={colors.ink} strokeWidth={1} />
-      <path d="M180 90 L 180 100 M177 95 L 183 95" stroke={colors.ink} strokeWidth={1} />
+      <path
+        d="M30 92 L 30 100 M28 96 L 32 96"
+        stroke={colors.ink}
+        strokeWidth={1}
+      />
+      <path
+        d="M55 88 L 55 100 M52 93 L 58 93"
+        stroke={colors.ink}
+        strokeWidth={1}
+      />
+      <path
+        d="M180 90 L 180 100 M177 95 L 183 95"
+        stroke={colors.ink}
+        strokeWidth={1}
+      />
       {/* 河流（细线） */}
-      <path d="M0 105 Q 60 98 120 104 Q 180 100 220 105" stroke={colors.goldSoft} strokeWidth={1} fill="none" />
+      <path
+        d="M0 105 Q 60 98 120 104 Q 180 100 220 105"
+        stroke={colors.goldSoft}
+        strokeWidth={1}
+        fill="none"
+      />
     </svg>
   );
 }
@@ -793,11 +935,19 @@ import { colors } from '../tokens';
 export function CornerOrnament({
   size = 60,
   variant = 'tl',
-}: { size?: number; variant?: 'tl' | 'tr' | 'bl' | 'br' }) {
+}: {
+  size?: number;
+  variant?: 'tl' | 'tr' | 'bl' | 'br';
+}) {
   const rotation = { tl: 0, tr: 90, br: 180, bl: 270 }[variant];
   return (
-    <svg width={size} height={size} viewBox="0 0 60 60" fill="none"
-         style={{ transform: `rotate(${rotation}deg)` }}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 60 60"
+      fill="none"
+      style={{ transform: `rotate(${rotation}deg)` }}
+    >
       <path
         d="M5 5 L 25 5 L 25 10 L 10 10 L 10 25 L 5 25 Z M 14 14 L 22 14 L 22 22 L 14 22 Z"
         fill={colors.goldSoft}
@@ -827,14 +977,24 @@ export function Watermark({ qrDataUrl, date }: WatermarkProps) {
   return (
     <Box direction="row" align="center" gap={12}>
       {qrDataUrl && (
-        <img src={qrDataUrl} width={64} height={64}
-             style={{ borderRadius: 6, border: `1px solid ${colors.line}` }} />
+        <img
+          src={qrDataUrl}
+          width={64}
+          height={64}
+          style={{ borderRadius: 6, border: `1px solid ${colors.line}` }}
+        />
       )}
       <Box direction="column" gap={4}>
-        <Text size="footnote" color="inkMuted">由赛博玄学馆生成</Text>
-        <Text size="footnote" color="inkMuted">{date}</Text>
+        <Text size="footnote" color="inkMuted">
+          由赛博玄学馆生成
+        </Text>
+        <Text size="footnote" color="inkMuted">
+          {date}
+        </Text>
         {qrDataUrl && (
-          <Text size="footnote" color="gold">扫码下载桌面版</Text>
+          <Text size="footnote" color="gold">
+            扫码下载桌面版
+          </Text>
         )}
       </Box>
     </Box>
@@ -883,7 +1043,7 @@ const MAIN_LINE_ICONS = {
 const AUX_ICONS = {
   signpost: SignpostIcon,
   wave: WaveIcon,
-  star: WaveIcon,        // star 暂用 wave 占位，正式上线补充
+  star: WaveIcon, // star 暂用 wave 占位，正式上线补充
   mountain: WaveIcon,
 } as const;
 
@@ -901,16 +1061,10 @@ export function PalmReadingPoster({ data, qrDataUrl, source = 'web' }: Props) {
       style={{ position: 'relative' }}
     >
       {/* 四角装饰：用 absolute 定位，Box 外层加 position: relative 提供锚点 */}
-      <Box
-        direction="row"
-        style={{ position: 'absolute', top: 16, left: 16 }}
-      >
+      <Box direction="row" style={{ position: 'absolute', top: 16, left: 16 }}>
         <CornerOrnament variant="tl" />
       </Box>
-      <Box
-        direction="row"
-        style={{ position: 'absolute', top: 16, right: 16 }}
-      >
+      <Box direction="row" style={{ position: 'absolute', top: 16, right: 16 }}>
         <CornerOrnament variant="tr" />
       </Box>
 
@@ -948,11 +1102,21 @@ export function PalmReadingPoster({ data, qrDataUrl, source = 'web' }: Props) {
           border={`1px solid ${colors.line}`}
         >
           <Box direction="row" align="center" gap={10}>
-            <Box width={6} height={6} borderRadius={3} background={colors.gold} />
+            <Box
+              width={6}
+              height={6}
+              borderRadius={3}
+              background={colors.gold}
+            />
             <Text size="caption" color="inkSoft" letterSpacing={3}>
               你的掌纹示意图
             </Text>
-            <Box width={6} height={6} borderRadius={3} background={colors.gold} />
+            <Box
+              width={6}
+              height={6}
+              borderRadius={3}
+              background={colors.gold}
+            />
           </Box>
           <PalmDiagram />
         </Box>
@@ -970,26 +1134,42 @@ export function PalmReadingPoster({ data, qrDataUrl, source = 'web' }: Props) {
       {/* —————— 模块 2：三大主线 —————— */}
       <Card index={2} heading="三大主线解读">
         {data.mainLines.map((line, i) => {
-          const Icon = MAIN_LINE_ICONS[line.icon as keyof typeof MAIN_LINE_ICONS] ?? HeartIcon;
+          const Icon =
+            MAIN_LINE_ICONS[line.icon as keyof typeof MAIN_LINE_ICONS] ??
+            HeartIcon;
           return (
             <Box key={line.name} direction="column" gap={10}>
               {/* 子项行：图标 + 名称 */}
               <Box direction="row" align="center" gap={14}>
                 <Box
-                  direction="row" justify="center" align="center"
-                  width={44} height={44} borderRadius={22}
+                  direction="row"
+                  justify="center"
+                  align="center"
+                  width={44}
+                  height={44}
+                  borderRadius={22}
                   background={colors.paperDeep}
                   style={{ flexShrink: 0 }}
                 >
                   <Icon size={22} />
                 </Box>
-                <Text size="bodyLarge" weight="semibold" color="ink" letterSpacing={2}>
+                <Text
+                  size="bodyLarge"
+                  weight="semibold"
+                  color="ink"
+                  letterSpacing={2}
+                >
                   {line.name}
                 </Text>
               </Box>
               {/* 子项正文 */}
-              <Text size="body" color="inkSoft" lineHeight="normal" asBlock
-                    style={{ paddingLeft: 58 }}>
+              <Text
+                size="body"
+                color="inkSoft"
+                lineHeight="normal"
+                asBlock
+                style={{ paddingLeft: 58 }}
+              >
                 {line.body}
               </Text>
               {/* 项目间分割线（最后一项不画） */}
@@ -1006,8 +1186,12 @@ export function PalmReadingPoster({ data, qrDataUrl, source = 'web' }: Props) {
           return (
             <Box key={i} direction="row" gap={14} align="flex-start">
               <Box
-                direction="row" justify="center" align="center"
-                width={40} height={40} borderRadius={20}
+                direction="row"
+                justify="center"
+                align="center"
+                width={40}
+                height={40}
+                borderRadius={20}
                 background={colors.paperDeep}
                 style={{ flexShrink: 0, marginTop: 2 }}
               >
@@ -1047,14 +1231,25 @@ export function PalmReadingPoster({ data, qrDataUrl, source = 'web' }: Props) {
           <Box direction="row" align="center" gap={14}>
             {/* 复用 SectionNumber 内联（懒得 import 直接写也行） */}
             <Box
-              direction="row" justify="center" align="center"
-              width={40} height={40} borderRadius={20}
+              direction="row"
+              justify="center"
+              align="center"
+              width={40}
+              height={40}
+              borderRadius={20}
               background={colors.paper}
               style={{ flexShrink: 0 }}
             >
-              <Text size="caption" weight="semibold" color="gold">05</Text>
+              <Text size="caption" weight="semibold" color="gold">
+                05
+              </Text>
             </Box>
-            <Text size="sectionHeading" weight="semibold" color="ink" letterSpacing={2}>
+            <Text
+              size="sectionHeading"
+              weight="semibold"
+              color="ink"
+              letterSpacing={2}
+            >
               {data.summary.heading}
             </Text>
           </Box>
@@ -1082,22 +1277,41 @@ export function PalmReadingPoster({ data, qrDataUrl, source = 'web' }: Props) {
         border={`1px solid ${colors.line}`}
       >
         <Box
-          direction="row" justify="center" align="center"
-          width={40} height={40} borderRadius={20}
+          direction="row"
+          justify="center"
+          align="center"
+          width={40}
+          height={40}
+          borderRadius={20}
           background={colors.paperDeep}
           style={{ flexShrink: 0 }}
         >
-          <Text size="caption" weight="semibold" color="gold">06</Text>
+          <Text size="caption" weight="semibold" color="gold">
+            06
+          </Text>
         </Box>
-        <Text size="caption" color="inkSoft" lineHeight="normal" asBlock style={{ flex: 1 }}>
-          <Text size="body" weight="semibold" color="ink">{data.disclaimer.label}</Text>
+        <Text
+          size="caption"
+          color="inkSoft"
+          lineHeight="normal"
+          asBlock
+          style={{ flex: 1 }}
+        >
+          <Text size="body" weight="semibold" color="ink">
+            {data.disclaimer.label}
+          </Text>
           {'　'}
           {data.disclaimer.body}
         </Text>
       </Box>
 
       {/* —————— 水印 —————— */}
-      <Box direction="row" justify="flex-end" width="100%" style={{ marginTop: 8 }}>
+      <Box
+        direction="row"
+        justify="flex-end"
+        width="100%"
+        style={{ marginTop: 8 }}
+      >
         <Watermark
           qrDataUrl={source === 'web' ? qrDataUrl : undefined}
           date={`${source === 'web' ? '网页版' : '桌面版'} · ${date}`}
@@ -1219,15 +1433,26 @@ const FONTS_DIR = path.resolve(process.cwd(), 'packages/poster/fonts');
  * 唯一对外的出图函数。
  * 设计为同步可测试（不依赖任何全局状态）+ 错误显式抛出。
  */
-export async function renderReadingPoster(input: RenderInput): Promise<RenderOutput> {
+export async function renderReadingPoster(
+  input: RenderInput,
+): Promise<RenderOutput> {
   const start = Date.now();
   const { data, qrDataUrl, source = 'web', scale = 2 } = input;
   const fonts = await loadFonts(FONTS_DIR);
 
   // 选择对应业务组件
-  const element = data.meta.type === 'palm'
-    ? PalmReadingPoster({ data: data as PalmReadingResult, qrDataUrl, source })
-    : FaceReadingPoster({ data: data as FaceReadingResult, qrDataUrl, source });
+  const element =
+    data.meta.type === 'palm'
+      ? PalmReadingPoster({
+          data: data as PalmReadingResult,
+          qrDataUrl,
+          source,
+        })
+      : FaceReadingPoster({
+          data: data as FaceReadingResult,
+          qrDataUrl,
+          source,
+        });
 
   // satori：JSX → SVG 字符串
   const svg = await satori(element, {
@@ -1277,10 +1502,17 @@ export async function renderReadingPoster(input: RenderInput): Promise<RenderOut
 
 import { NextResponse } from 'next/server';
 import { renderReadingPoster } from '@cyberoracle/poster/render/render-server';
-import { PalmReadingResultSchema, FaceReadingResultSchema } from '@cyberoracle/poster/data/schema';
-import { readResultJson, writeResultPng, generateShareQrDataUrl } from '@/lib/storage';
+import {
+  PalmReadingResultSchema,
+  FaceReadingResultSchema,
+} from '@cyberoracle/poster/data/schema';
+import {
+  readResultJson,
+  writeResultPng,
+  generateShareQrDataUrl,
+} from '@/lib/storage';
 
-export const runtime = 'nodejs';   // satori + resvg 必须 Node runtime
+export const runtime = 'nodejs'; // satori + resvg 必须 Node runtime
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -1291,13 +1523,14 @@ export async function POST(req: Request) {
   const raw = await readResultJson(id);
 
   // 2. 用 Zod 校验
-  const parsed = raw.meta.type === 'palm'
-    ? PalmReadingResultSchema.safeParse(raw)
-    : FaceReadingResultSchema.safeParse(raw);
+  const parsed =
+    raw.meta.type === 'palm'
+      ? PalmReadingResultSchema.safeParse(raw)
+      : FaceReadingResultSchema.safeParse(raw);
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'invalid result schema', detail: parsed.error.format() },
-      { status: 422 }
+      { status: 422 },
     );
   }
 
@@ -1316,7 +1549,8 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     url: `/api/result/${id}/image`,
-    width, height,
+    width,
+    height,
     renderMs: durationMs,
   });
 }
@@ -1343,7 +1577,8 @@ const OUT = path.resolve(__dirname, '../preview/output.png');
 async function build() {
   const data = PalmReadingResultSchema.parse(palmSample);
   const { png, durationMs, width, height } = await renderReadingPoster({
-    data, source: 'web',
+    data,
+    source: 'web',
   });
   await fs.mkdir(path.dirname(OUT), { recursive: true });
   await fs.writeFile(OUT, png);
@@ -1355,7 +1590,8 @@ build().catch(console.error);
 
 // watch 模式：改 src 自动重建
 if (process.argv.includes('--watch')) {
-  chokidar.watch(path.resolve(__dirname, '../src'), { ignoreInitial: true })
+  chokidar
+    .watch(path.resolve(__dirname, '../src'), { ignoreInitial: true })
     .on('change', () => {
       build().catch(console.error);
     });
@@ -1459,10 +1695,7 @@ export {
   PalmReadingResultSchema,
   FaceReadingResultSchema,
 } from './data/schema';
-export type {
-  PalmReadingResult,
-  FaceReadingResult,
-} from './data/schema';
+export type { PalmReadingResult, FaceReadingResult } from './data/schema';
 
 // 样例（dev / test / few-shot 三用）
 export { palmSample } from './data/samples';
@@ -1543,7 +1776,10 @@ const BASELINE = path.resolve(__dirname, 'baselines/palm.png');
 
 describe('PalmReadingPoster 视觉回归', () => {
   it('与基线图差异 < 0.5%', async () => {
-    const { png } = await renderReadingPoster({ data: palmSample, source: 'web' });
+    const { png } = await renderReadingPoster({
+      data: palmSample,
+      source: 'web',
+    });
 
     const current = PNG.sync.read(png);
     const baseline = PNG.sync.read(await fs.readFile(BASELINE));
@@ -1551,8 +1787,12 @@ describe('PalmReadingPoster 视觉回归', () => {
 
     const diff = new PNG({ width, height });
     const diffPx = pixelmatch(
-      current.data, baseline.data, diff.data,
-      width, height, { threshold: 0.1 }
+      current.data,
+      baseline.data,
+      diff.data,
+      width,
+      height,
+      { threshold: 0.1 },
     );
     const ratio = diffPx / (width * height);
     expect(ratio).toBeLessThan(0.005);
@@ -1564,8 +1804,11 @@ describe('PalmReadingPoster 视觉回归', () => {
       overview: { ...palmSample.overview, body: 'X'.repeat(200) },
       summary: { ...palmSample.summary, body: 'X'.repeat(260) },
     };
-    const { png } = await renderReadingPoster({ data: stressed as any, source: 'web' });
-    expect(png.length).toBeGreaterThan(1000);  // 至少出图成功
+    const { png } = await renderReadingPoster({
+      data: stressed as any,
+      source: 'web',
+    });
+    expect(png.length).toBeGreaterThan(1000); // 至少出图成功
   });
 });
 ```
@@ -1578,14 +1821,14 @@ describe('PalmReadingPoster 视觉回归', () => {
 
 ### 性能优化清单
 
-| 项 | 措施 | 收益 |
-|---|---|---|
-| 字体子集化 | pyftsubset 裁剪到 GB18030 常用字 | 单次出图 700ms → 180ms |
-| 字体缓存 | 进程级单例（loadFonts 内置） | 避免每次出图重读 2MB |
-| resvg fitTo | mode: 'width' 精确控制 | 避免计算 height 偏差 |
-| @2x 输出 | scale=2 在 resvg 里放大，不在 satori | satori 端尺寸越大越慢 |
-| 二维码生成 | 用 `qrcode` 包生成 SVG dataURL，不用 PNG | 体积更小、渲染更快 |
-| 长文截断 | Zod 字数上限挡住 | 防止极端文本撑爆版面 |
+| 项          | 措施                                     | 收益                   |
+| ----------- | ---------------------------------------- | ---------------------- |
+| 字体子集化  | pyftsubset 裁剪到 GB18030 常用字         | 单次出图 700ms → 180ms |
+| 字体缓存    | 进程级单例（loadFonts 内置）             | 避免每次出图重读 2MB   |
+| resvg fitTo | mode: 'width' 精确控制                   | 避免计算 height 偏差   |
+| @2x 输出    | scale=2 在 resvg 里放大，不在 satori     | satori 端尺寸越大越慢  |
+| 二维码生成  | 用 `qrcode` 包生成 SVG dataURL，不用 PNG | 体积更小、渲染更快     |
+| 长文截断    | Zod 字数上限挡住                         | 防止极端文本撑爆版面   |
 
 ### satori 已知踩坑 cheat sheet
 

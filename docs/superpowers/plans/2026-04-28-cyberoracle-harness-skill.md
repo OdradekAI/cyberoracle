@@ -24,6 +24,7 @@
 ```
 
 Each file has one clear responsibility:
+
 - `skill.md` — Agent prompts, discipline rules, evaluation criteria, all orchestration logic
 - `templates/feature-list.json` — The JSON schema contract + a working example for M2
 - `templates/init-sh.sh` — Shell script template the initializer customizes per milestone
@@ -35,6 +36,7 @@ Each file has one clear responsibility:
 ### Task 1: Create skill directory structure
 
 **Files:**
+
 - Create: `.claude/skills/cyberoracle-harness/` (directory)
 - Create: `.claude/skills/cyberoracle-harness/templates/` (directory)
 - Create: `.claude/skills/cyberoracle-harness/references/` (directory)
@@ -53,6 +55,7 @@ find .claude/skills/cyberoracle-harness -type d
 ```
 
 Expected:
+
 ```
 .claude/skills/cyberoracle-harness
 .claude/skills/cyberoracle-harness/templates
@@ -71,6 +74,7 @@ git commit -m "chore: scaffold cyberoracle-harness skill directory structure"
 ### Task 2: Write the runtime patterns reference
 
 **Files:**
+
 - Create: `.claude/skills/cyberoracle-harness/references/runtime-patterns.md`
 
 This task comes first because the main skill references this file — writing it first means no forward references.
@@ -91,10 +95,11 @@ Patterns derived from Anthropic's "Managed Agents: Decoupling the Brain from the
 Each multi-step LLM pipeline (palm reading, face reading, daily fortune, quick ask) writes progress to a status file as it executes. This file acts as an append-only session log.
 
 **Implementation:**
+```
 
-```
-/results/{id}.status    ← Server-side status log
-```
+/results/{id}.status ← Server-side status log
+
+````
 
 Status file format (one JSON object per line, appended after each step):
 
@@ -103,11 +108,12 @@ Status file format (one JSON object per line, appended after each step):
 {"step":"vlm_observe","status":"running","ts":"2026-04-28T10:00:05Z"}
 {"step":"vlm_observe","status":"done","ts":"2026-04-28T10:00:12Z","data":{"observation":"..."}}
 {"step":"llm_interpret","status":"running","ts":"2026-04-28T10:00:13Z"}
-```
+````
 
 **Recovery:** If the pipeline crashes mid-step, the recovery logic reads the last line with `status:"running"` and retries that step. No step runs twice with `status:"done"`.
 
 **Where to apply:**
+
 - `apps/server/app/api/analyze/route.ts` — SSE streaming endpoint
 - `apps/desktop/src-tauri/src/commands/analyze_stream.rs` — Rust-side LLM orchestration
 - `apps/server/app/api/quick-ask/route.ts` — Quick ask SSE endpoint
@@ -124,11 +130,14 @@ Decouple the orchestration logic ("brain") from individual LLM API calls ("hands
 type Step<I, O> = {
   name: string;
   execute: (input: I) => Promise<O>;
-  timeout: number;      // ms
+  timeout: number; // ms
   retries: number;
 };
 
-async function runPipeline<T>(steps: Step<any, any>[], initialInput: T): Promise<T> {
+async function runPipeline<T>(
+  steps: Step<any, any>[],
+  initialInput: T,
+): Promise<T> {
   let current = initialInput;
   for (const step of steps) {
     current = await withRetry(() => step.execute(current), {
@@ -142,6 +151,7 @@ async function runPipeline<T>(steps: Step<any, any>[], initialInput: T): Promise
 ```
 
 **Where to apply:**
+
 - Two-phase prompt pipeline: VLM observation → LLM interpretation
 - Daily fortune pipeline: date calculation → LLM generation → safety check
 - Desktop companion greeting: personality selection → LLM generation → TTS dispatch
@@ -156,25 +166,35 @@ Both server (SSE to browser) and desktop (Tauri events to webview) emit structur
 
 ```typescript
 type PipelineEvent = {
-  step: "vlm_observe" | "llm_interpret" | "poster_render" | "safety_check" | "complete";
-  status: "running" | "done" | "error";
+  step:
+    | 'vlm_observe'
+    | 'llm_interpret'
+    | 'poster_render'
+    | 'safety_check'
+    | 'complete';
+  status: 'running' | 'done' | 'error';
   data?: unknown;
   error?: string;
 };
 ```
 
 **Server-side (SSE):**
+
 ```typescript
 // Each chunk sent to the client includes step context
-res.write(`data: ${JSON.stringify({ step: "vlm_observe", status: "running" })}\n\n`);
+res.write(
+  `data: ${JSON.stringify({ step: 'vlm_observe', status: 'running' })}\n\n`,
+);
 ```
 
 **Desktop-side (Tauri):**
+
 ```rust
 window.emit("analyze:chunk", PipelineEvent { step: "vlm_observe", status: "running", ..Default::default() })?;
 ```
 
 **Where to apply:**
+
 - `apps/server` — All SSE endpoints
 - `apps/desktop/src-tauri/src/commands/analyze_stream.rs` — Window emit calls
 - Frontend components that render pipeline progress (StreamingPoster, CrystalBall animations)
@@ -199,17 +219,17 @@ Ultimate:  GPT-4o (vision), GPT-4o-mini (text)
 async function callLLMWithFallback(
   providers: LLMProvider[],
   prompt: string,
-  options: LLMOptions
+  options: LLMOptions,
 ): Promise<LLMResponse> {
   let lastError: Error | null = null;
   for (const provider of providers) {
     try {
       const result = await provider.call(prompt, options);
-      logStatus(`llm_${provider.name}`, "done", { provider: provider.name });
+      logStatus(`llm_${provider.name}`, 'done', { provider: provider.name });
       return result;
     } catch (err) {
       lastError = err as Error;
-      logStatus(`llm_${provider.name}`, "error", { error: String(err) });
+      logStatus(`llm_${provider.name}`, 'error', { error: String(err) });
     }
   }
   throw lastError;
@@ -217,15 +237,17 @@ async function callLLMWithFallback(
 ```
 
 **Where to apply:**
+
 - `apps/server` LLM proxy layer — all `/api/analyze`, `/api/daily`, `/api/quick-ask` routes
 - Client-side error handling — display "service degraded" when fallback is active
-```
+
+````
 
 - [ ] **Step 2: Verify file is readable**
 
 ```bash
 wc -l .claude/skills/cyberoracle-harness/references/runtime-patterns.md
-```
+````
 
 Expected: ~130 lines
 
@@ -241,6 +263,7 @@ git commit -m "feat(harness): add runtime pipeline patterns reference"
 ### Task 3: Write the templates (feature-list, init-sh, progress)
 
 **Files:**
+
 - Create: `.claude/skills/cyberoracle-harness/templates/feature-list.json`
 - Create: `.claude/skills/cyberoracle-harness/templates/init-sh.sh`
 - Create: `.claude/skills/cyberoracle-harness/templates/progress.md`
@@ -580,9 +603,9 @@ Write the following content to `.claude/skills/cyberoracle-harness/templates/pro
 
 ## Summary
 
-| Feature | Status | Session |
-|---|---|---|
-<!-- Auto-updated: | M2-001 | ✅ Pass | Session 1 | -->
+| Feature            | Status | Session |
+| ------------------ | ------ | ------- | --------- | --- |
+| <!-- Auto-updated: | M2-001 | ✅ Pass | Session 1 | --> |
 ```
 
 - [ ] **Step 4: Verify all templates exist**
@@ -613,6 +636,7 @@ git commit -m "feat(harness): add templates — feature list schema, init.sh, pr
 ### Task 4: Write the main skill.md
 
 **Files:**
+
 - Create: `.claude/skills/cyberoracle-harness/skill.md`
 
 This is the core of the harness. It contains the frontmatter, initializer prompt, coding agent prompt, evaluation criteria, and discipline rules.
@@ -636,6 +660,7 @@ You are the CyberOracle development harness — an agent system that drives incr
 The user invokes this skill with a milestone ID as argument: `/cyberoracle-harness M1` through `/cyberoracle-harness M7`.
 
 **Routing logic:**
+
 1. Check if `feature_list.json` exists in the project root
 2. If it does NOT exist → run the **Initializer** workflow
 3. If it DOES exist → run the **Coding Agent** workflow
@@ -650,21 +675,22 @@ You are the initializer agent. Your job is to read the project's existing docume
 
 Read the argument to determine which milestone. Map it to source documents:
 
-| Milestone | Source Documents |
-|---|---|
-| M1 共享基建 | `docs/1Monorepo工程骨架.md` + PRD §3.2 |
-| M2 Web 端 MVP | PRD §4.1, §7, §8, §9 + `docs/5完整Prompt文件.md` + `docs/2satori长图组件.md` |
-| M3 云端代理 + 鉴权 | PRD §4.4, §9, §13 |
-| M4 Tauri 客户端骨架 | `docs/4Tauri项目骨架.md` + PRD §5 |
-| M5 桌面伙伴 Live2D | PRD §5.2 + `docs/3Live2D集成完整示例.md` |
-| M6 加密 + 自动更新 + 打包签名 | PRD §5.4, §13.2 |
-| M7 转化漏斗 + 灰度 | PRD §6 |
+| Milestone                     | Source Documents                                                             |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| M1 共享基建                   | `docs/1Monorepo工程骨架.md` + PRD §3.2                                       |
+| M2 Web 端 MVP                 | PRD §4.1, §7, §8, §9 + `docs/5完整Prompt文件.md` + `docs/2satori长图组件.md` |
+| M3 云端代理 + 鉴权            | PRD §4.4, §9, §13                                                            |
+| M4 Tauri 客户端骨架           | `docs/4Tauri项目骨架.md` + PRD §5                                            |
+| M5 桌面伙伴 Live2D            | PRD §5.2 + `docs/3Live2D集成完整示例.md`                                     |
+| M6 加密 + 自动更新 + 打包签名 | PRD §5.4, §13.2                                                              |
+| M7 转化漏斗 + 灰度            | PRD §6                                                                       |
 
 PRD is at `docs/PRD.md`.
 
 ### Step 2: Read the source documents
 
 Read each listed document section carefully. You need to understand:
+
 - What features the milestone requires
 - What technical components are involved
 - What dependencies exist between components
@@ -677,6 +703,7 @@ Read the template at `.claude/skills/cyberoracle-harness/templates/feature-list.
 Generate a feature list following these rules:
 
 **Feature decomposition principles:**
+
 - Each feature is a single, testable unit of work
 - Features should take 5-30 minutes for a skilled developer to implement
 - Features have clear dependencies (what must be done first)
@@ -684,17 +711,20 @@ Generate a feature list following these rules:
 - testStrategy: `unit` for core/poster features, `playwright` for web/desktop/server features, `manual` only when neither applies
 
 **Priority ordering:**
+
 - Priority 1-5: Foundation features (schemas, loaders, safety modules)
 - Priority 6-10: Core features (prompt files, poster templates, render pipeline)
 - Priority 11-15: Integration features (API endpoints, pages, flows)
 - Priority 16+: Polish features (performance, edge cases, error handling)
 
 **Acceptance steps must be specific and verifiable:**
+
 - For `unit` strategy: name the test file, describe the assertion
 - For `playwright` strategy: describe exact user actions and expected outcomes
 - Never write vague steps like "verify it works"
 
 **CRITICAL CONSTRAINT:** You are the initializer. You NEVER write application code. You only generate these three files:
+
 1. `feature_list.json` — The feature decomposition
 2. `init.sh` — Dev server launcher for this milestone
 3. `progress.md` — Initial progress tracking file
@@ -704,6 +734,7 @@ Generate a feature list following these rules:
 Read the template at `.claude/skills/cyberoracle-harness/templates/init-sh.sh`.
 
 Customize it for this milestone:
+
 - M1, M2, M3: Uncomment the web+server block (ports 3000+3001)
 - M4, M5: Uncomment the desktop+server block (ports 3001+1420)
 - M6, M7: Use web+server block (testing packaging and deployment)
@@ -713,6 +744,7 @@ Customize it for this milestone:
 Read the template at `.claude/skills/cyberoracle-harness/templates/progress.md`.
 
 Fill in:
+
 - `{milestone_id}` → e.g. "M2"
 - `{milestone_title}` → e.g. "Web 端 MVP"
 - `{date}` → today's date
@@ -725,6 +757,7 @@ Write `feature_list.json`, `init.sh`, and `progress.md` to the project root.
 ### Step 7: Summary
 
 Report to the user:
+
 - How many features were generated
 - The dependency chain (which features depend on which)
 - Suggested invocation: "Run `/cyberoracle-harness M2` again to start the coding agent"
@@ -750,6 +783,7 @@ You MUST perform these steps before writing any code:
 Once you've completed the startup sequence, implement ONE feature following its testStrategy:
 
 **If testStrategy is `"unit"` (TDD — for packages/core, packages/poster):**
+
 1. Write a failing test that exercises the acceptance steps
 2. Run the test to confirm it fails
 3. Write the minimum implementation to make it pass
@@ -758,6 +792,7 @@ Once you've completed the startup sequence, implement ONE feature following its 
 6. Run the full test suite one final time
 
 **If testStrategy is `"playwright"` (E2E — for apps/web, apps/desktop, apps/server):**
+
 1. Implement the feature
 2. Ensure dev server is running
 3. Use Playwright browser tools to verify each acceptance step
@@ -765,6 +800,7 @@ Once you've completed the startup sequence, implement ONE feature following its 
 5. Re-verify after fixes
 
 **If testStrategy is `"manual"`:**
+
 1. Implement the feature
 2. Document what was done and what needs human review
 
@@ -790,19 +826,20 @@ After implementing (or attempting) a feature:
 
 When verifying features, apply these project-specific checks:
 
-| Criterion | Applies to | Threshold |
-|---|---|---|
-| Schema compliance | packages/core | Zod validation passes on all sample outputs |
-| Content safety | packages/core | No output triggers keyword blacklist |
-| Render correctness | packages/poster | Snapshot matches golden (pixel diff < 1%) |
-| SSE streaming | apps/server | Chunks ordered, connection survives 30s+ |
-| Performance budget | apps/web | LCP ≤ 2.5s, JS gzip ≤ 220KB |
-| Type safety | All | `pnpm typecheck` passes with zero errors |
-| Cross-platform build | apps/desktop | `cargo build` succeeds on all 4 targets |
+| Criterion            | Applies to      | Threshold                                   |
+| -------------------- | --------------- | ------------------------------------------- |
+| Schema compliance    | packages/core   | Zod validation passes on all sample outputs |
+| Content safety       | packages/core   | No output triggers keyword blacklist        |
+| Render correctness   | packages/poster | Snapshot matches golden (pixel diff < 1%)   |
+| SSE streaming        | apps/server     | Chunks ordered, connection survives 30s+    |
+| Performance budget   | apps/web        | LCP ≤ 2.5s, JS gzip ≤ 220KB                 |
+| Type safety          | All             | `pnpm typecheck` passes with zero errors    |
+| Cross-platform build | apps/desktop    | `cargo build` succeeds on all 4 targets     |
 
 ### Runtime Patterns
 
 When implementing SSE endpoints, LLM proxy routes, or desktop command handlers, read `.claude/skills/cyberoracle-harness/references/runtime-patterns.md` and apply its patterns:
+
 - Session as append-only log
 - Brain/hand separation for LLM calls
 - Progress event emission
@@ -836,6 +873,7 @@ git commit -m "feat(harness): add main skill.md with initializer + coding agent 
 ### Task 5: Register the skill in project settings
 
 **Files:**
+
 - Modify: `.claude/settings.local.json`
 
 The skill needs to be discoverable by Claude Code. We register it in the project's local settings.
@@ -850,7 +888,7 @@ Add a `skills` entry pointing to the harness skill directory. Add this to the se
 
 ```json
 {
-  "permissions": { "..." : "..." },
+  "permissions": { "...": "..." },
   "skills": {
     "cyberoracle-harness": {
       "path": ".claude/skills/cyberoracle-harness/skill.md"
@@ -881,6 +919,7 @@ git commit -m "chore(harness): register cyberoracle-harness skill in project set
 ### Task 6: Validate the harness end-to-end
 
 **Files:**
+
 - No new files — validation only
 
 - [ ] **Step 1: Verify skill files are all present**
@@ -890,6 +929,7 @@ find .claude/skills/cyberoracle-harness -type f | sort
 ```
 
 Expected output:
+
 ```
 .claude/skills/cyberoracle-harness/references/runtime-patterns.md
 .claude/skills/cyberoracle-harness/skill.md
@@ -955,6 +995,7 @@ Expected: Both return `1`
 ## Self-Review
 
 **1. Spec coverage:**
+
 - §2.1 File Layout → Task 1 (dirs) + Tasks 2-4 (all 5 files) ✓
 - §2.2 Project-Local Artifacts → Templates in Task 3 (feature-list.json, init.sh, progress.md) ✓
 - §2.3 Invocation → Skill.md routing logic in Task 4 ✓

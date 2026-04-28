@@ -1,7 +1,7 @@
 ---
 name: Bug 报告
 about: 报告可复现的缺陷或异常行为
-title: "[bug] "
+title: '[bug] '
 labels:
   - bug
 ---

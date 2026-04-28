@@ -37,8 +37,31 @@
 
 **Commit:** `a15353d`
 
+### Session 2 — 2026-04-29
+
+**Feature:** M1-002 — Vitest configuration for packages/core
+**Status:** completed
+
+**What was done:**
+
+- Created packages/core/vitest.config.ts with path alias resolution for @cyberoracle/core and @cyberoracle/tokens
+- Created packages/core/src/**tests**/health.test.ts with a basic import assertion
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 1 test passes
+- pnpm --filter @cyberoracle/core typecheck: passes
+- pnpm test from root includes core package results (poster/server fail with no tests — expected)
+
+**Commit:** `627fbb8`
+
 ## Summary
 
 | Feature | Status  | Session   |
 | ------- | ------- | --------- |
 | M1-001  | ✅ Pass | Session 1 |
+| M1-002  | ✅ Pass | Session 2 |

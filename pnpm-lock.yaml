@@ -269,6 +269,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: ^2.0.5
+        version: 2.1.9(@types/node@22.19.17)
 
   packages/ui:
     dependencies:

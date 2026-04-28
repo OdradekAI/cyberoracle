@@ -153,6 +153,31 @@
 - pnpm --filter @cyberoracle/tokens typecheck: passes
 - pnpm test from root: tokens (18 pass), core (1 pass), poster (1 pass); server no tests — expected
 
+**Commit:** `3e0d718`
+
+### Session 7 — 2026-04-29
+
+**Feature:** M1-007 — Design tokens: typography scale, font families, spacing, border radius, animation curves
+**Status:** completed
+
+**What was done:**
+
+- Created packages/tokens/src/typography.ts with fontFamilies (notoSerifSC, orbitron) and typeScale (xs–5xl with lineHeight)
+- Created packages/tokens/src/spacing.ts with spacing scale (0–96 step values)
+- Created packages/tokens/src/borders.ts with borderRadius (card 16px, button 12px, input 10px)
+- Created packages/tokens/src/animations.ts with easing and durations (enter 360ms, exit 220ms)
+- Created packages/tokens/src/**tests**/tokens.test.ts with 9 unit tests
+- Updated packages/tokens/src/index.ts to re-export all new token modules
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/tokens typecheck: passes
+- pnpm --filter @cyberoracle/tokens test: 27 tests pass (18 colors + 9 tokens)
+
 **Commit:** pending
 
 ## Summary
@@ -165,3 +190,4 @@
 | M1-004  | ✅ Pass | Session 4 |
 | M1-005  | ✅ Pass | Session 5 |
 | M1-006  | ✅ Pass | Session 6 |
+| M1-007  | ✅ Pass | Session 7 |

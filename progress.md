@@ -128,7 +128,32 @@
 - Playwright browser snapshot confirms /api/health returns `{"status":"ok","timestamp":...}`
 - pnpm typecheck: 11 tasks successful, 0 errors
 
-**Commit:** `007beee`
+**Commit:** `735159b`
+
+### Session 6 — 2026-04-29
+
+**Feature:** M1-006 — Design tokens: color palette with brand colors + poster palette + semantic aliases
+**Status:** completed
+
+**What was done:**
+
+- Added vitest devDependency and vitest.config.ts to packages/tokens
+- Created packages/tokens/src/colors.ts with brandColors, darkColors, posterColors, semanticColors, allColors (all `as const`)
+- Created packages/tokens/src/**tests**/colors.test.ts with 18 tests covering exact values and hex validity
+- Updated packages/tokens/src/index.ts to re-export all color modules
+- pnpm install to resolve new vitest dependency
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/tokens test: 18 tests pass
+- pnpm --filter @cyberoracle/tokens typecheck: passes
+- pnpm test from root: tokens (18 pass), core (1 pass), poster (1 pass); server no tests — expected
+
+**Commit:** pending
 
 ## Summary
 
@@ -139,3 +164,4 @@
 | M1-003  | ✅ Pass | Session 3 |
 | M1-004  | ✅ Pass | Session 4 |
 | M1-005  | ✅ Pass | Session 5 |
+| M1-006  | ✅ Pass | Session 6 |

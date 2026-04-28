@@ -1,0 +1,347 @@
+{
+  "milestone": "M1",
+  "milestoneTitle": "共享基建",
+  "sourceDocs": ["docs/1Monorepo工程骨架.md", "docs/PRD.md §3.2 (Monorepo structure)"],
+  "features": [
+    {
+      "id": "M1-001",
+      "category": "web",
+      "description": "Web app Tailwind CSS + PostCSS configuration with design token integration",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/tailwind.config.ts importing @cyberoracle/tokens/tailwind preset",
+        "Create apps/web/postcss.config.mjs with tailwindcss + autoprefixer plugins",
+        "Create apps/web/app/globals.css with @tailwind base/components/utilities directives",
+        "pnpm dev:web starts without errors",
+        "A test page renders with token-derived Tailwind classes visible"
+      ],
+      "priority": 1,
+      "dependsOn": [],
+      "passes": true
+    },
+    {
+      "id": "M1-002",
+      "category": "core",
+      "description": "Vitest configuration for packages/core — enables TDD workflow for schemas, prompts, safety",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/core/vitest.config.ts with path alias resolution for @cyberoracle/*",
+        "pnpm --filter @cyberoracle/core vitest run succeeds with zero tests (exit 0)",
+        "Create a placeholder test packages/core/src/__tests__/health.test.ts that asserts true",
+        "pnpm test from root includes core package results"
+      ],
+      "priority": 2,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "M1-003",
+      "category": "poster",
+      "description": "Vitest configuration for packages/poster — enables TDD for render pipeline and templates",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/poster/vitest.config.ts with React plugin + path alias resolution",
+        "pnpm --filter @cyberoracle/poster vitest run succeeds with zero tests",
+        "Create a placeholder test packages/poster/src/__tests__/health.test.ts",
+        "pnpm test from root includes poster package results"
+      ],
+      "priority": 3,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "M1-004",
+      "category": "server",
+      "description": "Server Dockerfile (multi-stage) + docker-compose.yml for local development",
+      "testStrategy": "manual",
+      "acceptanceSteps": [
+        "Create apps/server/Dockerfile with three stages: deps (install) → builder (build) → runner (standalone)",
+        "Dockerfile copies monorepo context, runs pnpm install --frozen-lockfile, builds server",
+        "Runner stage uses node:20-bookworm-slim, copies standalone output + static + fonts",
+        "Create docker-compose.yml at root with 'server' service building from apps/server/Dockerfile",
+        "docker compose build server succeeds (or manual review confirms Dockerfile correctness)"
+      ],
+      "priority": 4,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "M1-005",
+      "category": "web",
+      "description": "End-to-end dev verification — pnpm dev:web starts both web and server without errors",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "pnpm dev:web starts web on port 3000 and server on port 3001",
+        "GET http://localhost:3000 returns 200 with valid HTML",
+        "GET http://localhost:3001/api/health returns 200 with { status: 'ok' } JSON",
+        "No unhandled TypeScript errors in terminal output"
+      ],
+      "priority": 5,
+      "dependsOn": ["M1-001"],
+      "passes": false
+    },
+    {
+      "id": "M1-006",
+      "category": "core",
+      "description": "Design tokens: color palette with brand colors + poster palette + semantic aliases",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/tokens/src/colors.ts exporting: brand (purple #A855F7, cyan #22D3EE, pink #F472B6), dark (#0B0420), poster (cream #F8F5EE, text #1F1B16, gold #9A7B3F)",
+        "Include semantic aliases: primary, secondary, accent, background, surface, text",
+        "All values are typed as const objects (not loose strings)",
+        "Unit test verifies all color values are valid hex strings"
+      ],
+      "priority": 6,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "M1-007",
+      "category": "core",
+      "description": "Design tokens: typography scale, font families, spacing, border radius, animation curves",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/tokens/src/typography.ts: fontFamilies (notoSerifSC, orbitron), typeScale (xs–5xl with lineHeight)",
+        "Create packages/tokens/src/spacing.ts: spacing scale (0–96 step values)",
+        "Create packages/tokens/src/borders.ts: borderRadius (card 16, button 12, input 10)",
+        "Create packages/tokens/src/animations.ts: easing (cubic-bezier(0.22,1,0.36,1)), durations (enter 360ms, exit 220ms)",
+        "packages/tokens/src/index.ts re-exports all token modules",
+        "Unit test verifies token objects are non-empty and values are correct types"
+      ],
+      "priority": 7,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "M1-008",
+      "category": "core",
+      "description": "Tailwind preset from design tokens — maps all tokens to Tailwind theme extensions",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/tokens/src/tailwind-preset.js exporting a Tailwind preset object",
+        "Preset extends theme.colors with all token colors",
+        "Preset extends theme.fontFamily with notoSerifSC and orbitron",
+        "Preset extends theme.borderRadius, theme.transitionTimingFunction, theme.transitionDuration",
+        "Unit test imports the preset and verifies it has the required Tailwind config shape"
+      ],
+      "priority": 8,
+      "dependsOn": ["M1-006", "M1-007"],
+      "passes": false
+    },
+    {
+      "id": "M1-009",
+      "category": "core",
+      "description": "Zod schema for PalmReadingResult — structured output contract for palm reading pipeline",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/core/src/schemas/palm-reading.ts with Zod object schema",
+        "Schema fields: id (uuid), type ('palm'), personality/career/love/health (each with title+content+score), overallScore (1-100), summary (string), createdAt (ISO date string)",
+        "Test file: packages/core/src/schemas/__tests__/palm-reading.test.ts",
+        "Test: schema.parse(validSampleData) succeeds without errors",
+        "Test: schema.parse(missingFieldData) throws ZodError with path to missing field",
+        "Export PalmReadingResult type (z.infer) and schema from packages/core/src/schemas/index.ts"
+      ],
+      "priority": 9,
+      "dependsOn": ["M1-002"],
+      "passes": false
+    },
+    {
+      "id": "M1-010",
+      "category": "core",
+      "description": "Zod schema for FaceReadingResult — structured output contract for face reading pipeline",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/core/src/schemas/face-reading.ts with Zod object schema",
+        "Schema fields: id, type ('face'), fortune/career/relationship/wisdom sections (each with title+content+score), overallScore, summary, createdAt",
+        "Test file: packages/core/src/schemas/__tests__/face-reading.test.ts",
+        "Test: schema.parse(validSampleData) succeeds",
+        "Test: schema.parse(malformedData) throws ZodError",
+        "Export from packages/core/src/schemas/index.ts"
+      ],
+      "priority": 10,
+      "dependsOn": ["M1-002"],
+      "passes": false
+    },
+    {
+      "id": "M1-011",
+      "category": "core",
+      "description": "Zod schema for DailyFortuneResult — structured output for daily fortune feature",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/core/src/schemas/daily-fortune.ts with Zod object schema",
+        "Schema fields: date (string), overall (score+text), love/career/wealth (each score 1-100+text), luckyNumber, luckyColor, summary",
+        "Test file: packages/core/src/schemas/__tests__/daily-fortune.test.ts",
+        "Test: validates and rejects correctly",
+        "Export from packages/core/src/schemas/index.ts"
+      ],
+      "priority": 11,
+      "dependsOn": ["M1-002"],
+      "passes": false
+    },
+    {
+      "id": "M1-012",
+      "category": "core",
+      "description": "Zod schema for PipelineEvent — SSE streaming envelope for LLM proxy",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/core/src/schemas/pipeline-event.ts with Zod discriminated union or object schema",
+        "Schema: { step: enum(vlm_observe, llm_interpret, complete), status: enum(running, done, error), data: unknown, error?: string }",
+        "Test file: packages/core/src/schemas/__tests__/pipeline-event.test.ts",
+        "Test: valid events parse, invalid steps/statuses are rejected",
+        "Export from packages/core/src/schemas/index.ts"
+      ],
+      "priority": 12,
+      "dependsOn": ["M1-002"],
+      "passes": false
+    },
+    {
+      "id": "M1-013",
+      "category": "core",
+      "description": "Sample prompt file: vision-observe-palm.md — establishes .md prompt file format",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/core/prompts/vision-observe-palm.md",
+        "File has YAML frontmatter: version, targetModel, temperature, description",
+        "Body has system prompt section followed by ---USER--- separator followed by user prompt template",
+        "User template uses {{variable}} syntax (e.g. {{ganzhi}}, {{upload_description}})",
+        "Prompt content instructs VLM to observe palm features and return structured JSON"
+      ],
+      "priority": 13,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "M1-014",
+      "category": "core",
+      "description": "Prompt loader — reads .md prompt files, parses frontmatter, fills template variables",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/core/src/prompts/loader.ts with loadPrompt(name) and fillTemplate(template, vars) functions",
+        "loadPrompt('vision-observe-palm') returns { meta: { version, targetModel, temperature }, system: string, userTemplate: string }",
+        "fillTemplate('Hello {{name}}', { name: 'World' }) returns 'Hello World'",
+        "fillTemplate('Hello {{name}}', {}) leaves 'Hello {{name}}' unchanged (no error)",
+        "loadPrompt throws descriptive error for non-existent prompt name",
+        "Test file: packages/core/src/prompts/__tests__/loader.test.ts covers all cases"
+      ],
+      "priority": 14,
+      "dependsOn": ["M1-002", "M1-013"],
+      "passes": false
+    },
+    {
+      "id": "M1-015",
+      "category": "core",
+      "description": "Content safety module — keyword blacklist checker for filtering LLM outputs",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/core/src/content-safety/blacklist.json with Chinese keyword array (健康建议, 寿命, 疾病, 治疗, 投资建议, 赚钱, 自杀, 死亡, 政治)",
+        "Create packages/core/src/content-safety/checker.ts with checkContent(text: string): { safe: boolean, matched: string[] }",
+        "checkContent('今日运势不错') returns { safe: true, matched: [] }",
+        "checkContent('请注意健康建议') returns { safe: false, matched: ['健康建议'] }",
+        "Case-insensitive matching for blacklist keywords",
+        "Test file: packages/core/src/content-safety/__tests__/checker.test.ts passes",
+        "Export checkContent from packages/core/src/content-safety/index.ts"
+      ],
+      "priority": 15,
+      "dependsOn": ["M1-002"],
+      "passes": false
+    },
+    {
+      "id": "M1-016",
+      "category": "core",
+      "description": "Core package barrel exports — wire up all submodules through index.ts files",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "packages/core/src/index.ts re-exports from ./schemas, ./prompts, ./content-safety",
+        "packages/core/src/schemas/index.ts exports all Zod schemas and inferred types",
+        "packages/core/src/prompts/index.ts exports loadPrompt and fillTemplate",
+        "packages/core/src/content-safety/index.ts exports checkContent",
+        "pnpm --filter @cyberoracle/core typecheck passes",
+        "Import test: a test file can import { PalmReadingResultSchema, loadPrompt, checkContent } from '@cyberoracle/core'"
+      ],
+      "priority": 16,
+      "dependsOn": ["M1-009", "M1-010", "M1-011", "M1-012", "M1-014", "M1-015"],
+      "passes": false
+    },
+    {
+      "id": "M1-017",
+      "category": "poster",
+      "description": "Poster render pipeline — satori + resvg-js JSX-to-PNG conversion server function",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/poster/src/render/render-server.ts with renderToPng(component, data, options) function",
+        "renderToPng takes a React element + width (default 1080) and returns Promise<Buffer>",
+        "Loads Noto Serif SC font subset from packages/poster/fonts/ for Chinese text rendering",
+        "Returns valid PNG buffer (starts with PNG magic bytes 0x89504E47)",
+        "Throws descriptive error if font files are missing",
+        "Test file: packages/poster/src/render/__tests__/render-server.test.ts validates PNG output"
+      ],
+      "priority": 17,
+      "dependsOn": ["M1-003"],
+      "passes": false
+    },
+    {
+      "id": "M1-018",
+      "category": "poster",
+      "description": "Base poster layout component — reusable satori-compatible layout with poster styles",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "Create packages/poster/src/components/PosterLayout.tsx as a React component",
+        "Props: { title: string, sections: Array<{heading: string, content: string}>, footer?: string, width?: number }",
+        "Renders with cream background (#F8F5EE) and dark text (#1F1B16)",
+        "Includes gold accent divider lines between sections (#9A7B3F)",
+        "Watermark placeholder area in bottom-right corner",
+        "Component is satori-compatible (no external CSS, inline styles only)",
+        "Test: renders to satori VDOM without error with sample data"
+      ],
+      "priority": 18,
+      "dependsOn": ["M1-003", "M1-006"],
+      "passes": false
+    },
+    {
+      "id": "M1-019",
+      "category": "poster",
+      "description": "Poster preview script — local PNG preview from sample data via tsx",
+      "testStrategy": "manual",
+      "acceptanceSteps": [
+        "Create packages/poster/scripts/preview.ts using renderToPng with PosterLayout + sample data",
+        "pnpm preview:poster generates test PNG to packages/poster/preview-output.png",
+        "Output PNG is viewable in standard image viewers (correct dimensions, Chinese text renders)",
+        "pnpm preview:poster:watch watches src/ for changes and regenerates on save"
+      ],
+      "priority": 19,
+      "dependsOn": ["M1-017", "M1-018"],
+      "passes": false
+    },
+    {
+      "id": "M1-020",
+      "category": "core",
+      "description": "UI package base exports + Tailwind integration scaffolding",
+      "testStrategy": "unit",
+      "acceptanceSteps": [
+        "packages/ui/src/index.ts exports empty component stubs (CrystalBall, UploadDropzone, NeonText, StreamingPoster)",
+        "Each stub is a named export that can be imported without error",
+        "packages/ui package.json peerDependencies are correctly set up",
+        "pnpm --filter @cyberoracle/ui typecheck passes"
+      ],
+      "priority": 20,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "M1-021",
+      "category": "web",
+      "description": "Cross-package integration verification — full typecheck + test + build suite passes",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "pnpm typecheck passes with zero errors across all packages and apps",
+        "pnpm test passes for packages/core and packages/poster (all unit tests green)",
+        "pnpm build:web completes without errors",
+        "pnpm build:server completes without errors",
+        "All workspace imports (core→tokens, poster→core, web→core/poster/ui/tokens) resolve correctly"
+      ],
+      "priority": 21,
+      "dependsOn": ["M1-005", "M1-016", "M1-017", "M1-020"],
+      "passes": false
+    }
+  ]
+}

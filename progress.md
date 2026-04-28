@@ -59,9 +59,33 @@
 
 **Commit:** `627fbb8`
 
+### Session 3 — 2026-04-29
+
+**Feature:** M1-003 — Vitest configuration for packages/poster
+**Status:** completed
+
+**What was done:**
+
+- Created packages/poster/vitest.config.ts with React plugin (@vitejs/plugin-react) + path alias resolution (@cyberoracle/poster, @cyberoracle/core, @cyberoracle/tokens)
+- Created packages/poster/src/**tests**/health.test.ts with a basic import assertion
+- Added @vitejs/plugin-react to poster devDependencies
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/poster test: 1 test passes
+- pnpm --filter @cyberoracle/poster typecheck: passes
+- pnpm test from root runs both core (1 pass) and poster (1 pass); server fails with no tests — expected
+
+**Commit:** `3f3396b`
+
 ## Summary
 
 | Feature | Status  | Session   |
 | ------- | ------- | --------- |
 | M1-001  | ✅ Pass | Session 1 |
 | M1-002  | ✅ Pass | Session 2 |
+| M1-003  | ✅ Pass | Session 3 |

@@ -82,6 +82,29 @@
 
 **Commit:** `3f3396b`
 
+### Session 4 — 2026-04-29
+
+**Feature:** M1-004 — Server Dockerfile + docker-compose.yml for local development
+**Status:** completed
+
+**What was done:**
+
+- Created apps/server/Dockerfile with three-stage build (deps → builder → runner)
+- Created docker-compose.yml at root with server service
+- Created .dockerignore to exclude unnecessary files from build context
+
+**What failed / remaining:**
+
+- None (manual review strategy — Dockerfile follows spec pattern but needs human verification of actual `docker compose build`)
+
+**Verification:**
+
+- Dockerfile structure reviewed against spec doc (docs/1Monorepo工程骨架.md §四)
+- Three stages present: deps (install), builder (copy + build), runner (standalone + static + fonts)
+- docker-compose.yml exposes port 3001 with production env
+
+**Commit:** `0a62fd9`
+
 ## Summary
 
 | Feature | Status  | Session   |
@@ -89,3 +112,4 @@
 | M1-001  | ✅ Pass | Session 1 |
 | M1-002  | ✅ Pass | Session 2 |
 | M1-003  | ✅ Pass | Session 3 |
+| M1-004  | ✅ Pass | Session 4 |

@@ -35,7 +35,7 @@
 - GET http://localhost:3001/api/health returns 200
 - Tailwind CSS rules present in rendered output (min-height: 100vh, display: flex)
 
-**Commit:** pending
+**Commit:** `a15353d`
 
 ## Summary
 

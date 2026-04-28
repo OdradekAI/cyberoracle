@@ -1,0 +1,67 @@
+name: Release Web
+
+on:
+  push:
+    tags:
+      - 'web-v*'
+  workflow_dispatch:
+
+concurrency:
+  group: release-web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.12.0 }
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Pre-release checks
+        run: node scripts/release-check.mjs
+
+      - name: Build web
+        run: pnpm build:web
+
+      - name: Build server Docker image
+        run: |
+          docker build -t cyberoracle/server:${{ github.ref_name }} -f apps/server/Dockerfile .
+          docker tag cyberoracle/server:${{ github.ref_name }} cyberoracle/server:latest
+
+      - name: Push to registry
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker push cyberoracle/server:${{ github.ref_name }}
+          docker push cyberoracle/server:latest
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /opt/cyberoracle
+            docker compose pull server
+            docker compose up -d server
+            docker image prune -f
+
+      - name: Create GitHub Release
+        run: |
+          VERSION=${{ github.ref_name }}
+          gh release create "$VERSION" \
+            --title "Web ${VERSION}" \
+            --notes-file <(head -80 CHANGELOG.md) \
+            --target main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

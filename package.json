@@ -2,6 +2,7 @@
   "name": "cyberoracle",
   "version": "0.0.0",
   "private": true,
+  "license": "Apache-2.0",
   "description": "赛博玄学馆 · CyberOracle — AI-powered fortune telling companion",
   "packageManager": "pnpm@9.12.0",
   "engines": {
@@ -11,30 +12,29 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "postinstall": "node scripts/check-versions.mjs",
-
     "dev": "turbo run dev --concurrency 20",
     "dev:web": "turbo run dev --filter=@cyberoracle/web... --filter=@cyberoracle/server...",
     "dev:desktop": "turbo run dev --filter=@cyberoracle/desktop... --filter=@cyberoracle/server...",
     "dev:server": "turbo run dev --filter=@cyberoracle/server",
-
     "build": "turbo run build",
     "build:web": "turbo run build --filter=@cyberoracle/web...",
     "build:desktop": "turbo run build --filter=@cyberoracle/desktop...",
     "build:server": "turbo run build --filter=@cyberoracle/server",
     "build:packages": "turbo run build --filter='./packages/*'",
-
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-
     "clean": "node scripts/clean.mjs",
     "clean:cache": "node scripts/clean.mjs --cache-only",
-
     "fonts:prepare": "bash scripts/prepare-fonts.sh",
-
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "version:check": "node scripts/check-version-drift.mjs",
+    "release:check": "node scripts/release-check.mjs",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -46,7 +46,10 @@
     "only-allow": "^1.2.1",
     "prettier": "^3.3.3",
     "turbo": "^2.3.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "@changesets/cli": "^2.27.7",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.2.0"
   },
   "pnpm": {
     "peerDependencyRules": {

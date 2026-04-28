@@ -1,0 +1,35 @@
+{
+  "name": "@cyberoracle/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "lint": "next lint --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "build:dev": "echo web ready"
+  },
+  "dependencies": {
+    "@cyberoracle/core": "workspace:*",
+    "@cyberoracle/poster": "workspace:*",
+    "@cyberoracle/tokens": "workspace:*",
+    "@cyberoracle/ui": "workspace:*",
+    "framer-motion": "catalog:",
+    "next": "14.2.5",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9.7.0",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.7",
+    "typescript": "catalog:"
+  }
+}

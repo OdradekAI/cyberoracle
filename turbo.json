@@ -1,0 +1,96 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "globalDependencies": [
+    "**/.env.*local",
+    "tsconfig.base.json",
+    ".prettierrc",
+    "eslint.config.js"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "VERCEL_ENV",
+    "CI"
+  ],
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build:dev"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**",
+        "public/**",
+        "app/**",
+        "fonts/**",
+        "package.json",
+        "tsconfig.json",
+        "tsconfig.build.json",
+        "next.config.*",
+        "vite.config.*",
+        "tauri.conf.json",
+        "Cargo.toml",
+        "src-tauri/**"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        "src-tauri/target/release/bundle/**"
+      ],
+      "env": [
+        "API_BASE_URL",
+        "NEXT_PUBLIC_*",
+        "VITE_*",
+        "TAURI_SIGNING_*",
+        "APPLE_*",
+        "WINDOWS_CERTIFICATE_*"
+      ]
+    },
+    "build:dev": {
+      "cache": false,
+      "outputs": []
+    },
+    "lint": {
+      "dependsOn": ["^build:dev"],
+      "inputs": [
+        "src/**",
+        "*.ts",
+        "*.tsx",
+        "*.js",
+        "package.json",
+        "eslint.config.js"
+      ],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^build:dev"],
+      "inputs": [
+        "src/**",
+        "*.ts",
+        "*.tsx",
+        "tsconfig.json",
+        "tsconfig.base.json"
+      ],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build:dev"],
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "*.test.ts",
+        "*.test.tsx",
+        "vitest.config.*"
+      ],
+      "outputs": ["coverage/**"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build:dev"]
+    }
+  }
+}

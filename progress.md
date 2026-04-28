@@ -105,6 +105,31 @@
 
 **Commit:** `0a62fd9`
 
+### Session 5 — 2026-04-29
+
+**Feature:** M1-005 — End-to-end dev verification — pnpm dev:web starts both web and server without errors
+**Status:** completed
+
+**What was done:**
+
+- Started dev servers via `pnpm dev:web` (web on port 3000, server on port 3001)
+- Verified GET http://localhost:3000 returns 200 with valid HTML (title "赛博玄学馆 · CyberOracle", Tailwind-styled content)
+- Verified GET http://localhost:3001/api/health returns 200 with `{ "status": "ok", "timestamp": ... }` JSON
+- Confirmed no unhandled TypeScript errors — `pnpm typecheck` passes across all 7 packages (0 errors)
+- Only console error is favicon.ico 404 (expected, no favicon file exists)
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- Playwright browser snapshot confirms web page renders with heading "赛博玄学馆 · CyberOracle" and paragraph "Coming soon."
+- Playwright browser snapshot confirms /api/health returns `{"status":"ok","timestamp":...}`
+- pnpm typecheck: 11 tasks successful, 0 errors
+
+**Commit:** `007beee`
+
 ## Summary
 
 | Feature | Status  | Session   |
@@ -113,3 +138,4 @@
 | M1-002  | ✅ Pass | Session 2 |
 | M1-003  | ✅ Pass | Session 3 |
 | M1-004  | ✅ Pass | Session 4 |
+| M1-005  | ✅ Pass | Session 5 |

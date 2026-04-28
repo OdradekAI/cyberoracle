@@ -78,7 +78,7 @@
       ],
       "priority": 5,
       "dependsOn": ["M1-001"],
-      "passes": false
+      "passes": true
     },
     {
       "id": "M1-006",

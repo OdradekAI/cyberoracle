@@ -314,6 +314,30 @@
 
 **Commit:** pending
 
+### Session 14 — 2026-04-29
+
+**Feature:** M1-014 — Prompt loader — reads .md prompt files, parses frontmatter, fills template variables
+**Status:** completed
+
+**What was done:**
+
+- Created packages/core/src/prompts/loader.ts with loadPrompt(name) and fillTemplate(template, vars) functions
+- loadPrompt reads .md files from packages/core/prompts/, parses YAML frontmatter (version, targetModel, temperature), splits on ---USER--- into system and userTemplate sections
+- fillTemplate replaces {{variable}} placeholders with provided values, leaves unmatched placeholders unchanged
+- loadPrompt throws descriptive "Prompt not found" error for non-existent prompt names
+- Created packages/core/src/prompts/**tests**/loader.test.ts with 8 tests (4 fillTemplate + 4 loadPrompt)
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 36 tests pass (1 health + 6 palm + 5 face + 5 daily + 6 pipeline + 5 prompt-file + 8 loader)
+- pnpm --filter @cyberoracle/core typecheck: passes
+
+**Commit:** pending
+
 ## Summary
 
 | Feature | Status  | Session    |
@@ -331,3 +355,4 @@
 | M1-011  | ✅ Pass | Session 11 |
 | M1-012  | ✅ Pass | Session 12 |
 | M1-013  | ✅ Pass | Session 13 |
+| M1-014  | ✅ Pass | Session 14 |

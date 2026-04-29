@@ -178,6 +178,31 @@
 - pnpm --filter @cyberoracle/tokens typecheck: passes
 - pnpm --filter @cyberoracle/tokens test: 27 tests pass (18 colors + 9 tokens)
 
+**Commit:** `c4d7982`
+
+### Session 8 — 2026-04-29
+
+**Feature:** M1-008 — Tailwind preset from design tokens — maps all tokens to Tailwind theme extensions
+**Status:** completed
+
+**What was done:**
+
+- Replaced stub tailwind-preset with full implementation importing all token modules
+- Renamed tailwind-preset.js → tailwind-preset.ts for TypeScript type safety
+- Preset maps colors (brand, dark, poster, semantic), fontFamily, borderRadius, transitionTimingFunction, transitionDuration
+- Updated package.json export path from .js to .ts
+- Created packages/tokens/src/**tests**/tailwind-preset.test.ts with 8 unit tests
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/tokens typecheck: passes
+- pnpm --filter @cyberoracle/tokens test: 35 tests pass (18 colors + 8 preset + 9 tokens)
+- pnpm --filter @cyberoracle/web typecheck: passes (web app imports updated preset correctly)
+
 **Commit:** pending
 
 ## Summary
@@ -191,3 +216,4 @@
 | M1-005  | ✅ Pass | Session 5 |
 | M1-006  | ✅ Pass | Session 6 |
 | M1-007  | ✅ Pass | Session 7 |
+| M1-008  | ✅ Pass | Session 8 |

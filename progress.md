@@ -336,6 +336,29 @@
 - pnpm --filter @cyberoracle/core test: 36 tests pass (1 health + 6 palm + 5 face + 5 daily + 6 pipeline + 5 prompt-file + 8 loader)
 - pnpm --filter @cyberoracle/core typecheck: passes
 
+**Commit:** `343081f`
+
+### Session 15 — 2026-04-29
+
+**Feature:** M1-015 — Content safety module — keyword blacklist checker for filtering LLM outputs
+**Status:** completed
+
+**What was done:**
+
+- Created packages/core/src/content-safety/blacklist.json with 9 Chinese keywords (健康建议, 寿命, 疾病, 治疗, 投资建议, 赚钱, 自杀, 死亡, 政治)
+- Created packages/core/src/content-safety/checker.ts with checkContent(text): { safe, matched } — case-insensitive matching against blacklist
+- Created packages/core/src/content-safety/index.ts barrel export
+- Created packages/core/src/content-safety/**tests**/checker.test.ts with 6 tests (clean text, single keyword, multiple keywords, case-insensitive, all keywords, empty string)
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 42 tests pass (8 files, all green)
+- pnpm --filter @cyberoracle/core typecheck: passes
+
 **Commit:** pending
 
 ## Summary
@@ -356,3 +379,4 @@
 | M1-012  | ✅ Pass | Session 12 |
 | M1-013  | ✅ Pass | Session 13 |
 | M1-014  | ✅ Pass | Session 14 |
+| M1-015  | ✅ Pass | Session 15 |

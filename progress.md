@@ -225,18 +225,41 @@
 - pnpm --filter @cyberoracle/core test: 7 tests pass (1 health + 6 palm-reading)
 - pnpm --filter @cyberoracle/core typecheck: passes
 
+**Commit:** `dcc6df9`
+
+### Session 10 — 2026-04-29
+
+**Feature:** M1-010 — Zod schema for FaceReadingResult — structured output contract for face reading pipeline
+**Status:** completed
+
+**What was done:**
+
+- Created packages/core/src/schemas/face-reading.ts with Zod schema (id uuid, type 'face', fortune/career/relationship/wisdom sections with title+content+score, overallScore 1-100, summary, createdAt)
+- Created packages/core/src/schemas/**tests**/face-reading.test.ts with 5 tests (valid parse, missing field, wrong type, out-of-range score, invalid UUID)
+- Updated packages/core/src/schemas/index.ts to export FaceReadingResultSchema
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 12 tests pass (1 health + 6 palm + 5 face)
+- pnpm --filter @cyberoracle/core typecheck: passes
+
 **Commit:** pending
 
 ## Summary
 
-| Feature | Status  | Session   |
-| ------- | ------- | --------- |
-| M1-001  | ✅ Pass | Session 1 |
-| M1-002  | ✅ Pass | Session 2 |
-| M1-003  | ✅ Pass | Session 3 |
-| M1-004  | ✅ Pass | Session 4 |
-| M1-005  | ✅ Pass | Session 5 |
-| M1-006  | ✅ Pass | Session 6 |
-| M1-007  | ✅ Pass | Session 7 |
-| M1-008  | ✅ Pass | Session 8 |
-| M1-009  | ✅ Pass | Session 9 |
+| Feature | Status  | Session    |
+| ------- | ------- | ---------- |
+| M1-001  | ✅ Pass | Session 1  |
+| M1-002  | ✅ Pass | Session 2  |
+| M1-003  | ✅ Pass | Session 3  |
+| M1-004  | ✅ Pass | Session 4  |
+| M1-005  | ✅ Pass | Session 5  |
+| M1-006  | ✅ Pass | Session 6  |
+| M1-007  | ✅ Pass | Session 7  |
+| M1-008  | ✅ Pass | Session 8  |
+| M1-009  | ✅ Pass | Session 9  |
+| M1-010  | ✅ Pass | Session 10 |

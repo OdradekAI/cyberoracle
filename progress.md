@@ -412,6 +412,32 @@
 
 **Commit:** pending
 
+### Session 18 — 2026-04-29
+
+**Feature:** M1-018 — Base poster layout component — reusable satori-compatible layout with poster styles
+**Status:** completed
+
+**What was done:**
+
+- Created packages/poster/src/components/PosterLayout.tsx as a satori-compatible component returning VDOM objects
+- Props: { title, sections: Array<{heading, content}>, footer? }
+- Renders with cream background (#F8F5EE), dark text (#1F1B16), gold accent dividers (#9A7B3F) between sections
+- Watermark placeholder area in bottom-right corner (defaults to "CyberOracle" text)
+- All styles inline, no external CSS — satori-compatible
+- Created packages/poster/src/components/**tests**/poster-layout.test.tsx with 6 tests
+
+**What failed / remaining:**
+
+- Initial attempt had satori error "Expected display: flex" on section containers — fixed by adding explicit flex display
+- resvg panic caused by passing numeric width to satori style — fixed by using '100%' width
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/poster test: 10 tests pass (1 health + 3 render + 6 poster-layout)
+- pnpm --filter @cyberoracle/poster typecheck: passes
+
+**Commit:** pending
+
 ## Summary
 
 | Feature | Status  | Session    |
@@ -433,3 +459,4 @@
 | M1-015  | ✅ Pass | Session 15 |
 | M1-016  | ✅ Pass | Session 16 |
 | M1-017  | ✅ Pass | Session 17 |
+| M1-018  | ✅ Pass | Session 18 |

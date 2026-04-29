@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "@cyberoracle/core": "workspace:*",
+    "@resvg/resvg-js": "^2.6.2",
     "react": "catalog:",
+    "satori": "^0.26.0",
     "zod": "catalog:"
   },
   "devDependencies": {

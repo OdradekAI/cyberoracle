@@ -383,6 +383,33 @@
 - pnpm --filter @cyberoracle/core typecheck: passes
 - Barrel export test confirms { PalmReadingResultSchema, FaceReadingResultSchema, DailyFortuneResultSchema, PipelineEventSchema, loadPrompt, fillTemplate, checkContent, PACKAGE_NAME } all importable from @cyberoracle/core
 
+**Commit:** `3549c46`
+
+### Session 17 — 2026-04-29
+
+**Feature:** M1-017 — Poster render pipeline — satori + resvg-js JSX-to-PNG conversion server function
+**Status:** completed
+
+**What was done:**
+
+- Added satori and @resvg/resvg-js dependencies to packages/poster
+- Created packages/poster/src/render/render-server.ts with renderToPng(element, options) function
+- renderToPng takes a React element + optional width (default 1080) + optional fonts array, returns Promise<Buffer>
+- Loads Noto Serif SC font subsets from packages/poster/fonts/ by default
+- Returns valid PNG buffer (verified PNG magic bytes 0x89504E47)
+- Throws descriptive error if no fonts are available
+- Created packages/poster/src/render/**tests**/render-server.test.ts with 3 tests (PNG output, default width, font error)
+- Fixed TypeScript strict issues: FontConfig weight type cast to satori Weight, ArrayBuffer conversion for test fonts
+
+**What failed / remaining:**
+
+- None (font subsetting via pnpm fonts:prepare requires manual download of source fonts)
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/poster test: 4 tests pass (1 health + 3 render)
+- pnpm --filter @cyberoracle/poster typecheck: passes
+
 **Commit:** pending
 
 ## Summary
@@ -405,3 +432,4 @@
 | M1-014  | ✅ Pass | Session 14 |
 | M1-015  | ✅ Pass | Session 15 |
 | M1-016  | ✅ Pass | Session 16 |
+| M1-017  | ✅ Pass | Session 17 |

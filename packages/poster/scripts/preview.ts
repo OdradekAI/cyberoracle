@@ -1,6 +1,6 @@
 import { renderToPng } from '../src/render/render-server';
 import { PosterLayout } from '../src/components/PosterLayout';
-import { writeFileSync, readFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -32,12 +32,7 @@ async function main() {
 
   const element = PosterLayout(sampleData);
 
-  // Fall back to system Arial font if Noto Serif SC subset fonts are not prepared
-  const fallbackFontBuffer = readFileSync('C:/Windows/Fonts/arial.ttf');
-  const fallbackFontData = new Uint8Array(fallbackFontBuffer).buffer as ArrayBuffer;
-  const fonts = [{ name: 'Arial', data: fallbackFontData, weight: 400, style: 'normal' as const }];
-
-  const buffer = await renderToPng(element as any, { width: 1080, fonts });
+  const buffer = await renderToPng(element as any, { width: 1080 });
 
   const outputPath = resolve(__dirname, '../preview-output.png');
   writeFileSync(outputPath, buffer);

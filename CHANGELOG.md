@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file. See [.chang
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.0] - 2026-04-29
+
+M1 共享基建 (Shared Infrastructure) milestone.
+
+### Added
+
+- **Design tokens** (`packages/tokens`): color palette (brand/dark/poster/semantic), typography scale, spacing, border radius, animation curves, Tailwind preset
+- **Zod schemas** (`packages/core`): `PalmReadingResult`, `FaceReadingResult`, `DailyFortuneResult`, `PipelineEvent` — with full validation tests
+- **Prompt system** (`packages/core`): `.md` prompt files with YAML frontmatter + `---USER---` separator, `loadPrompt`/`fillTemplate` loader
+- **Content safety** (`packages/core`): keyword blacklist checker for Chinese content filtering
+- **Core barrel exports**: all submodules re-exported through `@cyberoracle/core`
+- **Poster render pipeline** (`packages/poster`): satori + resvg-js JSX-to-PNG conversion, `PosterLayout` component with cream/gold styling
+- **Poster preview script**: `pnpm preview:poster` generates local PNG from sample data
+- **UI component stubs** (`packages/ui`): `CrystalBall`, `UploadDropzone`, `NeonText`, `StreamingPoster`
+- **Web Tailwind integration**: `apps/web` Tailwind config + PostCSS + token preset import
+- **Server Dockerfile**: multi-stage build (deps → builder → runner) + `docker-compose.yml`
+- **Server health test**: `apps/server/src/__tests__/health.test.ts` (3 tests)
+- **Vitest configs**: for `packages/core`, `packages/poster`, `packages/ui`, `apps/server`
+- **E2E scaffolding**: Playwright config + smoke test for `apps/web`
+- **M1 audit report**: `docs/m1-audit-report.md`
+
+### Changed
+
+- Removed legacy `.eslintrc.json` from `apps/web` and `apps/server` (now using flat config)
+- Updated `next.config.mjs` for web and server apps
+- Pinned `pnpm.overrides` and `pnpm.catalog` for React 18
+- Reformatted all files with Prettier
+
+### Known Issues
+
+- Next.js 14.2.35 has 2 high-severity DoS CVEs (GHSA-h25m-26qc-wcjf, GHSA-q4gf-8mx6-v5v3); cannot upgrade to Next 15 due to React 18 constraint
+- `packages/poster/fonts/` directory empty — poster rendering falls back to system fonts
+- Docker build not verified on Windows; standalone output requires symlink permissions
+
 ## [0.0.1] - 2026-04-28
 
 ### Added

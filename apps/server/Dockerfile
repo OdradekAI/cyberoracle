@@ -18,6 +18,7 @@ RUN pnpm install --frozen-lockfile --filter=@cyberoracle/server...
 FROM base AS builder
 COPY --from=deps /repo /repo
 COPY . .
+ENV CI=1
 RUN pnpm --filter=@cyberoracle/server build
 
 # ---------- runner ----------

@@ -58,6 +58,12 @@
       "cache": false,
       "persistent": true,
       "dependsOn": ["^build:dev"]
+    },
+    "test:e2e": {
+      "cache": false,
+      "dependsOn": ["^build:dev"],
+      "inputs": ["e2e/**", "playwright.config.*"],
+      "outputs": []
     }
   }
 }

@@ -1,8 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { renderToPng } from '../render-server';
 import { readFileSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const testFontBuffer = readFileSync('C:/Windows/Fonts/arial.ttf');
+const posterRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+const testFontPath = resolve(posterRoot, 'fonts/NotoSerifSC-Regular.subset.otf');
+const testFontBuffer = readFileSync(testFontPath);
 const testFontData = new Uint8Array(testFontBuffer).buffer as ArrayBuffer;
 
 describe('renderToPng', () => {
@@ -48,6 +52,18 @@ describe('renderToPng', () => {
     expect(buffer[0]).toBe(0x89);
   });
 
+  it('renders with the packaged Noto Serif SC fonts by default', async () => {
+    const element = {
+      type: 'div',
+      props: { style: { width: '100%', height: '100%' }, children: '默认字体' },
+    };
+
+    const buffer = await renderToPng(element as any, { width: 400 });
+
+    expect(buffer).toBeInstanceOf(Buffer);
+    expect(buffer[0]).toBe(0x89);
+  });
+
   it('throws descriptive error when no fonts provided and default fonts are missing', async () => {
     const element = {
       type: 'div',
@@ -55,5 +71,11 @@ describe('renderToPng', () => {
     };
 
     await expect(renderToPng(element as any, { width: 400, fonts: [] })).rejects.toThrow(/font/i);
+  });
+
+  it('keeps preview generation independent from Windows system fonts', () => {
+    const previewScript = readFileSync(resolve(posterRoot, 'scripts/preview.ts'), 'utf8');
+
+    expect(previewScript).not.toContain('C:/Windows/Fonts');
   });
 });

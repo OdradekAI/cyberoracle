@@ -8,7 +8,8 @@
     "start": "next start --port 3000",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "build:dev": "echo web ready"
+    "build:dev": "echo web ready",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@cyberoracle/core": "workspace:*",
@@ -23,6 +24,7 @@
     "zustand": "catalog:"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "autoprefixer": "^10.4.19",

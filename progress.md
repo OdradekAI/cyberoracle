@@ -291,6 +291,27 @@
 - pnpm --filter @cyberoracle/core test: 23 tests pass (1 health + 6 palm + 5 face + 5 daily + 6 pipeline)
 - pnpm --filter @cyberoracle/core typecheck: passes
 
+**Commit:** `7aae8f8`
+
+### Session 13 — 2026-04-29
+
+**Feature:** M1-013 — Sample prompt file: vision-observe-palm.md — establishes .md prompt file format
+**Status:** completed
+
+**What was done:**
+
+- Created packages/core/prompts/vision-observe-palm.md with YAML frontmatter (version, targetModel, temperature, description), system prompt section, ---USER--- separator, and user template with {{ganzhi}} and {{upload_description}} variables
+- Created packages/core/src/prompts/**tests**/prompt-file.test.ts with 5 tests validating file structure (frontmatter fields, separator, system section, template variables, JSON instruction)
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 28 tests pass (1 health + 6 palm + 5 face + 5 daily + 6 pipeline + 5 prompt-file)
+- pnpm --filter @cyberoracle/core typecheck: passes
+
 **Commit:** pending
 
 ## Summary
@@ -309,3 +330,4 @@
 | M1-010  | ✅ Pass | Session 10 |
 | M1-011  | ✅ Pass | Session 11 |
 | M1-012  | ✅ Pass | Session 12 |
+| M1-013  | ✅ Pass | Session 13 |

@@ -269,6 +269,28 @@
 - pnpm --filter @cyberoracle/core test: 17 tests pass (1 health + 6 palm + 5 face + 5 daily)
 - pnpm --filter @cyberoracle/core typecheck: passes
 
+**Commit:** `419c97f`
+
+### Session 12 — 2026-04-29
+
+**Feature:** M1-012 — Zod schema for PipelineEvent — SSE streaming envelope for LLM proxy
+**Status:** completed
+
+**What was done:**
+
+- Created packages/core/src/schemas/pipeline-event.ts with Zod schema (step enum, status enum, data unknown, optional error)
+- Created packages/core/src/schemas/**tests**/pipeline-event.test.ts with 6 tests (running event, done with data, error event, invalid step, invalid status, optional error)
+- Updated packages/core/src/schemas/index.ts to export PipelineEventSchema
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 23 tests pass (1 health + 6 palm + 5 face + 5 daily + 6 pipeline)
+- pnpm --filter @cyberoracle/core typecheck: passes
+
 **Commit:** pending
 
 ## Summary
@@ -286,3 +308,4 @@
 | M1-009  | ✅ Pass | Session 9  |
 | M1-010  | ✅ Pass | Session 10 |
 | M1-011  | ✅ Pass | Session 11 |
+| M1-012  | ✅ Pass | Session 12 |

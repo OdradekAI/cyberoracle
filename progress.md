@@ -412,7 +412,29 @@
 
 **Commit:** pending
 
-### Session 18 — 2026-04-29
+### Session 19 — 2026-04-29
+
+**Feature:** M1-020 — UI package base exports + Tailwind integration scaffolding
+**Status:** completed
+
+**What was done:**
+
+- Added vitest devDependency and vitest.config.ts to packages/ui with path alias resolution
+- Added "test" script to packages/ui/package.json
+- Updated packages/ui/src/index.ts to export CrystalBall, UploadDropzone, NeonText, StreamingPoster as empty function stubs
+- peerDependencies (react-dom, framer-motion) were already correctly set up
+- Created packages/ui/src/**tests**/exports.test.ts with 5 tests (PACKAGE_NAME + 4 component stubs)
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/ui test: 5 tests pass
+- pnpm --filter @cyberoracle/ui typecheck: passes
+
+**Commit:** pending
 
 **Feature:** M1-018 — Base poster layout component — reusable satori-compatible layout with poster styles
 **Status:** completed
@@ -460,3 +482,4 @@
 | M1-016  | ✅ Pass | Session 16 |
 | M1-017  | ✅ Pass | Session 17 |
 | M1-018  | ✅ Pass | Session 18 |
+| M1-020  | ✅ Pass | Session 19 |

@@ -2,6 +2,9 @@
 node_modules/
 .pnpm-store/
 
+# Preview outputs
+packages/poster/preview-output.png
+
 # Build outputs
 dist/
 .next/
@@ -55,3 +58,4 @@ coverage/
 
 .claude/
 .agents/
+.playwright-mcp/

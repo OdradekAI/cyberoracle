@@ -460,6 +460,33 @@
 
 **Commit:** pending
 
+### Session 20 — 2026-04-29
+
+**Feature:** M1-019 — Poster preview script — local PNG preview from sample data via tsx
+**Status:** completed
+
+**What was done:**
+
+- Created packages/poster/scripts/preview.ts using renderToPng with PosterLayout + sample Chinese fortune data
+- Added tsx devDependency to poster package
+- Added preview:poster and preview:poster:watch scripts to package.json
+- Script falls back to system Arial font when Noto Serif SC subsets are not prepared
+- Added preview-output.png to .gitignore
+- Verified: pnpm preview:poster generates 10.5 KB PNG (1080x542, valid PNG magic bytes)
+
+**What failed / remaining:**
+
+- Chinese text renders with Arial font (boxes/placeholders) until Noto Serif SC fonts are prepared via pnpm fonts:prepare
+- Human review needed: verify Chinese text renders correctly after font preparation
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/poster preview:poster: exits 0, generates preview-output.png
+- PNG file: valid header (0x89504E47), dimensions 1080x542
+- pnpm --filter @cyberoracle/poster typecheck: passes
+
+**Commit:** pending
+
 ## Summary
 
 | Feature | Status  | Session    |
@@ -482,4 +509,5 @@
 | M1-016  | ✅ Pass | Session 16 |
 | M1-017  | ✅ Pass | Session 17 |
 | M1-018  | ✅ Pass | Session 18 |
+| M1-019  | ✅ Pass | Session 20 |
 | M1-020  | ✅ Pass | Session 19 |

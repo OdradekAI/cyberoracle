@@ -45,6 +45,7 @@
 | Feature | Status  | Session   |
 | ------- | ------- | --------- |
 | M2-001  | ✅ Pass | Session 1 |
+| M2-002  | ✅ Pass | Session 2 |
 
 ### Session 1 — 2026-04-30
 
@@ -69,3 +70,27 @@
 - Barrel exports test confirms `PalmReadingResultSchema` still importable from `@cyberoracle/core`
 
 **Commit:** `a643cd6`
+
+### Session 2 — 2026-04-30
+
+**Feature:** M2-002 — Replace FaceReadingResult schema with rich prompt-spec structure
+**Status:** completed
+
+**What was done:**
+
+- Replaced `packages/core/src/schemas/face-reading.ts` with new Zod schema matching docs/5完整Prompt文件.md §六
+- New schema: meta{title,subtitle} → overview{heading,body} → mainLines[{name,icon,body}]×3-4 (icons: eyebrow/eye/nose/mouth/face) → auxiliary[{icon,label,body}]×2-3 → temperament{heading,body} → summary{heading,body,illustration} → disclaimer{label,body}
+- Updated test file with 9 tests: validates standard answer JSON, accepts 3 and 4 mainLines, rejects <3 and >4, rejects invalid icons/illustration, type-level check
+- Removed old M1 structure (id/type/fortune/career/relationship/wisdom/overallScore/summary/createdAt)
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 57/57 tests pass (9 files)
+- `pnpm typecheck`: 11/11 packages pass
+- Barrel exports test confirms `FaceReadingResultSchema` still importable from `@cyberoracle/core`
+
+**Commit:** (pending)

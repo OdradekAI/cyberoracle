@@ -46,6 +46,7 @@
 | ------- | ------- | --------- |
 | M2-001  | ✅ Pass | Session 1 |
 | M2-002  | ✅ Pass | Session 2 |
+| M2-003  | ✅ Pass | Session 3 |
 
 ### Session 1 — 2026-04-30
 
@@ -94,3 +95,27 @@
 - Barrel exports test confirms `FaceReadingResultSchema` still importable from `@cyberoracle/core`
 
 **Commit:** `3ee43da`
+
+### Session 3 — 2026-04-30
+
+**Feature:** M2-003 — Replace DailyFortuneResult schema with rich prompt-spec structure
+**Status:** completed
+
+**What was done:**
+
+- Replaced `packages/core/src/schemas/daily-fortune.ts` with new Zod schema matching docs/5完整Prompt文件.md §七
+- New schema: title(literal '今日心境速写') → date → ganzhi → solarTerm → ratings{overall,work,relationship,creative,rest} (each 1-5 int) → lucky{color,direction,number(0-9 int),moment} → advice{do,avoid} → oneLine
+- Updated test file with 10 tests: validates standard answer from docs, accepts empty solarTerm, rejects ratings out of range (0, 6), rejects lucky.number=10, accepts lucky.number boundary values (0, 9), type-level check
+- Removed old M1 structure (date/overall/love/career/wealth/luckyNumber/luckyColor/summary)
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 62/62 tests pass (9 files)
+- `pnpm typecheck`: 11/11 packages pass
+- Barrel exports test confirms `DailyFortuneResultSchema` still importable from `@cyberoracle/core`
+
+**Commit:** (pending)

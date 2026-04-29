@@ -93,4 +93,4 @@
 - `pnpm typecheck`: 11/11 packages pass
 - Barrel exports test confirms `FaceReadingResultSchema` still importable from `@cyberoracle/core`
 
-**Commit:** (pending)
+**Commit:** `3ee43da`

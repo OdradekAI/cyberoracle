@@ -203,6 +203,28 @@
 - pnpm --filter @cyberoracle/tokens test: 35 tests pass (18 colors + 8 preset + 9 tokens)
 - pnpm --filter @cyberoracle/web typecheck: passes (web app imports updated preset correctly)
 
+**Commit:** `7175626`
+
+### Session 9 — 2026-04-29
+
+**Feature:** M1-009 — Zod schema for PalmReadingResult — structured output contract for palm reading pipeline
+**Status:** completed
+
+**What was done:**
+
+- Created packages/core/src/schemas/palm-reading.ts with Zod schema (id uuid, type 'palm', personality/career/love/health sections with title+content+score, overallScore 1-100, summary, createdAt)
+- Created packages/core/src/schemas/**tests**/palm-reading.test.ts with 6 tests (valid parse, missing field rejection, wrong type, out-of-range score, invalid UUID, inferred type)
+- Created packages/core/src/schemas/index.ts barrel export
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 7 tests pass (1 health + 6 palm-reading)
+- pnpm --filter @cyberoracle/core typecheck: passes
+
 **Commit:** pending
 
 ## Summary
@@ -217,3 +239,4 @@
 | M1-006  | ✅ Pass | Session 6 |
 | M1-007  | ✅ Pass | Session 7 |
 | M1-008  | ✅ Pass | Session 8 |
+| M1-009  | ✅ Pass | Session 9 |

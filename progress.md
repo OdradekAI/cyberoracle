@@ -247,6 +247,28 @@
 - pnpm --filter @cyberoracle/core test: 12 tests pass (1 health + 6 palm + 5 face)
 - pnpm --filter @cyberoracle/core typecheck: passes
 
+**Commit:** `36317a1`
+
+### Session 11 — 2026-04-29
+
+**Feature:** M1-011 — Zod schema for DailyFortuneResult — structured output for daily fortune feature
+**Status:** completed
+
+**What was done:**
+
+- Created packages/core/src/schemas/daily-fortune.ts with strict Zod schema (date, overall/love/career/wealth with score 1-100 + text, luckyNumber, luckyColor, summary)
+- Created packages/core/src/schemas/**tests**/daily-fortune.test.ts with 5 tests (valid parse, missing field, out-of-range score, non-integer luckyNumber, strict mode rejects extra fields)
+- Updated packages/core/src/schemas/index.ts to export DailyFortuneResultSchema
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 17 tests pass (1 health + 6 palm + 5 face + 5 daily)
+- pnpm --filter @cyberoracle/core typecheck: passes
+
 **Commit:** pending
 
 ## Summary
@@ -263,3 +285,4 @@
 | M1-008  | ✅ Pass | Session 8  |
 | M1-009  | ✅ Pass | Session 9  |
 | M1-010  | ✅ Pass | Session 10 |
+| M1-011  | ✅ Pass | Session 11 |

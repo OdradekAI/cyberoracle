@@ -68,4 +68,4 @@
 - `pnpm typecheck`: 11/11 packages pass
 - Barrel exports test confirms `PalmReadingResultSchema` still importable from `@cyberoracle/core`
 
-**Commit:** (pending)
+**Commit:** `a643cd6`

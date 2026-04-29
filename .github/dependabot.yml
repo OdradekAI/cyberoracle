@@ -5,35 +5,44 @@ updates:
     schedule:
       interval: weekly
       day: monday
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     labels:
       - dependencies
+    # Only allow patch and minor updates — major version bumps are manual
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'
+      # React 18 lock — never auto-update
+      - dependency-name: 'react'
+      - dependency-name: 'react-dom'
+      - dependency-name: '@types/react'
+      - dependency-name: '@types/react-dom'
+      # Next.js — pinned to 14.x for React 18 compat
+      - dependency-name: 'next'
+      - dependency-name: 'eslint-config-next'
+      # Tailwind — stay on 3.x until migration planned
+      - dependency-name: 'tailwindcss'
+      - dependency-name: 'autoprefixer'
     groups:
-      react:
-        patterns:
-          - react
-          - react-dom
-          - '@types/react'
-          - '@types/react-dom'
       nextjs:
         patterns:
           - next
           - eslint-config-next
-      tailwind:
-        patterns:
-          - tailwindcss
-          - autoprefixer
-          - postcss
 
   - package-ecosystem: cargo
     directory: /apps/desktop/src-tauri
     schedule:
       interval: weekly
       day: monday
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     labels:
       - dependencies
       - rust
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'
 
   - package-ecosystem: github-actions
     directory: /

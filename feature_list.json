@@ -1,347 +1,808 @@
 {
-  "milestone": "M1",
-  "milestoneTitle": "共享基建",
-  "sourceDocs": ["docs/1Monorepo工程骨架.md", "docs/PRD.md §3.2 (Monorepo structure)"],
+  "_comment": "M2 Web 端 MVP feature list. M1 (Shared infrastructure) is complete (v0.1.0). M2 builds on M1's schemas/loader/render-pipeline rather than redoing them. Canvas features follow the 4-phase roadmap from docs/6canvas动态化交互设计spec.md (MVP → V1 → V2 → V3).",
+  "milestone": "M2",
+  "milestoneTitle": "Web 端 MVP",
+  "sourceDocs": [
+    "docs/PRD.md §4.1 (Web tech stack)",
+    "docs/PRD.md §7 (Prompt engineering — two-phase pipeline)",
+    "docs/PRD.md §8 (Poster templates — packages/poster as single source)",
+    "docs/PRD.md §9 (API specs — /api/upload, /api/analyze SSE, /api/render-image, etc.)",
+    "docs/5完整Prompt文件.md (Prompt file library — 12 prompts with frontmatter + include + variables)",
+    "docs/2satori长图组件.md (Poster rendering — primitives, icons, tokens, render-server)",
+    "docs/6canvas动态化交互设计spec.md (Canvas interaction design — 4-layer, 9 entries, rhythm layering, dramatic 4-act)"
+  ],
   "features": [
     {
-      "id": "M1-001",
-      "category": "web",
-      "description": "Web app Tailwind CSS + PostCSS configuration with design token integration",
-      "testStrategy": "playwright",
+      "id": "M2-001",
+      "category": "core",
+      "description": "Replace PalmReadingResult schema with rich prompt-spec structure (meta/overview/mainLines/auxiliary/temperament/summary/disclaimer). M1's simple personality/career/love/health structure does not match the actual LLM output described in docs/5完整Prompt文件.md §五.",
+      "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create apps/web/tailwind.config.ts importing @cyberoracle/tokens/tailwind preset",
-        "Create apps/web/postcss.config.mjs with tailwindcss + autoprefixer plugins",
-        "Create apps/web/app/globals.css with @tailwind base/components/utilities directives",
-        "pnpm dev:web starts without errors",
-        "A test page renders with token-derived Tailwind classes visible"
+        "Replace packages/core/src/schemas/palm-reading.ts with new Zod schema matching docs/5完整Prompt文件.md §五 output schema",
+        "Top-level fields: meta{title,subtitle}, overview{heading,body}, mainLines[{name,icon,body}] (3 items: 感情线/智慧线/生命线), auxiliary[{icon,label,body}] (2-3 items), temperament{heading,body}, summary{heading,body,illustration}, disclaimer{label,body}",
+        "Schema validates the example JSON from docs/5完整Prompt文件.md line 519 (the standard answer) without errors",
+        "Schema rejects malformed JSON missing the summary.illustration field",
+        "Update packages/core/src/schemas/__tests__/palm-reading.test.ts to use the new structure",
+        "pnpm --filter @cyberoracle/core test passes; existing import sites in barrel-exports.test.ts still work"
       ],
       "priority": 1,
       "dependsOn": [],
       "passes": true
     },
     {
-      "id": "M1-002",
+      "id": "M2-002",
       "category": "core",
-      "description": "Vitest configuration for packages/core — enables TDD workflow for schemas, prompts, safety",
+      "description": "Replace FaceReadingResult schema with rich prompt-spec structure matching docs/5完整Prompt文件.md §六. Same shape as PalmReadingResult but mainLines covers 眉眼/鼻子/嘴部/脸型 with icons eyebrow|eye|nose|mouth|face.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/core/vitest.config.ts with path alias resolution for @cyberoracle/*",
-        "pnpm --filter @cyberoracle/core vitest run succeeds with zero tests (exit 0)",
-        "Create a placeholder test packages/core/src/__tests__/health.test.ts that asserts true",
-        "pnpm test from root includes core package results"
+        "Replace packages/core/src/schemas/face-reading.ts with new Zod schema",
+        "mainLines accepts 3-4 items with name in [眉眼,鼻子,嘴部,脸型] and icon in [eyebrow,eye,nose,mouth,face]",
+        "auxiliary, temperament, summary, disclaimer fields match palm-reading shape (reusable sub-schemas in helpers if needed)",
+        "Schema validates the example JSON from docs/5完整Prompt文件.md line 663 without errors",
+        "Update packages/core/src/schemas/__tests__/face-reading.test.ts to use the new structure",
+        "pnpm --filter @cyberoracle/core test passes"
       ],
       "priority": 2,
       "dependsOn": [],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "M1-003",
-      "category": "poster",
-      "description": "Vitest configuration for packages/poster — enables TDD for render pipeline and templates",
+      "id": "M2-003",
+      "category": "core",
+      "description": "Replace DailyFortuneResult schema with rich prompt-spec structure (title/date/ganzhi/solarTerm/ratings/lucky/advice/oneLine) per docs/5完整Prompt文件.md §七.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/poster/vitest.config.ts with React plugin + path alias resolution",
-        "pnpm --filter @cyberoracle/poster vitest run succeeds with zero tests",
-        "Create a placeholder test packages/poster/src/__tests__/health.test.ts",
-        "pnpm test from root includes poster package results"
+        "Replace packages/core/src/schemas/daily-fortune.ts with new Zod schema",
+        "Fields: title (literal '今日心境速写'), date, ganzhi, solarTerm (string, can be empty), ratings{overall,work,relationship,creative,rest} (each 1-5 integer), lucky{color,direction,number(0-9 int),moment}, advice{do,avoid}, oneLine",
+        "Schema validates the example JSON from docs/5完整Prompt文件.md line 743 without errors",
+        "Schema rejects ratings.overall=6 (out of 1-5 range)",
+        "Schema rejects lucky.number=10 (out of 0-9 range)",
+        "Update packages/core/src/schemas/__tests__/daily-fortune.test.ts; pnpm --filter @cyberoracle/core test passes"
       ],
       "priority": 3,
       "dependsOn": [],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "M1-004",
-      "category": "server",
-      "description": "Server Dockerfile (multi-stage) + docker-compose.yml for local development",
-      "testStrategy": "manual",
+      "id": "M2-004",
+      "category": "core",
+      "description": "Add VisionObservation schemas — the JSON contract for stage-1 VLM output (palm + face). VLM returns either {valid:true, observations:{...}} or {valid:false, reason:'not_palm|minor|low_quality|unsafe|not_face|multiple_faces'}.",
+      "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create apps/server/Dockerfile with three stages: deps (install) → builder (build) → runner (standalone)",
-        "Dockerfile copies monorepo context, runs pnpm install --frozen-lockfile, builds server",
-        "Runner stage uses node:20-bookworm-slim, copies standalone output + static + fonts",
-        "Create docker-compose.yml at root with 'server' service building from apps/server/Dockerfile",
-        "docker compose build server succeeds (or manual review confirms Dockerfile correctness)"
+        "Create packages/core/src/schemas/vision-observation.ts with PalmObservationSchema and FaceObservationSchema",
+        "Both use Zod discriminated union on 'valid' field (true → observations, false → reason enum)",
+        "PalmObservation observations fields per docs/5完整Prompt文件.md §三: hand_shape, finger, palm_proportion, heart_line, head_line, life_line, fate_line, minor_lines, skin_texture, image_quality (all string)",
+        "FaceObservation observations fields per §四: face_shape, forehead, eyebrow, eye, nose, mouth, chin, skin_texture, expression_impression, image_quality",
+        "Reason enums: palm=[not_palm,minor,low_quality,unsafe], face=[not_face,minor,multiple_faces,low_quality,unsafe]",
+        "Test file: schemas/__tests__/vision-observation.test.ts with valid/invalid cases for both",
+        "Export both schemas from schemas/index.ts barrel; pnpm --filter @cyberoracle/core test passes"
       ],
       "priority": 4,
       "dependsOn": [],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "M1-005",
-      "category": "web",
-      "description": "End-to-end dev verification — pnpm dev:web starts both web and server without errors",
-      "testStrategy": "playwright",
+      "id": "M2-005",
+      "category": "core",
+      "description": "Extend prompt loader with expandIncludes() function — resolves <<include:safety-rules>> markers by inlining content from packages/core/prompts/_shared/{name}.md.",
+      "testStrategy": "unit",
       "acceptanceSteps": [
-        "pnpm dev:web starts web on port 3000 and server on port 3001",
-        "GET http://localhost:3000 returns 200 with valid HTML",
-        "GET http://localhost:3001/api/health returns 200 with { status: 'ok' } JSON",
-        "No unhandled TypeScript errors in terminal output"
+        "Add expandIncludes(text:string):Promise<string> to packages/core/src/prompts/loader.ts",
+        "Function replaces all <<include:NAME>> matches (where NAME matches [\\w-]+) with the content of packages/core/prompts/_shared/NAME.md (trimmed)",
+        "Function throws descriptive error 'Include not found' when _shared/NAME.md does not exist",
+        "Multiple includes in one text are all replaced (loop over matchAll)",
+        "Test file: prompts/__tests__/expand-includes.test.ts with 4 cases (single include, multiple includes, no include, missing include)",
+        "Export expandIncludes from prompts/index.ts barrel"
       ],
       "priority": 5,
-      "dependsOn": ["M1-001"],
-      "passes": true
+      "dependsOn": [],
+      "passes": false
     },
     {
-      "id": "M1-006",
+      "id": "M2-006",
       "category": "core",
-      "description": "Design tokens: color palette with brand colors + poster palette + semantic aliases",
+      "description": "Create shared prompt segments — _shared/safety-rules.md and _shared/tone-guidelines.md per docs/5完整Prompt文件.md §二. These are referenced by 8+ downstream prompts via <<include:>>.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/tokens/src/colors.ts exporting: brand (purple #A855F7, cyan #22D3EE, pink #F472B6), dark (#0B0420), poster (cream #F8F5EE, text #1F1B16, gold #9A7B3F)",
-        "Include semantic aliases: primary, secondary, accent, background, surface, text",
-        "All values are typed as const objects (not loose strings)",
-        "Unit test verifies all color values are valid hex strings"
+        "Create packages/core/prompts/_shared/safety-rules.md with the 10-point content safety checklist + 措辞要求 + 遇到无法处理的输入 sections",
+        "Create packages/core/prompts/_shared/tone-guidelines.md with 整体定位 + 风格关键词 + 具体写作要求 + 中文表达细节 sections",
+        "expandIncludes('<<include:safety-rules>>') returns the content of safety-rules.md",
+        "expandIncludes('<<include:tone-guidelines>>') returns the content of tone-guidelines.md",
+        "Test file: prompts/__tests__/shared-segments.test.ts verifies file existence + non-empty content + key phrases present"
       ],
       "priority": 6,
-      "dependsOn": [],
-      "passes": true
+      "dependsOn": ["M2-005"],
+      "passes": false
     },
     {
-      "id": "M1-007",
+      "id": "M2-007",
       "category": "core",
-      "description": "Design tokens: typography scale, font families, spacing, border radius, animation curves",
+      "description": "Create vision-observe-face.md prompt file per docs/5完整Prompt文件.md §四. Stage-1 VLM prompt for face observation, outputs JSON matching FaceObservation schema.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/tokens/src/typography.ts: fontFamilies (notoSerifSC, orbitron), typeScale (xs–5xl with lineHeight)",
-        "Create packages/tokens/src/spacing.ts: spacing scale (0–96 step values)",
-        "Create packages/tokens/src/borders.ts: borderRadius (card 16, button 12, input 10)",
-        "Create packages/tokens/src/animations.ts: easing (cubic-bezier(0.22,1,0.36,1)), durations (enter 360ms, exit 220ms)",
-        "packages/tokens/src/index.ts re-exports all token modules",
-        "Unit test verifies token objects are non-empty and values are correct types"
+        "Create packages/core/prompts/vision-observe-face.md with frontmatter (id, version v1.1, targetModel [qwen-vl-max,glm-4v,gpt-4o], temperature 0.2, maxTokens 800, outputFormat json, updatedAt)",
+        "System section includes <<include:safety-rules>>",
+        "Body covers: 任务, 图片合法性判断 (5 reasons including multiple_faces), 观察维度 (10 fields), 输出格式, 1-2 examples",
+        "---USER--- separator followed by user template '请按系统指令观察以下面部照片，输出 JSON：'",
+        "loadPrompt('vision-observe-face') succeeds; meta.outputFormat === 'json'; meta.targetModel includes 'qwen-vl-max'",
+        "Test in prompts/__tests__/face-prompt.test.ts validates loaded structure"
       ],
       "priority": 7,
-      "dependsOn": [],
-      "passes": true
+      "dependsOn": ["M2-005", "M2-006"],
+      "passes": false
     },
     {
-      "id": "M1-008",
+      "id": "M2-008",
       "category": "core",
-      "description": "Tailwind preset from design tokens — maps all tokens to Tailwind theme extensions",
+      "description": "Create reading-write-palm.md prompt file — the most important prompt, per docs/5完整Prompt文件.md §五. Stage-2 LLM prompt that takes vision observation JSON and writes the palm reading matching PalmReadingResult schema.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/tokens/src/tailwind-preset.js exporting a Tailwind preset object",
-        "Preset extends theme.colors with all token colors",
-        "Preset extends theme.fontFamily with notoSerifSC and orbitron",
-        "Preset extends theme.borderRadius, theme.transitionTimingFunction, theme.transitionDuration",
-        "Unit test imports the preset and verifies it has the required Tailwind config shape"
+        "Create packages/core/prompts/reading-write-palm.md with frontmatter (id, version v3.1, targetModel [deepseek-v3,qwen-plus,gpt-4o-mini], temperature 0.7, maxTokens 1500, outputFormat json)",
+        "System section includes <<include:safety-rules>> and <<include:tone-guidelines>>",
+        "Body covers: 任务, 整体定位, 撰写原则 (7 items), 固定 disclaimer 文案, 输出 Schema, icon 选择规则, 输出要求, 2 完整示例 (the standard answers from docs)",
+        "---USER--- separator with user template containing {{observations}} variable",
+        "loadPrompt('reading-write-palm') + expandIncludes resolves both safety-rules and tone-guidelines",
+        "fillTemplate with {observations:'{...}'} substitutes correctly; test in prompts/__tests__/palm-prompt.test.ts"
       ],
       "priority": 8,
-      "dependsOn": ["M1-006", "M1-007"],
-      "passes": true
+      "dependsOn": ["M2-005", "M2-006", "M2-001"],
+      "passes": false
     },
     {
-      "id": "M1-009",
+      "id": "M2-009",
       "category": "core",
-      "description": "Zod schema for PalmReadingResult — structured output contract for palm reading pipeline",
+      "description": "Create reading-write-face.md prompt file per docs/5完整Prompt文件.md §六. Stage-2 LLM prompt for face reading.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/core/src/schemas/palm-reading.ts with Zod object schema",
-        "Schema fields: id (uuid), type ('palm'), personality/career/love/health (each with title+content+score), overallScore (1-100), summary (string), createdAt (ISO date string)",
-        "Test file: packages/core/src/schemas/__tests__/palm-reading.test.ts",
-        "Test: schema.parse(validSampleData) succeeds without errors",
-        "Test: schema.parse(missingFieldData) throws ZodError with path to missing field",
-        "Export PalmReadingResult type (z.infer) and schema from packages/core/src/schemas/index.ts"
+        "Create packages/core/prompts/reading-write-face.md with frontmatter (id, version v2.1, targetModel [deepseek-v3,qwen-plus,gpt-4o-mini], temperature 0.7, maxTokens 1500, outputFormat json)",
+        "System includes <<include:safety-rules>> and <<include:tone-guidelines>>",
+        "Body covers: 特别强调 (4 face-reading compliance points: 不评价美丑/不预测健康/不涉及姻缘事件/映射到性格倾向), 输出 Schema, 完整示例",
+        "User template with {{observations}}",
+        "loadPrompt('reading-write-face') succeeds; expansion+fill works",
+        "Test in prompts/__tests__/face-reading-prompt.test.ts"
       ],
       "priority": 9,
-      "dependsOn": ["M1-002"],
-      "passes": true
+      "dependsOn": ["M2-005", "M2-006", "M2-002"],
+      "passes": false
     },
     {
-      "id": "M1-010",
+      "id": "M2-010",
       "category": "core",
-      "description": "Zod schema for FaceReadingResult — structured output contract for face reading pipeline",
+      "description": "Create daily-fortune.md prompt file per docs/5完整Prompt文件.md §七. Stage-2 LLM prompt for daily fortune card.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/core/src/schemas/face-reading.ts with Zod object schema",
-        "Schema fields: id, type ('face'), fortune/career/relationship/wisdom sections (each with title+content+score), overallScore, summary, createdAt",
-        "Test file: packages/core/src/schemas/__tests__/face-reading.test.ts",
-        "Test: schema.parse(validSampleData) succeeds",
-        "Test: schema.parse(malformedData) throws ZodError",
-        "Export from packages/core/src/schemas/index.ts"
+        "Create packages/core/prompts/daily-fortune.md with frontmatter (id, version v1.3, targetModel [deepseek-v3,qwen-turbo], temperature 0.8, maxTokens 500, outputFormat json)",
+        "System includes <<include:safety-rules>> and <<include:tone-guidelines>>",
+        "Body covers: 任务, 输出 Schema (matches DailyFortuneResult), 撰写要求 (3 items), 1 完整示例",
+        "User template with {{date}}, {{ganzhi}}, {{solarTerm}}, {{seed}} variables",
+        "loadPrompt('daily-fortune') succeeds; fillTemplate substitutes all 4 vars",
+        "Test in prompts/__tests__/daily-fortune-prompt.test.ts"
       ],
       "priority": 10,
-      "dependsOn": ["M1-002"],
-      "passes": true
+      "dependsOn": ["M2-005", "M2-006", "M2-003"],
+      "passes": false
     },
     {
-      "id": "M1-011",
-      "category": "core",
-      "description": "Zod schema for DailyFortuneResult — structured output for daily fortune feature",
-      "testStrategy": "unit",
+      "id": "M2-011",
+      "category": "server",
+      "description": "VLM client with provider chain — calls Qwen-VL-Max → GLM-4V → GPT-4o (fallback). Returns parsed JSON (not stream). Server-side only; never exposes API keys.",
+      "testStrategy": "playwright",
       "acceptanceSteps": [
-        "Create packages/core/src/schemas/daily-fortune.ts with Zod object schema",
-        "Schema fields: date (string), overall (score+text), love/career/wealth (each score 1-100+text), luckyNumber, luckyColor, summary",
-        "Test file: packages/core/src/schemas/__tests__/daily-fortune.test.ts",
-        "Test: validates and rejects correctly",
-        "Export from packages/core/src/schemas/index.ts"
+        "Create apps/server/src/lib/vlm-client.ts with callVLM({model, messages, temperature, responseFormat}) function",
+        "API keys read from process.env (QWEN_API_KEY, GLM_API_KEY, OPENAI_API_KEY) — never logged",
+        "Failure on first provider triggers retry on next provider in chain (try/catch + provider.next())",
+        "Returns string (raw JSON content from model) — caller responsible for JSON.parse + Zod validation",
+        "Image input supported via {type:'image_url', image_url:{url:dataUrl}} in messages",
+        "Throw NoProviderAvailableError if all providers fail or none have API keys",
+        "Manual smoke test: with QWEN_API_KEY env var set, call from a test endpoint with a real palm image, verify valid JSON returned"
       ],
       "priority": 11,
-      "dependsOn": ["M1-002"],
-      "passes": true
+      "dependsOn": [],
+      "passes": false
     },
     {
-      "id": "M1-012",
-      "category": "core",
-      "description": "Zod schema for PipelineEvent — SSE streaming envelope for LLM proxy",
-      "testStrategy": "unit",
+      "id": "M2-012",
+      "category": "server",
+      "description": "Text LLM streaming client with provider chain — DeepSeek V3 → Qwen-Plus → GPT-4o-mini. Returns AsyncIterable<string> for SSE-friendly chunk-by-chunk consumption.",
+      "testStrategy": "playwright",
       "acceptanceSteps": [
-        "Create packages/core/src/schemas/pipeline-event.ts with Zod discriminated union or object schema",
-        "Schema: { step: enum(vlm_observe, llm_interpret, complete), status: enum(running, done, error), data: unknown, error?: string }",
-        "Test file: packages/core/src/schemas/__tests__/pipeline-event.test.ts",
-        "Test: valid events parse, invalid steps/statuses are rejected",
-        "Export from packages/core/src/schemas/index.ts"
+        "Create apps/server/src/lib/llm-stream-client.ts with callLLMStream({model, messages, temperature, maxTokens, responseFormat}) returning AsyncIterable<string>",
+        "Uses fetch + ReadableStream + parser to handle SSE chunks from each provider",
+        "Provider chain: DeepSeek V3 → Qwen-Plus → GPT-4o-mini (env keys: DEEPSEEK_API_KEY, QWEN_API_KEY, OPENAI_API_KEY)",
+        "If first provider fails after 0 chunks → silent failover to next; if fails mid-stream → propagate error",
+        "responseFormat:{type:'json_object'} forwarded to providers that support it (DeepSeek, OpenAI)",
+        "Manual smoke test: full SSE stream with sample messages, verify chunks arrive ordered and complete JSON parses"
       ],
       "priority": 12,
-      "dependsOn": ["M1-002"],
-      "passes": true
+      "dependsOn": [],
+      "passes": false
     },
     {
-      "id": "M1-013",
-      "category": "core",
-      "description": "Sample prompt file: vision-observe-palm.md — establishes .md prompt file format",
-      "testStrategy": "unit",
+      "id": "M2-013",
+      "category": "server",
+      "description": "Reading service orchestrator — chains VLM observe → text LLM interpret → safety check → schema validate. Implements the pipeline from docs/5完整Prompt文件.md §十四.",
+      "testStrategy": "playwright",
       "acceptanceSteps": [
-        "Create packages/core/prompts/vision-observe-palm.md",
-        "File has YAML frontmatter: version, targetModel, temperature, description",
-        "Body has system prompt section followed by ---USER--- separator followed by user prompt template",
-        "User template uses {{variable}} syntax (e.g. {{ganzhi}}, {{upload_description}})",
-        "Prompt content instructs VLM to observe palm features and return structured JSON"
+        "Create apps/server/src/services/reading-service.ts with generatePalmReading(imageDataUrl, {onChunk?}) and generateFaceReading(imageDataUrl, {onChunk?}) functions",
+        "Stage 1: loadPrompt vision-observe-palm + expandIncludes + callVLM → JSON.parse → PalmObservationSchema.safeParse",
+        "If observation.valid===false → return {status:'rejected', reason:observation.reason}",
+        "Stage 2: loadPrompt reading-write-palm + expandIncludes + fillTemplate({observations}) + callLLMStream → accumulate buffer + onChunk callback",
+        "Stage 3: JSON.parse buffer → PalmReadingResultSchema.safeParse → checkContent on stringified result",
+        "Returns {status:'ok'|'rejected'|'failed', data?, reason?, detail?}",
+        "Manual smoke test: call with sample palm image, verify ok response with valid PalmReadingResult JSON"
       ],
       "priority": 13,
-      "dependsOn": [],
-      "passes": true
+      "dependsOn": ["M2-001", "M2-002", "M2-004", "M2-007", "M2-008", "M2-009", "M2-011", "M2-012"],
+      "passes": false
     },
     {
-      "id": "M1-014",
+      "id": "M2-014",
       "category": "core",
-      "description": "Prompt loader — reads .md prompt files, parses frontmatter, fills template variables",
+      "description": "Fallback content service — fallback-soft.md with prebuilt 'gentle failure' JSON for palm/face/daily, plus a getFallback(type) function for the reading service to use when LLM fails.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/core/src/prompts/loader.ts with loadPrompt(name) and fillTemplate(template, vars) functions",
-        "loadPrompt('vision-observe-palm') returns { meta: { version, targetModel, temperature }, system: string, userTemplate: string }",
-        "fillTemplate('Hello {{name}}', { name: 'World' }) returns 'Hello World'",
-        "fillTemplate('Hello {{name}}', {}) leaves 'Hello {{name}}' unchanged (no error)",
-        "loadPrompt throws descriptive error for non-existent prompt name",
-        "Test file: packages/core/src/prompts/__tests__/loader.test.ts covers all cases"
+        "Create packages/core/prompts/fallback-soft.md per docs/5完整Prompt文件.md §十二 (palm fallback JSON, face fallback similar structure, companion lines pool)",
+        "Create packages/core/src/fallbacks/index.ts with getPalmFallback(), getFaceFallback(), getDailyFallback(), getCompanionLine(category)",
+        "All fallback JSON validates against the corresponding M2-001/002/003 schemas",
+        "getCompanionLine('morning'|'idle'|'tap'|'celebrate'|'sad') returns a random string from the matching pool",
+        "Test file: fallbacks/__tests__/fallbacks.test.ts validates schema compliance + non-empty pools"
       ],
       "priority": 14,
-      "dependsOn": ["M1-002", "M1-013"],
-      "passes": true
+      "dependsOn": ["M2-001", "M2-002", "M2-003"],
+      "passes": false
     },
     {
-      "id": "M1-015",
-      "category": "core",
-      "description": "Content safety module — keyword blacklist checker for filtering LLM outputs",
+      "id": "M2-015",
+      "category": "poster",
+      "description": "Satori-friendly primitives — Box (auto display:flex), Text (font + lineHeight + color), Card (rounded + border), SectionNumber (circular 01/02 badge), Divider, Tag. Per docs/2satori长图组件.md §二.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/core/src/content-safety/blacklist.json with Chinese keyword array (健康建议, 寿命, 疾病, 治疗, 投资建议, 赚钱, 自杀, 死亡, 政治)",
-        "Create packages/core/src/content-safety/checker.ts with checkContent(text: string): { safe: boolean, matched: string[] }",
-        "checkContent('今日运势不错') returns { safe: true, matched: [] }",
-        "checkContent('请注意健康建议') returns { safe: false, matched: ['健康建议'] }",
-        "Case-insensitive matching for blacklist keywords",
-        "Test file: packages/core/src/content-safety/__tests__/checker.test.ts passes",
-        "Export checkContent from packages/core/src/content-safety/index.ts"
+        "Create packages/poster/src/primitives/{Box,Text,Card,SectionNumber,Divider,Tag}.tsx — all return satori-compatible VDOM",
+        "Box auto-applies style.display='flex' when not specified; supports flexDirection prop",
+        "Text uses fontFamily 'Noto Serif SC' by default; size/weight/color/lineHeight props all map to inline style",
+        "Card has paper background (#F8F5EE), 16px borderRadius, 1px line border (#E5DFD2), inner padding",
+        "SectionNumber renders a circular badge with gold (#9A7B3F) background and white text",
+        "All primitives composable: <Card><Box flexDirection='column'><Text>...</Text></Box></Card> renders correctly via renderToPng",
+        "Test file: primitives/__tests__/primitives.test.tsx renders each via renderToPng and asserts valid PNG output"
       ],
       "priority": 15,
-      "dependsOn": ["M1-002"],
-      "passes": true
+      "dependsOn": [],
+      "passes": false
     },
     {
-      "id": "M1-016",
-      "category": "core",
-      "description": "Core package barrel exports — wire up all submodules through index.ts files",
+      "id": "M2-016",
+      "category": "poster",
+      "description": "Poster icon library — inline SVG components per docs/2satori长图组件.md §二: PalmDiagram, HeartLine, BrainLine, LeafLine, Signpost, Wave, MountainScene, RiverScene, CloudScene, LotusScene, CornerOrnament, Watermark.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "packages/core/src/index.ts re-exports from ./schemas, ./prompts, ./content-safety",
-        "packages/core/src/schemas/index.ts exports all Zod schemas and inferred types",
-        "packages/core/src/prompts/index.ts exports loadPrompt and fillTemplate",
-        "packages/core/src/content-safety/index.ts exports checkContent",
-        "pnpm --filter @cyberoracle/core typecheck passes",
-        "Import test: a test file can import { PalmReadingResultSchema, loadPrompt, checkContent } from '@cyberoracle/core'"
+        "Create packages/poster/src/icons/ with 12 inline SVG components",
+        "Each is a satori-compatible component returning {type:'svg', props:{viewBox, children:[...path elements]}}",
+        "Heart/Brain/Leaf are simple stroke-only icons (24x24); Signpost/Wave for auxiliary",
+        "Mountain/River/Cloud/Lotus are 'illustration' scene icons (180x120) used in summary section",
+        "Watermark renders 'CyberOracle · {date}' with QR code placeholder area",
+        "All icons use ink (#1F1B16) or gold (#9A7B3F) stroke, no fill",
+        "Test file: icons/__tests__/icons.test.tsx renders each icon via renderToPng and asserts valid output"
       ],
       "priority": 16,
-      "dependsOn": ["M1-009", "M1-010", "M1-011", "M1-012", "M1-014", "M1-015"],
-      "passes": true
+      "dependsOn": [],
+      "passes": false
     },
     {
-      "id": "M1-017",
+      "id": "M2-017",
       "category": "poster",
-      "description": "Poster render pipeline — satori + resvg-js JSX-to-PNG conversion server function",
+      "description": "PalmReadingPoster.tsx — full satori long-image template using rich PalmReadingResult data. Layout: title + subtitle + overview card + 3 mainLines cards with icons + 2-3 auxiliary cards + temperament + summary with illustration + disclaimer + watermark.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/poster/src/render/render-server.ts with renderToPng(component, data, options) function",
-        "renderToPng takes a React element + width (default 1080) and returns Promise<Buffer>",
-        "Loads Noto Serif SC font subset from packages/poster/fonts/ for Chinese text rendering",
-        "Returns valid PNG buffer (starts with PNG magic bytes 0x89504E47)",
-        "Throws descriptive error if font files are missing",
-        "Test file: packages/poster/src/render/__tests__/render-server.test.ts validates PNG output"
+        "Replace packages/poster/src/components/PosterLayout.tsx with PalmReadingPoster.tsx (or coexist)",
+        "Component takes PalmReadingResult data prop and renders the full long image (800px wide × ~2400px tall)",
+        "Uses primitives + icons; mainLines section shows 心/脑/生命 icons next to each line block",
+        "auxiliary section uses Signpost or Wave icon depending on item.icon",
+        "summary.illustration field selects between Mountain/River/Cloud/Lotus scene at the bottom",
+        "Right-bottom watermark via Watermark component",
+        "Snapshot test: renderToPng with sample data returns valid PNG; pixel diff vs golden < 5% (loose threshold for MVP)",
+        "Test file: components/__tests__/palm-reading-poster.test.tsx"
       ],
       "priority": 17,
-      "dependsOn": ["M1-003"],
-      "passes": true
+      "dependsOn": ["M2-001", "M2-015", "M2-016"],
+      "passes": false
     },
     {
-      "id": "M1-018",
+      "id": "M2-018",
       "category": "poster",
-      "description": "Base poster layout component — reusable satori-compatible layout with poster styles",
+      "description": "FaceReadingPoster.tsx — full satori long-image template for face reading. Same layout pattern as PalmReadingPoster but mainLines uses eye/eyebrow/nose/mouth/face icons.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "Create packages/poster/src/components/PosterLayout.tsx as a React component",
-        "Props: { title: string, sections: Array<{heading: string, content: string}>, footer?: string, width?: number }",
-        "Renders with cream background (#F8F5EE) and dark text (#1F1B16)",
-        "Includes gold accent divider lines between sections (#9A7B3F)",
-        "Watermark placeholder area in bottom-right corner",
-        "Component is satori-compatible (no external CSS, inline styles only)",
-        "Test: renders to satori VDOM without error with sample data"
+        "Create packages/poster/src/components/FaceReadingPoster.tsx",
+        "Takes FaceReadingResult data prop; renders 800×~2400 long image",
+        "mainLines icons: eyebrow→Eyebrow, eye→Eye, nose→Nose, mouth→Mouth, face→FaceOutline",
+        "Watermark + summary.illustration same as palm",
+        "Snapshot test: renderToPng with sample face data returns valid PNG",
+        "Test file: components/__tests__/face-reading-poster.test.tsx"
       ],
       "priority": 18,
-      "dependsOn": ["M1-003", "M1-006"],
-      "passes": true
+      "dependsOn": ["M2-002", "M2-015", "M2-016"],
+      "passes": false
     },
     {
-      "id": "M1-019",
+      "id": "M2-019",
       "category": "poster",
-      "description": "Poster preview script — local PNG preview from sample data via tsx",
-      "testStrategy": "manual",
-      "acceptanceSteps": [
-        "Create packages/poster/scripts/preview.ts using renderToPng with PosterLayout + sample data",
-        "pnpm preview:poster generates test PNG to packages/poster/preview-output.png",
-        "Output PNG is viewable in standard image viewers (correct dimensions, Chinese text renders)",
-        "pnpm preview:poster:watch watches src/ for changes and regenerates on save"
-      ],
-      "priority": 19,
-      "dependsOn": ["M1-017", "M1-018"],
-      "passes": true
-    },
-    {
-      "id": "M1-020",
-      "category": "core",
-      "description": "UI package base exports + Tailwind integration scaffolding",
+      "description": "DailyFortuneCard.tsx — short share-card template for daily fortune (800×1200). Layout: title + ratings (star bars) + lucky info + advice (do/avoid) + oneLine.",
       "testStrategy": "unit",
       "acceptanceSteps": [
-        "packages/ui/src/index.ts exports empty component stubs (CrystalBall, UploadDropzone, NeonText, StreamingPoster)",
-        "Each stub is a named export that can be imported without error",
-        "packages/ui package.json peerDependencies are correctly set up",
-        "pnpm --filter @cyberoracle/ui typecheck passes"
+        "Create packages/poster/src/components/DailyFortuneCard.tsx",
+        "Takes DailyFortuneResult data prop; renders 800×~1200 short card",
+        "Ratings row: 5 metrics with horizontal star/filled-bar visualization",
+        "Lucky info: color swatch + direction arrow + number badge + moment text",
+        "Advice section: do (green tint) + avoid (gold tint) blocks",
+        "oneLine rendered prominently with serif italic styling at the bottom",
+        "Snapshot test: renderToPng with sample data returns valid PNG",
+        "Test file: components/__tests__/daily-fortune-card.test.tsx"
+      ],
+      "priority": 19,
+      "dependsOn": ["M2-003", "M2-015", "M2-016"],
+      "passes": false
+    },
+    {
+      "id": "M2-020",
+      "category": "server",
+      "description": "POST /api/upload — accepts image upload (FormData), validates type (image/jpeg|image/png|image/webp) + size (≤8MB), converts to WebP via sharp, saves to /storage/uploads/{id}.webp + meta.json, returns {id}.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/server/src/app/api/upload/route.ts with POST handler",
+        "FormData parsing: multipart/form-data with 'file' field + 'kind' field (palm|face)",
+        "Validation: returns 415 for non-image MIME, 413 for >8MB",
+        "Image processing: sharp resize (max 1920px) → WebP encode (quality 80)",
+        "Storage: write to /storage/uploads/{nanoid}.webp + sibling .meta.json with {kind, originalName, size, uploadedAt}",
+        "Response: {id: string} on success (200)",
+        "Add 'sharp' + 'nanoid' to apps/server dependencies",
+        "Manual test via curl: POST a sample PNG, verify 200 + id in response + file exists in /storage/uploads/"
       ],
       "priority": 20,
       "dependsOn": [],
-      "passes": true
+      "passes": false
     },
     {
-      "id": "M1-021",
-      "category": "web",
-      "description": "Cross-package integration verification — full typecheck + test + build suite passes",
+      "id": "M2-021",
+      "category": "server",
+      "description": "GET /api/analyze — SSE streaming endpoint that runs the reading-service pipeline. Streams PipelineEvent chunks (vlm_observe → llm_interpret → complete) using the M1-012 PipelineEvent schema.",
       "testStrategy": "playwright",
       "acceptanceSteps": [
-        "pnpm typecheck passes with zero errors across all packages and apps",
-        "pnpm test passes for packages/core and packages/poster (all unit tests green)",
-        "pnpm build:web completes without errors",
-        "pnpm build:server completes without errors",
-        "All workspace imports (core→tokens, poster→core, web→core/poster/ui/tokens) resolve correctly"
+        "Create apps/server/src/app/api/analyze/route.ts with GET handler that accepts ?id={uploadId}",
+        "Returns Response with content-type 'text/event-stream', cache-control 'no-cache', connection 'keep-alive'",
+        "Reads /storage/uploads/{id}.webp + .meta.json; routes to generatePalmReading or generateFaceReading based on kind",
+        "Emits PipelineEvent chunks: {step:'vlm_observe', status:'running'} → {step:'vlm_observe', status:'done', data:observations} → {step:'llm_interpret', status:'running'} → onChunk fires {step:'llm_interpret', status:'running', data:partial} → {step:'complete', status:'done', data:fullResult}",
+        "Each chunk validated against PipelineEventSchema before emission",
+        "Connection survives 30+ seconds; final chunk closes the stream",
+        "Saves final result to /storage/results/{id}.json",
+        "Manual test: curl -N http://localhost:3001/api/analyze?id={id} streams events ending with complete"
       ],
       "priority": 21,
-      "dependsOn": ["M1-005", "M1-016", "M1-017", "M1-020"],
-      "passes": true
+      "dependsOn": ["M2-013", "M2-020"],
+      "passes": false
+    },
+    {
+      "id": "M2-022",
+      "category": "server",
+      "description": "POST /api/render-image — generates poster PNG from a result JSON id. Uses M1's renderToPng + the M2 poster components, saves to /storage/results/{id}.png, returns the PNG buffer.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/server/src/app/api/render-image/route.ts with POST handler accepting {id} JSON body",
+        "Reads /storage/results/{id}.json; selects PalmReadingPoster or FaceReadingPoster based on result.type or kind metadata",
+        "Calls renderToPng(<Poster data={result} />) to get PNG buffer",
+        "Saves buffer to /storage/results/{id}.png",
+        "Response: PNG buffer with content-type 'image/png'",
+        "Returns 404 if result JSON not found, 500 on render failure",
+        "Manual test: POST {id} to endpoint after a complete /api/analyze flow, verify PNG file exists + valid magic bytes"
+      ],
+      "priority": 22,
+      "dependsOn": ["M2-017", "M2-018", "M2-021"],
+      "passes": false
+    },
+    {
+      "id": "M2-023",
+      "category": "server",
+      "description": "GET /api/result/:id and GET /api/result/:id/image — fetch endpoints for a result's JSON and PNG. Both return 404 for unknown ids; /image streams the PNG with appropriate cache headers.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/server/src/app/api/result/[id]/route.ts with GET → reads /storage/results/{id}.json, returns 200 or 404",
+        "Create apps/server/src/app/api/result/[id]/image/route.ts with GET → streams /storage/results/{id}.png with content-type 'image/png' + cache-control 'public, max-age=604800'",
+        "404 for missing id; 410 if metadata indicates expired (>7 days old per /storage cleanup policy from PRD §10.1)",
+        "Manual test: GET /api/result/{id} returns valid JSON; GET /api/result/{id}/image returns valid PNG"
+      ],
+      "priority": 23,
+      "dependsOn": ["M2-021", "M2-022"],
+      "passes": false
+    },
+    {
+      "id": "M2-024",
+      "category": "server",
+      "description": "GET /api/daily — returns the daily fortune for today (cached per day). Uses M2-013 reading service style with the daily-fortune prompt + DailyFortuneResult schema.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/server/src/app/api/daily/route.ts with GET handler",
+        "Computes today's date + ganzhi + solarTerm (use 'lunar' npm package or hardcode for MVP)",
+        "Cache strategy: read /storage/index/daily.json; if today's date present, return cached; else generate via callLLMStream + daily-fortune prompt + DailyFortuneResult schema, write back to cache",
+        "Falls back to M2-014 getDailyFallback() on LLM failure",
+        "Response: DailyFortuneResult JSON with today's data",
+        "Manual test: GET /api/daily twice quickly, second response served from cache (latency <50ms)"
+      ],
+      "priority": 24,
+      "dependsOn": ["M2-003", "M2-010", "M2-012", "M2-014"],
+      "passes": false
+    },
+    {
+      "id": "M2-025",
+      "category": "web",
+      "description": "Canvas 4-layer rendering infrastructure — sets up OffscreenCanvas (static bg) + background canvas (slow ~10fps) + main canvas (rAF 60fps) + HTML overlay div, all stacked on the home page.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/CanvasStage.tsx React component",
+        "Renders 2 stacked <canvas> elements + 1 absolute-positioned div for HTML overlay",
+        "OffscreenCanvas pre-renders the static cyberpunk background once on mount",
+        "Background canvas updates via setInterval(100ms) — frame-skip counter visible in dev tools",
+        "Main canvas runs requestAnimationFrame loop with handle for cancel on unmount",
+        "Responsive: fills viewport on 375px (mobile) and 1440px (desktop)",
+        "Update apps/web/src/app/page.tsx to render <CanvasStage />",
+        "Performance: LCP ≤ 2.5s with the stage mounted (verify via Lighthouse or CDP)"
+      ],
+      "priority": 25,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "M2-026",
+      "category": "web",
+      "description": "Canvas hit-detection system — bbox-based mouse interaction. Registry of clickable elements with idle/hover/active state machine; mousemove iterates elements and updates cursor + state per frame.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/hit-detection.ts with InteractiveElement interface ({id, bbox:{x,y,w,h}, onHover, onLeave, onClick})",
+        "Registry singleton holds active elements; mousemove handler iterates ≤20 elements (no perf concern)",
+        "Hover state: changes cursor to 'pointer' within bbox, fires onHover; mouseleave fires onLeave",
+        "Click state: triggers active state with 50ms feedback, fires onClick",
+        "Hit detection adds <1ms overhead per frame (verify via performance.now() instrumentation)",
+        "Test in CanvasStage by registering a sample bbox and clicking with Playwright; cursor + click callback fire"
+      ],
+      "priority": 26,
+      "dependsOn": ["M2-025"],
+      "passes": false
+    },
+    {
+      "id": "M2-027",
+      "category": "web",
+      "description": "Crystal ball — idle + hover state. Internal fog rotation (conic-gradient), surface highlight sweep, base particle emission, hover acceleration + scale-up + mouse-follow parallax. Per docs/6canvas动态化交互设计spec.md §二 Layer 2.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/CrystalBall.tsx that draws to the main canvas",
+        "Renders at page center: ball circle with internal conic-gradient fog (purple #A855F7 → cyan #22D3EE) rotating at L3 frequency (2s period)",
+        "Surface highlight (white radial gradient) moves slowly across surface (glass reflection)",
+        "Base emits 5-10 particles/second upward (using the simple particle pool from M2-038, but inline if not built yet)",
+        "Hover: fog rotation accelerates to 1.5x, ball scales to 1.05x with halo expansion, fog shifts toward mouse position",
+        "Hover feedback latency <100ms (measure with Playwright clock)",
+        "Amplitude range: 80-100% (center brightness tier per spec §七)",
+        "Registers with M2-026 hit detection"
+      ],
+      "priority": 27,
+      "dependsOn": ["M2-025", "M2-026"],
+      "passes": false
+    },
+    {
+      "id": "M2-028",
+      "category": "web",
+      "description": "Crystal ball click 4-act dramatic sequence (Setup → Build-up → Climax with 200ms freeze → Resolution). The fortune-telling flow's cornerstone interaction. Per docs/6canvas动态化交互设计spec.md §七.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Click handler triggers a state machine with 4 acts and total duration 4-5 seconds",
+        "T+0 (Setup): scale 1.0→0.95→1.0 bounce + click feedback within 50ms",
+        "T+300-2200 (Build-up): fog accelerates, particles ×3, tarot cards fly toward ball (reuses M2-029 cards), arm extends",
+        "T+2200 (Climax): ALL animations freeze for 200ms + white screen flash",
+        "T+2400-2700 (Resolution part 1): one card selected, flies to center, flips (300ms)",
+        "T+3000-4500 (Resolution part 2): card illuminates, result text types in, gold starlight (uses M2-039 if available), CTA buttons fade in",
+        "Sequence cancellable on unmount; cleanly resets state if interrupted",
+        "Playwright test: click crystal ball, advance virtual clock through each act, snapshot at each milestone"
+      ],
+      "priority": 28,
+      "dependsOn": ["M2-027", "M2-029"],
+      "passes": false
+    },
+    {
+      "id": "M2-029",
+      "category": "web",
+      "description": "Tarot cards — 5-card group with idle float (sine wave staggered phase), hover 3D tilt + sibling dim, click flip to reveal meaning. Per docs/6canvas动态化交互设计spec.md §二 Layer 2 Tarot section.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/TarotGroup.tsx — 5 cards rendered near crystal ball",
+        "Idle: each card vertical float (amplitude 4px, period 3s, L2 frequency layer) with unique phase offset (5 cards × 0.6s stagger)",
+        "Idle: cards sway ±2° rotation; face symbols have subtle glow outline",
+        "Hover: card rises 12px + scales 1.1x + glow intensifies; siblings dim to 70% opacity + recede 4px",
+        "Hover: 3D tilt follows mouse (perspective transform)",
+        "Click: flip animation (300ms decelerate-to-mid-accelerate easing), reveals meaning text on back; second click retracts",
+        "Each card registers with M2-026 hit detection",
+        "Playwright test: hover one card → other cards dim; click → flip; click again → unflip"
+      ],
+      "priority": 29,
+      "dependsOn": ["M2-025", "M2-026"],
+      "passes": false
+    },
+    {
+      "id": "M2-030",
+      "category": "web",
+      "description": "Neon sign system — pre-rendered glow sprites (≤8 simultaneous shadowBlur instances) with staggered breathing + random glitch (8-12s interval, 200ms duration, slice + RGB split). Layer 1 per spec.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/NeonSigns.tsx — renders to background canvas",
+        "Pre-renders glow sprites once via OffscreenCanvas (≤8 instances live concurrently)",
+        "Main title '赛博玄学馆' pulses with random glitch every 8-12s (RGB channel split + horizontal slice offset, 200ms)",
+        "Secondary signs (e.g., '今日运势', '八字精批') breathe at L2 frequency (3s period) with staggered phase",
+        "Entry sequence on first mount: signs light up in sweep pattern (50-150ms stagger between each)",
+        "Glitch effect disabled when prefers-reduced-motion media query is active",
+        "Playwright test: wait 12s, verify glitch appears at least once; toggle reduced-motion → glitch absent"
+      ],
+      "priority": 30,
+      "dependsOn": ["M2-025"],
+      "passes": false
+    },
+    {
+      "id": "M2-031",
+      "category": "web",
+      "description": "Background Layer 0 — code rain (Python-themed line-by-line highlight), data flow particles (30-50 purple/cyan, slow speed), distant neon halos (large breathing). Per docs/6canvas动态化交互设计spec.md §二 Layer 0.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/BackgroundLayer0.tsx — draws to background canvas",
+        "Code rain (top-left region): Python source-style text scrolls vertically, 1 line highlighted every 800ms",
+        "30-50 data particles (purple #A855F7 + cyan #22D3EE) float at speed 0.3-0.8px/frame",
+        "3-5 distant neon halos (large radial gradients) breathe at L0 frequency (6-10s period, opacity 0.6-0.9)",
+        "Background parallax scrolls at 0.2px/frame (horizontal)",
+        "Background canvas updates at ~10fps (verified by frame skip counter)",
+        "Playwright test: 10s capture shows code rain progression + halo breathing"
+      ],
+      "priority": 31,
+      "dependsOn": ["M2-025"],
+      "passes": false
+    },
+    {
+      "id": "M2-032",
+      "category": "web",
+      "description": "Bagua diagram — slow rotation idle (20s period), hover acceleration to 8s + gold outline, click opens bazi (生辰八字) input panel as HTML overlay.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/BaguaDiagram.tsx — left-side decorative element",
+        "Idle: rotates clockwise at 20s/revolution (smooth, not stuttery)",
+        "Hover: rotation accelerates to 8s/revolution + gold (#9A7B3F) outer border glow",
+        "Click: opens an HTML overlay panel (M2-025's overlay div) with year/month/day/hour inputs + 提交 button",
+        "Panel closes on Escape or outside click",
+        "Registers with M2-026 hit detection",
+        "Playwright test: hover → rotation faster (verify rotation rate); click → panel visible; submit → console.log of values (real submit deferred)"
+      ],
+      "priority": 32,
+      "dependsOn": ["M2-026"],
+      "passes": false
+    },
+    {
+      "id": "M2-033",
+      "category": "web",
+      "description": "Palm diagram — three palm lines (fate/wisdom/love) light up in cycle (idle breathing), hover all-light + scan line sweep, click triggers upload flow navigation.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/PalmDiagram.tsx — right-upper area",
+        "Idle: 3 lines each breathe in cycle (line A 0-1s, line B 1-2s, line C 2-3s, repeat)",
+        "Hover: all 3 lines fully illuminate + a horizontal scan line sweeps top-to-bottom (1s loop)",
+        "Click: navigates to /upload?kind=palm or opens an upload modal (whichever comes first per M2-042)",
+        "Click feedback within 50ms",
+        "Playwright test: hover → scan line visible; click → URL changes or modal opens"
+      ],
+      "priority": 33,
+      "dependsOn": ["M2-026"],
+      "passes": false
+    },
+    {
+      "id": "M2-034",
+      "category": "web",
+      "description": "Fortune stick containers — 3 cylindrical containers (姻缘/事业/财运) with rising glow pillar idle, hover label + tooltip, click shake → stick fly-out → text reveal.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/FortuneSticks.tsx with 3 containers laid horizontally",
+        "Idle: each container has a purple glow pillar rising from inside (breathing, L2 3s period)",
+        "Hover: container's label (姻缘|事业|财运) enlarges + glow intensifies + tooltip 'Click to draw' appears after 300ms delay",
+        "Click: container shakes (5 frames at 50ms intervals) → 1 stick flies up with spring physics (popmotion or hand-rolled spring) → lands above with bounce → stick text fades in character-by-character",
+        "Each container's click navigates to its category fortune flow (deferred to M2-042; for now, console.log)",
+        "Playwright test: 3 containers render; hover middle one → tooltip; click → animation plays"
+      ],
+      "priority": 34,
+      "dependsOn": ["M2-026"],
+      "passes": false
+    },
+    {
+      "id": "M2-035",
+      "category": "web",
+      "description": "Cyber cat — idle tail sway + random eye expression + rainbow collar LEDs, hover head tilt, click triggers fortune stick draw (reuses M2-034 stick animation).",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/CyberCat.tsx — left-bottom corner",
+        "Idle: tail sways (sine wave, 2s period); eyes randomly become >_< for 500ms every ~10s; collar 5-LED strip cycles rainbow colors",
+        "Hover: head tilts ~15° toward cursor",
+        "Click: triggers fortune stick draw animation (calls into M2-034's draw function with category='general')",
+        "Eye expression uses L5 random layer (per spec §七 rhythm layering)",
+        "Playwright test: cat renders; hover → head tilt; click → stick animation triggers"
+      ],
+      "priority": 35,
+      "dependsOn": ["M2-026", "M2-034"],
+      "passes": false
+    },
+    {
+      "id": "M2-036",
+      "category": "web",
+      "description": "Oracle girl character — central decorative avatar with idle blink (4-7s random), hair vertex sway, halo rotation (6s period), body breathing float (±2px). Click triggers a speech bubble with oracle line.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/OracleGirl.tsx — central decorative element",
+        "Idle: eyes blink every 4-7s (random interval); subtle hair vertex perturbation; halo (above head) rotates at 6s period; body floats ±2px (breathing)",
+        "Left-hand 'screen' shows scrolling 'Analyzing...' text",
+        "Click body: HTML overlay speech bubble with random line from companion-tap-reaction pool (M2-014 fallbacks)",
+        "Bubble auto-dismisses after 3s",
+        "Playwright test: render → eyes blink at least once in 7s; click → bubble visible"
+      ],
+      "priority": 36,
+      "dependsOn": ["M2-014", "M2-026"],
+      "passes": false
+    },
+    {
+      "id": "M2-037",
+      "category": "web",
+      "description": "AI poetry scroll — right-bottom decorative scroll with idle golden flow effect, hover partial reveal, click expand + AI-generate 4-line poem.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/PoetryScroll.tsx — right-bottom area",
+        "Idle: scroll edge has cycling golden flow effect (gradient animation, 3s loop)",
+        "Hover: scroll partially expands (0.8s ease-out), shows label 'Click to reveal full poem'",
+        "Click: scroll expand animation → calls /api/quick-ask or stub LLM endpoint to get a 4-line poem → poem text appears with character-by-character typing effect (50ms per char)",
+        "For MVP: stub the API call with hardcoded 4 lines; real LLM hook in M3",
+        "Playwright test: hover → label visible; click → full expansion + typed poem"
+      ],
+      "priority": 37,
+      "dependsOn": ["M2-026"],
+      "passes": false
+    },
+    {
+      "id": "M2-038",
+      "category": "web",
+      "description": "Ambient particle system — object-pooled ambient dust (80-120 falling purple particles, full screen, slow speed), tier-based count (50 low / 100 mid / 150 high). Per docs/6canvas动态化交互设计spec.md §二 Layer 4.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/particles.ts with ParticlePool class (preallocated array, no new allocations per frame)",
+        "renderAmbientParticles(ctx, count) draws purple dust particles (size 1-3px) falling at 0.5-1.2px/frame",
+        "Particles wrap around screen edges (recycle from pool)",
+        "Count adapts per device tier (defaults to 100 mid; will be wired to M2-040)",
+        "prefers-reduced-motion → count = 0",
+        "Performance: with 150 particles, main canvas stays ≥45fps (measured via Performance API)",
+        "Playwright test: 100 particles visible after 1s; toggle reduced-motion → 0 particles"
+      ],
+      "priority": 38,
+      "dependsOn": ["M2-025"],
+      "passes": false
+    },
+    {
+      "id": "M2-039",
+      "category": "web",
+      "description": "Fortune sequence particles — 200+ burst from crystal ball during click sequence + gold starlight from result panel at reveal. Particles recycle to pool after life expires.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Extend ParticlePool with burst(originX, originY, count, color, lifeMs) method",
+        "During M2-028 click sequence: at T+300, burst 200+ particles radially from crystal ball center (1.5s life)",
+        "At T+3000 (resolution): gold starlight (50 particles) radiates from result panel position (2s life)",
+        "Particles fade (alpha decay over life) and recycle back to pool",
+        "Burst does not drop frame rate below 30fps on a Throttled CPU 4× simulation in DevTools",
+        "Playwright test: trigger crystal ball click → particles visible during build-up + climax + resolution"
+      ],
+      "priority": 39,
+      "dependsOn": ["M2-028", "M2-038"],
+      "passes": false
+    },
+    {
+      "id": "M2-040",
+      "category": "web",
+      "description": "Performance degradation system — auto-detect device tier via WebGL renderer string + RAM, applies low/mid/high config to particle count + shadowBlur + glitch. Honors prefers-reduced-motion as low-tier.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/components/canvas/perf-tier.ts with detectPerformanceTier(): 'high'|'mid'|'low'",
+        "Detection: WebGL renderer string regex (Apple GPU/Adreno 6xx+/Mali G7x+ → high), navigator.deviceMemory + hardwareConcurrency thresholds",
+        "Low tier config: particles count=50, shadowBlur=0, glitch disabled, simplified halos",
+        "Mid tier (default): particles=100, shadowBlur≤4 instances, glitch enabled",
+        "High tier: particles=150, shadowBlur≤8, all effects enabled",
+        "prefers-reduced-motion → forces low tier + provides UI toggle in settings panel",
+        "All 9 interaction elements remain functional in low tier (just less flashy)",
+        "Playwright test: simulate low-tier (override detect to return 'low'); verify shadowBlur=0 + particles=50 + glitch absent"
+      ],
+      "priority": 40,
+      "dependsOn": ["M2-030", "M2-038"],
+      "passes": false
+    },
+    {
+      "id": "M2-041",
+      "category": "web",
+      "description": "Easter eggs (midnight visit color shift + cat belly-up rollover) + rhythm layering verification. Per docs/6canvas动态化交互设计spec.md §三 Easter eggs and §六 Checklist.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Midnight egg: visiting between 0:00-3:00 local time shifts overall color temperature colder (CSS filter: hue-rotate(20deg) saturate(0.85) on canvas wrapper); '夜半凶兆' text briefly appears at top",
+        "Cat belly-up egg: 10 consecutive clicks on cyber cat within 30s triggers a roll-over animation (cat lies belly-up for 2s); 60s cooldown before re-triggering; does not interfere with click-to-draw-fortune",
+        "Rhythm verification: dev-only debug overlay listing all animated elements with frequency layer + phase offset; verify no two elements share same layer with phase=0 (assert at runtime, log warnings)",
+        "Amplitude check: dev-only assertion that center elements (crystal ball) hit 80-100%, mid elements 70-95%, edges 60-85%, bg 30-60%",
+        "Playwright test: mock Date to 1:00am → verify color shift; click cat 10× rapidly → belly-up animation"
+      ],
+      "priority": 41,
+      "dependsOn": ["M2-031", "M2-035"],
+      "passes": false
+    },
+    {
+      "id": "M2-042",
+      "category": "web",
+      "description": "Result page (/result/[id]) — SSE-streamed result display with loading animation, incremental section reveal, poster preview iframe, export button. Connects to /api/analyze + /api/result/:id/image.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/app/result/[id]/page.tsx as a client component",
+        "On mount: open EventSource('/api/analyze?id=...'), parse PipelineEvent chunks",
+        "During streaming: show crystal ball + progress bar (matches phases vlm_observe/llm_interpret/complete)",
+        "Result sections appear incrementally as the JSON accumulates (progressive reveal)",
+        "After 'complete' event: trigger /api/render-image POST, then show <img src='/api/result/{id}/image'> preview",
+        "Export button: triggers download of the PNG (anchor with download attribute)",
+        "Playwright test: navigate to /result/{seed-id}, verify SSE chunks render progressively, poster preview loads, export downloads PNG"
+      ],
+      "priority": 42,
+      "dependsOn": ["M2-021", "M2-022", "M2-023", "M2-028"],
+      "passes": false
+    },
+    {
+      "id": "M2-043",
+      "category": "web",
+      "description": "History page (/history) — displays recent readings stored in IndexedDB (max 20) via Dexie.js. Each item has date, type, thumbnail, click → /result/{id}.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Add 'dexie' dependency to apps/web; create apps/web/src/lib/history-db.ts with Dexie schema (id, type, date, summary, thumbnailUrl)",
+        "On result page complete: insert {id, type, date, summary} into IndexedDB; max 20 (delete oldest if over)",
+        "Create apps/web/src/app/history/page.tsx that lists IDB entries sorted by date desc",
+        "Each item: date + type icon + summary excerpt + thumbnail (from /api/result/:id/image with object-fit:cover)",
+        "Click item → navigate to /result/{id}",
+        "Empty state: '还没有解读记录' helpful message + CTA to home",
+        "Playwright test: complete a reading → verify history entry appears; click → result page loads"
+      ],
+      "priority": 43,
+      "dependsOn": ["M2-042"],
+      "passes": false
+    },
+    {
+      "id": "M2-044",
+      "category": "web",
+      "description": "Share page (/share/[id]) + Download page stub (/download). /share renders a publicly-viewable result with funnel CTA at top; /download shows desktop client coming-soon page with platform buttons (per PRD §6.2).",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Create apps/web/src/app/share/[id]/page.tsx — fetches /api/result/:id, renders the result content + a fixed top bar 'Get the desktop companion' linking to /download",
+        "Create apps/web/src/app/download/page.tsx — coming-soon page with hero (mock companion image), 3 unique-feature bullets (Live2D 桌面伙伴 / 全局呼出 / 本地加密历史), 3 platform buttons (macOS Universal / Windows x64 / Linux AppImage) all disabled with '即将上线' label",
+        "Top-of-share funnel: visible above the fold on /share/[id]",
+        "Both pages SEO-friendly: meta title + description per PRD §一 (轻量试玩 + 病毒传播 + 客户端获取入口)",
+        "Playwright test: /share/{seed-id} renders content + visible CTA; /download renders + 3 platform buttons present"
+      ],
+      "priority": 44,
+      "dependsOn": ["M2-023"],
+      "passes": false
+    },
+    {
+      "id": "M2-045",
+      "category": "web",
+      "description": "End-to-end user journey verification — full path from home → click crystal ball → fortune sequence → result streaming → poster export → history entry → share page. Validates the complete M2 pipeline.",
+      "testStrategy": "playwright",
+      "acceptanceSteps": [
+        "Navigate to home page (http://localhost:3000)",
+        "Wait for canvas stage to mount + crystal ball visible",
+        "Click crystal ball → 4-act sequence plays (verify each act milestone)",
+        "Result page loads via SSE → all sections appear within 25s (per PRD §12.1 budget)",
+        "Click export → PNG downloads",
+        "Navigate to /history → verify newest entry matches just-completed reading",
+        "Click history entry → /result/{id} loads with cached PNG (no re-streaming)",
+        "Navigate to /share/{id} from result page → public view loads with funnel CTA",
+        "Verify Lighthouse perf score ≥80 on home page; LCP ≤2.5s; JS gzip ≤220KB"
+      ],
+      "priority": 45,
+      "dependsOn": ["M2-024", "M2-040", "M2-041", "M2-042", "M2-043", "M2-044"],
+      "passes": false
     }
   ]
 }

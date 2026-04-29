@@ -359,6 +359,30 @@
 - pnpm --filter @cyberoracle/core test: 42 tests pass (8 files, all green)
 - pnpm --filter @cyberoracle/core typecheck: passes
 
+**Commit:** `09d4c3a`
+
+### Session 16 — 2026-04-29
+
+**Feature:** M1-016 — Core package barrel exports — wire up all submodules through index.ts files
+**Status:** completed
+
+**What was done:**
+
+- Updated packages/core/src/index.ts to re-export from ./schemas, ./prompts, ./content-safety (kept PACKAGE_NAME export)
+- Created packages/core/src/prompts/index.ts exporting loadPrompt, fillTemplate, LoadedPrompt, PromptMeta
+- Created packages/core/src/**tests**/barrel-exports.test.ts with 8 tests importing all exports from @cyberoracle/core
+- Existing index.ts files for schemas and content-safety were already correct
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- pnpm --filter @cyberoracle/core test: 50 tests pass (9 files, all green)
+- pnpm --filter @cyberoracle/core typecheck: passes
+- Barrel export test confirms { PalmReadingResultSchema, FaceReadingResultSchema, DailyFortuneResultSchema, PipelineEventSchema, loadPrompt, fillTemplate, checkContent, PACKAGE_NAME } all importable from @cyberoracle/core
+
 **Commit:** pending
 
 ## Summary
@@ -380,3 +404,4 @@
 | M1-013  | ✅ Pass | Session 13 |
 | M1-014  | ✅ Pass | Session 14 |
 | M1-015  | ✅ Pass | Session 15 |
+| M1-016  | ✅ Pass | Session 16 |

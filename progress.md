@@ -49,6 +49,7 @@
 | M2-003  | ✅ Pass | Session 3 |
 | M2-004  | ✅ Pass | Session 4 |
 | M2-005  | ✅ Pass | Session 5 |
+| M2-006  | ✅ Pass | Session 6 |
 
 ### Session 1 — 2026-04-30
 
@@ -174,3 +175,26 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `1d7cd7e`
+
+### Session 6 — 2026-04-30
+
+**Feature:** M2-006 — Create shared prompt segments with verification tests
+**Status:** completed
+
+**What was done:**
+
+- Shared segment files already created in M2-005; this session adds the dedicated test
+- Created `packages/core/src/prompts/__tests__/shared-segments.test.ts` with 13 tests
+- safety-rules.md: verifies existence, non-empty, 10-point checklist phrases, 措辞要求 section, 遇到无法处理的输入 section, expandIncludes resolution
+- tone-guidelines.md: verifies existence, non-empty, 整体定位 section, 风格关键词 section, 具体写作要求 section, 中文表达细节 section, expandIncludes resolution
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 90/90 tests pass (12 files)
+- `pnpm typecheck`: passes
+
+**Commit:** (pending)

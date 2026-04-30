@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { HitRegistry } from './hit-detection';
+import { CrystalBall } from './CrystalBall';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -58,6 +59,7 @@ export default function CanvasStage() {
   const rafRef = useRef<number>(0);
   const frameCountRef = useRef(0);
   const registryRef = useRef<HitRegistry>(new HitRegistry());
+  const crystalBallRef = useRef<CrystalBall | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
 
   const resize = useCallback(() => {
@@ -112,6 +114,11 @@ export default function CanvasStage() {
     // Wire registry cursor callback
     registryRef.current.onCursorChange((c) => setCursor(c));
 
+    // Create crystal ball
+    const ball = new CrystalBall(width, height);
+    ball.registerHit(registryRef.current);
+    crystalBallRef.current = ball;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     function drawBackground() {
@@ -135,16 +142,8 @@ export default function CanvasStage() {
         drawBackground();
       }
 
-      // Draw subtle ambient particles on main canvas (placeholder)
-      const time = t * 0.001;
-      mainCtx.fillStyle = 'rgba(120, 80, 180, 0.3)';
-      for (let i = 0; i < 5; i++) {
-        const x = width * 0.5 + Math.sin(time * 0.3 + i * 1.2) * 100;
-        const y = height * 0.5 + Math.cos(time * 0.2 + i * 0.9) * 80;
-        mainCtx.beginPath();
-        mainCtx.arc(x, y, 2, 0, Math.PI * 2);
-        mainCtx.fill();
-      }
+      // Draw crystal ball
+      ball.draw(mainCtx, t, 16.67);
 
       rafRef.current = requestAnimationFrame(mainLoop);
     }
@@ -155,7 +154,10 @@ export default function CanvasStage() {
       const mc = mainCanvasRef.current;
       if (!mc) return;
       const rect = mc.getBoundingClientRect();
-      registryRef.current.handleMouseMove(e.clientX - rect.left, e.clientY - rect.top);
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      registryRef.current.handleMouseMove(mx, my);
+      ball.setMousePosition(mx, my);
     }
     function onMouseClick(e: MouseEvent) {
       const mc = mainCanvasRef.current;
@@ -170,6 +172,8 @@ export default function CanvasStage() {
 
     return () => {
       cancelAnimationFrame(rafRef.current);
+      ball.destroy();
+      crystalBallRef.current = null;
       mainCanvas.removeEventListener('mousemove', onMouseMove);
       mainCanvas.removeEventListener('click', onMouseClick);
       window.removeEventListener('resize', resize);

@@ -726,3 +726,31 @@
 - `pnpm test`: all tests pass (core 150 + poster 73 + server 31)
 
 **Commit:** `256e4d1`
+
+---
+
+### Session 27 — 2026-04-30
+
+**Feature:** M2-027 — Crystal ball idle + hover state
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/CrystalBall.ts` — plain TS class (not React component) drawing to canvas via `draw(ctx, t, dt)`
+- Idle state: conic-gradient fog (60 segments, 4 colors purple→cyan) rotating at L3 frequency (2s period), surface highlight sweep, outer halo (80-100% amplitude), base particle emission (5-10/sec, max 30)
+- Hover state: fog rotation 1.5x, scale 1.05x, halo expands from 1.35x to 1.6x radius, fog offset shifts toward mouse position
+- Particle system: spawn from ball base, float upward, fade purple→cyan, recycle on death
+- `registerHit(registry)` wires into M2-026 HitRegistry for bbox hit detection
+- `setMousePosition(x, y)` tracks mouse for parallax effect
+- `resize(w, h)` recalculates geometry + re-registers hit
+- `destroy()` unregisters from hit registry + clears particles
+- Integrated into `CanvasStage.tsx`: crystalBallRef, ball.draw() in main rAF loop, ball.setMousePosition() in mouse handler
+- TypeScript strict mode fix: `FOG_COLORS[colorIdx]` returns `string | undefined` with `noUncheckedIndexedAccess`, guarded with `if (fogColor)` check
+
+**Verification (playwright):**
+
+- Crystal ball renders at page center: pixel data shows purple-blue fog (avg 129, 116, 243 at center)
+- 1600/1600 non-transparent pixels in center 40×40 region — ball is fully opaque
+- Cursor changes from `default` to `pointer` when mouse enters ball center — hit detection registration confirmed
+- No console errors
+- `pnpm typecheck`: 11/11 workspace projects pass

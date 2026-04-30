@@ -754,3 +754,5 @@
 - Cursor changes from `default` to `pointer` when mouse enters ball center — hit detection registration confirmed
 - No console errors
 - `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `20c4d8f`

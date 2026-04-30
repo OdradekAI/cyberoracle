@@ -536,4 +536,4 @@
 - `pnpm test`: 73/73 tests pass (8 files)
 - `pnpm typecheck`: 11/11 workspace projects pass
 
-**Commit:** pending
+**Commit:** `e755eec`

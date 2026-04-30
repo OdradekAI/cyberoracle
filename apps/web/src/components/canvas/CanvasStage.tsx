@@ -14,6 +14,7 @@ import { OracleGirl } from './OracleGirl';
 import { PoetryScroll } from './PoetryScroll';
 import { AmbientParticles } from './ambient-particles';
 import { ParticleBurst } from './particle-burst';
+import { getPerformanceTier, getTierConfig } from './perf-tier';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -246,12 +247,19 @@ export default function CanvasStage() {
     poetryScrollRef.current = poetryScroll;
 
     // Create ambient particles (drawn on background canvas)
-    const ambientParticles = new AmbientParticles(width, height);
+    // Detect performance tier
+    const perfTier = getPerformanceTier();
+    const tierConfig = getTierConfig();
+
+    const ambientParticles = new AmbientParticles(width, height, perfTier);
     ambientParticlesRef.current = ambientParticles;
 
     // Create particle burst system (for fortune sequence effects)
     const particleBurst = new ParticleBurst(width, height);
     particleBurstRef.current = particleBurst;
+
+    // Expose tier config for testing
+    (window as unknown as Record<string, unknown>).__tierConfig = tierConfig;
 
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)

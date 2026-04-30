@@ -565,3 +565,32 @@
 - `pnpm test`: 73/73 tests pass (8 files)
 
 **Commit:** `d011260`
+
+---
+
+### Session 21 — 2026-04-30
+
+**Feature:** M2-021 — GET /api/analyze SSE streaming endpoint
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/server/src/app/api/analyze/route.ts` with GET handler
+- Accepts `?id={uploadId}` query parameter
+- Reads `/storage/uploads/{id}.webp` + `.meta.json`, routes to `generatePalmReading` or `generateFaceReading` based on `kind`
+- Streams `PipelineEvent` chunks via SSE: `vlm_observe:running` → `llm_interpret:running` (with onChunk partial data) → `complete:done|error`
+- Each event validated against `PipelineEventSchema` before emission
+- Response headers: `content-type: text/event-stream`, `cache-control: no-cache`, `connection: keep-alive`
+- Saves successful results to `/storage/results/{id}.json`
+- Error cases: 400 for missing id, 404 for invalid id
+
+**Verification (playwright — manual curl):**
+
+- Missing `?id` → 400 with error message
+- Invalid id → 404 with error message
+- Valid upload → SSE stream with properly formatted events, stream closes after `complete`
+- Response headers verified: correct SSE content-type, no-cache, keep-alive
+- `pnpm typecheck`: 11/11 workspace projects pass
+- `pnpm test`: all tests pass
+
+**Commit:** pending

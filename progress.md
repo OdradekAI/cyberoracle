@@ -1029,3 +1029,36 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `ae0ee87`
+
+---
+
+### Session 36 — 2026-05-01
+
+**Feature:** M2-036 — Oracle girl character with idle blink, hair sway, halo rotation, body float, click speech bubble
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/OracleGirl.ts` — plain TS class drawing a female avatar at center-below crystal ball (width*0.5, height*0.62)
+- Idle animations:
+  - Eyes blink every 4-7s (random interval, 150ms blink duration) — closed eyes rendered as dark horizontal lines
+  - Hair vertex sway: sine wave (3s period), applied to hair mass + side strands with slight parallax
+  - Halo rotation: gold ellipse above head rotates at 6s period with shadowBlur glow
+  - Body float: ±2px breathing sine wave (4s period)
+- Left-hand screen: small scrolling "Analyzing..." text in monospace with cyan color, clipped to screen rect
+- Face: skin-colored circle with detailed eyes (white + purple iris + dark pupil + highlight), small smile mouth
+- Body: purple robe shape with V-neck collar detail
+- Click: random line from TAP_LINES pool (5 Chinese companion-tap-reaction lines), delivered via `setSpeechCallback`
+- HTML overlay speech bubble in CanvasStage.tsx: positioned at top:38% centered, auto-dismisses after 3s via setTimeout
+- Extended hitbox downward (+30% height) so body area below crystal ball is clickable despite overlapping hitboxes
+- Integrated into `CanvasStage.tsx`: oracleGirlRef, draw before crystal ball (behind), speech callback wiring with timer management, cleanup
+
+**Verification (playwright):**
+
+- Rendering: 4734 non-transparent pixels in oracle girl area, 1600 at center — character confirmed visible
+- Blink: white pixel count varies (1-6) across 8s sampling — eye open/close state changes confirmed
+- Click → speech bubble: text "这样会让我分心的。" visible at (554, 274) after click at (640, 476)
+- Auto-dismiss: bubble text null after 3.5s wait — 3s auto-dismiss confirmed
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `acc5091`

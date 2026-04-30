@@ -42,17 +42,18 @@
 
 ## Summary
 
-| Feature | Status  | Session   |
-| ------- | ------- | --------- |
-| M2-001  | ✅ Pass | Session 1 |
-| M2-002  | ✅ Pass | Session 2 |
-| M2-003  | ✅ Pass | Session 3 |
-| M2-004  | ✅ Pass | Session 4 |
-| M2-005  | ✅ Pass | Session 5 |
-| M2-006  | ✅ Pass | Session 6 |
-| M2-007  | ✅ Pass | Session 7 |
-| M2-008  | ✅ Pass | Session 8 |
-| M2-009  | ✅ Pass | Session 9 |
+| Feature | Status  | Session    |
+| ------- | ------- | ---------- |
+| M2-001  | ✅ Pass | Session 1  |
+| M2-002  | ✅ Pass | Session 2  |
+| M2-003  | ✅ Pass | Session 3  |
+| M2-004  | ✅ Pass | Session 4  |
+| M2-005  | ✅ Pass | Session 5  |
+| M2-006  | ✅ Pass | Session 6  |
+| M2-007  | ✅ Pass | Session 7  |
+| M2-008  | ✅ Pass | Session 8  |
+| M2-009  | ✅ Pass | Session 9  |
+| M2-010  | ✅ Pass | Session 10 |
 
 ### Session 1 — 2026-04-30
 
@@ -274,3 +275,27 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `4b10aa8`
+
+### Session 10 — 2026-04-30
+
+**Feature:** M2-010 — Create daily-fortune.md prompt file
+**Status:** completed
+
+**What was done:**
+
+- Created `packages/core/prompts/daily-fortune.md` per docs §七 with frontmatter (version v1.3, targetModel deepseek-v3/qwen-turbo, temperature 0.8, maxTokens 500, outputFormat json)
+- System section includes <<include:safety-rules>> and <<include:tone-guidelines>>
+- Body covers: 任务 (今日心境提醒定位), 输出 Schema (title/date/ganzhi/solarTerm/ratings/lucky/advice/oneLine), 撰写要求 (3 items), 输出要求, 1 完整示例
+- ---USER--- separator with {{date}}, {{ganzhi}}, {{solarTerm}}, {{seed}} template variables
+- Test file with 14 tests: load/version/outputFormat/targetModel(2)/temperature/maxTokens, include markers, expandIncludes resolution, 任务 section, schema fields, 撰写要求, example output, user template with 4 variables, fillTemplate substitution
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 135/135 tests pass (16 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** `{pending}`

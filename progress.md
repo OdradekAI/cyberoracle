@@ -51,6 +51,7 @@
 | M2-005  | ✅ Pass | Session 5 |
 | M2-006  | ✅ Pass | Session 6 |
 | M2-007  | ✅ Pass | Session 7 |
+| M2-008  | ✅ Pass | Session 8 |
 
 ### Session 1 — 2026-04-30
 
@@ -224,3 +225,27 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `bfc4229`
+
+### Session 8 — 2026-04-30
+
+**Feature:** M2-008 — Create reading-write-palm.md prompt file
+**Status:** completed
+
+**What was done:**
+
+- Created `packages/core/prompts/reading-write-palm.md` per docs §五 with full frontmatter (version v3.1, targetModel deepseek-v3/qwen-plus/gpt-4o-mini, temperature 0.7, maxTokens 1500, outputFormat json)
+- System section includes <<include:safety-rules>> and <<include:tone-guidelines>>
+- Body covers: 任务, 整体定位, 撰写原则 (7 items), 固定 disclaimer 文案, 输出 Schema with field constraints, icon 选择规则, 输出要求, 2 完整示例 (稳步推进型 + 敏感观察型)
+- ---USER--- separator with {{observations}} template variable
+- Test file with 12 tests: load/version/outputFormat/targetModel/maxTokens, include markers, expandIncludes resolution, required sections, disclaimer, schema fields, both examples, user template, fillTemplate substitution
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 109/109 tests pass (14 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** `{pending}`

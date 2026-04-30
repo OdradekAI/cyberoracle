@@ -47,6 +47,7 @@
 | M2-001  | ✅ Pass | Session 1 |
 | M2-002  | ✅ Pass | Session 2 |
 | M2-003  | ✅ Pass | Session 3 |
+| M2-004  | ✅ Pass | Session 4 |
 
 ### Session 1 — 2026-04-30
 
@@ -119,3 +120,30 @@
 - Barrel exports test confirms `DailyFortuneResultSchema` still importable from `@cyberoracle/core`
 
 **Commit:** `9f71f09`
+
+### Session 4 — 2026-04-30
+
+**Feature:** M2-004 — Add VisionObservation schemas (VLM stage-1 output)
+**Status:** completed
+
+**What was done:**
+
+- Created `packages/core/src/schemas/vision-observation.ts` with PalmObservationSchema and FaceObservationSchema
+- Both use `z.discriminatedUnion('valid', [...])` — valid:true yields observations object, valid:false yields reason enum
+- PalmObservations: 10 fields (hand_shape, finger, palm_proportion, heart_line, head_line, life_line, fate_line, minor_lines, skin_texture, image_quality)
+- FaceObservations: 10 fields (face_shape, forehead, eyebrow, eye, nose, mouth, chin, skin_texture, expression_impression, image_quality)
+- Palm rejection reasons: not_palm, minor, low_quality, unsafe
+- Face rejection reasons: not_face, minor, multiple_faces, low_quality, unsafe
+- Added test file with 11 tests covering valid/invalid cases for both schemas
+- Exported both schemas + types from schemas/index.ts barrel
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 73/73 tests pass (10 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** (pending)

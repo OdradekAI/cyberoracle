@@ -13,6 +13,7 @@ import { CyberCat } from './CyberCat';
 import { OracleGirl } from './OracleGirl';
 import { PoetryScroll } from './PoetryScroll';
 import { AmbientParticles } from './ambient-particles';
+import { ParticleBurst } from './particle-burst';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -80,6 +81,7 @@ export default function CanvasStage() {
   const oracleGirlRef = useRef<OracleGirl | null>(null);
   const poetryScrollRef = useRef<PoetryScroll | null>(null);
   const ambientParticlesRef = useRef<AmbientParticles | null>(null);
+  const particleBurstRef = useRef<ParticleBurst | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
   const [baziPanelOpen, setBaziPanelOpen] = useState(false);
   const [speechBubble, setSpeechBubble] = useState<string | null>(null);
@@ -124,6 +126,7 @@ export default function CanvasStage() {
     if (oracleGirlRef.current) oracleGirlRef.current.resize(width, height);
     if (poetryScrollRef.current) poetryScrollRef.current.resize(width, height);
     if (ambientParticlesRef.current) ambientParticlesRef.current.resize(width, height);
+    if (particleBurstRef.current) particleBurstRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -169,9 +172,19 @@ export default function CanvasStage() {
     tarot.registerHit(registryRef.current);
     tarotRef.current = tarot;
 
-    // Wire crystal ball sequence → tarot group
-    ball.setSequenceCallback((phase, selectedCard) => {
-      tarot.setSequencePhase(phase, selectedCard);
+    // Wire crystal ball sequence → tarot group + particle bursts
+    const ballCx = width / 2;
+    const ballCy = height / 2;
+    ball.setSequenceCallback((phase, _selectedCard) => {
+      tarot.setSequencePhase(phase, _selectedCard);
+      if (phase === 'buildup') {
+        // T+300: 200+ purple burst from crystal ball
+        particleBurst.burst(ballCx, ballCy, 200, 168, 85, 247, 3, 1500);
+      }
+      if (phase === 'resolution') {
+        // T+2400: 50 gold starlight particles
+        particleBurst.burst(ballCx, ballCy + 80, 50, 255, 215, 0, 2, 2000);
+      }
     });
 
     // Create neon signs
@@ -236,6 +249,10 @@ export default function CanvasStage() {
     const ambientParticles = new AmbientParticles(width, height);
     ambientParticlesRef.current = ambientParticles;
 
+    // Create particle burst system (for fortune sequence effects)
+    const particleBurst = new ParticleBurst(width, height);
+    particleBurstRef.current = particleBurst;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     let prevBgTime = performance.now();
@@ -292,6 +309,9 @@ export default function CanvasStage() {
       // Draw poetry scroll
       poetryScroll.draw(mainCtx, t);
 
+      // Draw particle bursts (fortune sequence effects)
+      particleBurst.draw(mainCtx, 16.67);
+
       rafRef.current = requestAnimationFrame(mainLoop);
     }
     rafRef.current = requestAnimationFrame(mainLoop);
@@ -344,6 +364,8 @@ export default function CanvasStage() {
       poetryScrollRef.current = null;
       ambientParticles.destroy();
       ambientParticlesRef.current = null;
+      particleBurst.destroy();
+      particleBurstRef.current = null;
       window.removeEventListener('bagua-click', onBaguaClick);
       window.removeEventListener('palm-diagram-click', onPalmDiagramClick);
       mainCanvas.removeEventListener('mousemove', onMouseMove);

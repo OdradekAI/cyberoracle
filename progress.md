@@ -59,6 +59,7 @@
 | M2-013  | ✅ Pass | Session 13 |
 | M2-014  | ✅ Pass | Session 14 |
 | M2-015  | ✅ Pass | Session 15 |
+| M2-016  | ✅ Pass | Session 16 |
 
 ### Session 1 — 2026-04-30
 
@@ -436,3 +437,29 @@
 - `pnpm -r typecheck`: 7/7 workspace projects pass
 
 **Commit:** `16a5b4d`
+
+### Session 16 — 2026-04-30
+
+**Feature:** M2-016 — Poster icon library
+**Status:** completed
+
+**What was done:**
+
+- Created 12 inline SVG icon components in `packages/poster/src/icons/`:
+  - Stroke icons (28x28): HeartIcon, BrainIcon, LeafIcon, SignpostIcon, WaveIcon
+  - PalmDiagram (280x360): hand outline with line paths and gold dot annotations
+  - Scene illustrations (220x110): MountainScene, RiverScene, CloudScene, LotusScene
+  - Decorative: CornerOrnament (4 rotation variants), Watermark (with optional QR data URL)
+- All use ink/gold/goldSoft colors from tokens, no fill, satori-compatible
+- Created test file with 18 tests: each icon renders to valid PNG, custom sizes, all variants, composability
+
+**What failed / remaining:**
+
+- PalmDiagram originally used `<text>` elements for line labels; satori doesn't support `<text>` nodes in SVG — replaced with `<circle>` dot annotations at label endpoints
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/poster test`: 50/50 tests pass (5 files)
+- `pnpm -r typecheck`: 7/7 workspace projects pass
+
+**Commit:** `{pending}`

@@ -11,6 +11,7 @@ import { PalmDiagram } from './PalmDiagram';
 import { FortuneSticks } from './FortuneSticks';
 import { CyberCat } from './CyberCat';
 import { OracleGirl } from './OracleGirl';
+import { PoetryScroll } from './PoetryScroll';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -76,6 +77,7 @@ export default function CanvasStage() {
   const fortuneSticksRef = useRef<FortuneSticks | null>(null);
   const cyberCatRef = useRef<CyberCat | null>(null);
   const oracleGirlRef = useRef<OracleGirl | null>(null);
+  const poetryScrollRef = useRef<PoetryScroll | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
   const [baziPanelOpen, setBaziPanelOpen] = useState(false);
   const [speechBubble, setSpeechBubble] = useState<string | null>(null);
@@ -118,6 +120,7 @@ export default function CanvasStage() {
     if (fortuneSticksRef.current) fortuneSticksRef.current.resize(width, height);
     if (cyberCatRef.current) cyberCatRef.current.resize(width, height);
     if (oracleGirlRef.current) oracleGirlRef.current.resize(width, height);
+    if (poetryScrollRef.current) poetryScrollRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -221,6 +224,11 @@ export default function CanvasStage() {
     });
     oracleGirlRef.current = oracleGirl;
 
+    // Create poetry scroll
+    const poetryScroll = new PoetryScroll(width, height);
+    poetryScroll.registerHit(registryRef.current);
+    poetryScrollRef.current = poetryScroll;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     let prevBgTime = performance.now();
@@ -272,6 +280,9 @@ export default function CanvasStage() {
       // Draw cyber cat
       cyberCat.draw(mainCtx, t);
 
+      // Draw poetry scroll
+      poetryScroll.draw(mainCtx, t);
+
       rafRef.current = requestAnimationFrame(mainLoop);
     }
     rafRef.current = requestAnimationFrame(mainLoop);
@@ -320,6 +331,8 @@ export default function CanvasStage() {
       oracleGirl.destroy();
       oracleGirlRef.current = null;
       if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
+      poetryScroll.destroy();
+      poetryScrollRef.current = null;
       window.removeEventListener('bagua-click', onBaguaClick);
       window.removeEventListener('palm-diagram-click', onPalmDiagramClick);
       mainCanvas.removeEventListener('mousemove', onMouseMove);

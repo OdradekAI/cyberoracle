@@ -55,6 +55,7 @@
 | M2-009  | ✅ Pass | Session 9  |
 | M2-010  | ✅ Pass | Session 10 |
 | M2-011  | ✅ Pass | Session 11 |
+| M2-012  | ✅ Pass | Session 12 |
 
 ### Session 1 — 2026-04-30
 
@@ -327,3 +328,28 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `33ec36c`
+
+### Session 12 — 2026-04-30
+
+**Feature:** M2-012 — Text LLM streaming client with provider chain
+**Status:** completed
+
+**What was done:**
+
+- Created `apps/server/src/lib/llm-stream-client.ts` with `callLLMStream(options)` returning `AsyncIterable<string>`
+- Provider chain: DeepSeek V3 → Qwen-Plus → GPT-4o-mini (env keys: DEEPSEEK_API_KEY, QWEN_API_KEY, OPENAI_API_KEY)
+- SSE stream parsing via ReadableStream reader + line-by-line delta extraction
+- 0-chunk failure triggers silent failover; mid-stream failure propagates error to caller
+- responseFormat forwarded to providers that support it (DeepSeek, OpenAI)
+- 8 unit tests: no keys error, DeepSeek first, Qwen fallback, GPT ultimate fallback, skip providers without keys, mid-stream error propagation, responseFormat forwarding, API key never logged
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/server test`: 20/20 tests pass (3 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** `{pending}`

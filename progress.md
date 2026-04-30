@@ -593,4 +593,4 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 - `pnpm test`: all tests pass
 
-**Commit:** pending
+**Commit:** `b57b0e8`

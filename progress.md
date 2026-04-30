@@ -645,3 +645,27 @@
 - `pnpm test`: all tests pass
 
 **Commit:** `0489636`
+
+---
+
+### Session 24 — 2026-04-30
+
+**Feature:** M2-024 — GET /api/daily daily fortune endpoint with per-day caching
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/server/src/app/api/daily/route.ts` with GET handler
+- Cache strategy: reads `storage/index/daily.json`; if today's date matches, returns cached data
+- Fresh generation: loads `daily-fortune` prompt, fills template with date context, streams via `callLLMStream`, validates against `DailyFortuneResultSchema` + `checkContent`, writes cache
+- Falls back to `getDailyFallback()` on any LLM/safety/schema failure
+- MVP ganzhi/solarTerm: passes date string as context, LLM generates values
+
+**Verification (playwright — manual curl):**
+
+- First call (no cache, no API keys) → returns fallback data (50ms)
+- Cache manually seeded with test data → subsequent call returns cached data (<50ms, verified `overall: 5` from cache)
+- `pnpm typecheck`: 11/11 workspace projects pass
+- `pnpm test`: all tests pass
+
+**Commit:** pending

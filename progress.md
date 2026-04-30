@@ -699,3 +699,30 @@
 - `pnpm test`: all tests pass
 
 **Commit:** `3fc168d`
+
+---
+
+### Session 26 — 2026-04-30
+
+**Feature:** M2-026 — Canvas hit-detection system
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/hit-detection.ts` with `HitRegistry` class and `InteractiveElement` interface
+- Registry supports register/unregister, handleMouseMove (hover/leave detection), handleClick (click dispatch)
+- Cursor callback pattern: `onCursorChange(cb)` → React state drives canvas `cursor` style
+- Max 20 elements cap with warning on overflow
+- `getHoveredId()` and `getElements()` for external state queries
+- Integrated into `CanvasStage.tsx`: registry ref, cursor state, mouse event listeners on main canvas with cleanup
+- TypeScript strict mode fix: event handlers use `mainCanvasRef.current` instead of closure variable to avoid null check issues
+
+**Verification (playwright):**
+
+- HitRegistry unit tests in browser (8 tests): outside/inside bbox, hover/leave/click callbacks, hoveredId tracking, performance (1000 iterations × 20 elements = 1ms)
+- Page loads with cursor: default on main canvas
+- 2 canvas elements present, cursor state wired to React
+- `pnpm typecheck`: 11/11 workspace projects pass
+- `pnpm test`: all tests pass (core 150 + poster 73 + server 31)
+
+**Commit:** `256e4d1`

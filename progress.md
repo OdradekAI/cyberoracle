@@ -564,4 +564,4 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 - `pnpm test`: 73/73 tests pass (8 files)
 
-**Commit:** pending
+**Commit:** `d011260`

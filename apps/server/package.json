@@ -14,9 +14,11 @@
   "dependencies": {
     "@cyberoracle/core": "workspace:*",
     "@cyberoracle/poster": "workspace:*",
+    "nanoid": "^5.1.9",
     "next": "14.2.35",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "sharp": "^0.34.5",
     "zod": "catalog:"
   },
   "devDependencies": {

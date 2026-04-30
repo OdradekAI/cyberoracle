@@ -537,3 +537,31 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `e755eec`
+
+---
+
+### Session 20 — 2026-04-30
+
+**Feature:** M2-020 — POST /api/upload image upload endpoint
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/server/src/app/api/upload/route.ts` with POST handler
+- FormData parsing: 'file' + 'kind' (palm|face) fields
+- Validation: 400 for missing file/invalid kind, 415 for non-image MIME, 413 for >8MB
+- Image processing: sharp resize (max 1920px) → WebP encode (quality 80)
+- Storage: writes to `storage/uploads/{nanoid}.webp` + sibling `.meta.json` with {kind, originalName, size, mime, uploadedAt}
+- Added `sharp` + `nanoid` dependencies to @cyberoracle/server
+
+**Verification (playwright — manual curl):**
+
+- Valid PNG upload → 200 with {id}, .webp and .meta.json files created
+- Missing file field → 400
+- Invalid kind → 400
+- Invalid MIME type → 415
+- Face kind → 200 with {id}
+- `pnpm typecheck`: 11/11 workspace projects pass
+- `pnpm test`: 73/73 tests pass (8 files)
+
+**Commit:** pending

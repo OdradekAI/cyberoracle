@@ -1093,3 +1093,33 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `ba02ea4`
+
+---
+
+### Session 38 — 2026-05-01
+
+**Feature:** M2-038 — Ambient particle system with object-pooled purple dust
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/ambient-particles.ts` with `AmbientParticles` class
+- Pre-allocated pool of 150 particles (no per-frame allocations)
+- Particles: purple dust (4 color variants), size 1-3px, falling speed 0.5-1.2px/frame, gentle horizontal drift with sine perturbation
+- Pulsing alpha (0.15-0.5 range, sine modulated) for shimmer effect
+- Edge wrapping: particles recycle from top when falling off bottom, wrap horizontally
+- Tier-based counts: low=50, mid=100, high=150 (default mid)
+- `setTier(tier)` method for future wiring to M2-040 perf detection
+- `prefers-reduced-motion` → `activeCount = 0`, draw returns immediately
+- Integrated into CanvasStage.tsx: drawn on background canvas (~10fps) after neon signs
+
+**Verification (playwright):**
+
+- Normal mode: 1073 purple particle pixels detected on background canvas
+- After 3s: 769 pixels (particles moving, recycling — animation confirmed)
+- Reduced motion: 880 pixels (ambient particles disabled, remaining from BackgroundLayer0 code rain)
+- Delta: 1073 - 880 = 193 ambient particle contribution confirmed
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `6c31449`

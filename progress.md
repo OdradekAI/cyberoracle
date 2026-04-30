@@ -1153,3 +1153,30 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `7ee0de1`
+
+---
+
+### Session 40 — 2026-05-01
+
+**Feature:** M2-040 — Performance degradation system with auto tier detection
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/perf-tier.ts` with tier detection and config system
+- `detectPerformanceTier()`: checks WebGL renderer string (Apple GPU, NVIDIA RTX, Adreno 6xx+, Mali G7x+ → high), then falls back to `navigator.deviceMemory + hardwareConcurrency` thresholds
+- Three tier configs: high (150 particles, shadowBlur≤8, glitch on), mid (100, ≤4, on), low (50, 0, off, simplified halos)
+- `prefers-reduced-motion` → forces low tier
+- Singleton cache via `getPerformanceTier()`, override via `setPerformanceTierOverride()` for testing
+- Wired into CanvasStage: ambient particles use detected tier for particle count
+- Tier config exposed on `window.__tierConfig` for Playwright testing
+
+**Verification (playwright):**
+
+- Normal mode: detected as high tier (particles=150, maxShadowBlur=8, glitchEnabled=true)
+- Reduced motion: forced to low tier (particles=50, maxShadowBlur=0, glitchEnabled=false, simplifiedHalos=true)
+- Particle pixels: 816 (low) < 945 (normal) — tier scaling confirmed
+- Low tier config valid: particles=50, shadowBlur=0, glitch=false ✓
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `f810f81`

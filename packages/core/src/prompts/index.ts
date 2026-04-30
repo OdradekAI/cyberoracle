@@ -1,2 +1,2 @@
-export { loadPrompt, fillTemplate } from './loader';
+export { loadPrompt, fillTemplate, expandIncludes } from './loader';
 export type { LoadedPrompt, PromptMeta } from './loader';

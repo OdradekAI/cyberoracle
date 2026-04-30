@@ -48,6 +48,7 @@
 | M2-002  | ✅ Pass | Session 2 |
 | M2-003  | ✅ Pass | Session 3 |
 | M2-004  | ✅ Pass | Session 4 |
+| M2-005  | ✅ Pass | Session 5 |
 
 ### Session 1 — 2026-04-30
 
@@ -147,3 +148,29 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `fc60caa`
+
+### Session 5 — 2026-04-30
+
+**Feature:** M2-005 — Extend prompt loader with expandIncludes()
+**Status:** completed
+
+**What was done:**
+
+- Added `expandIncludes(text: string): Promise<string>` to `packages/core/src/prompts/loader.ts`
+- Resolves `<<include:NAME>>` markers by reading `packages/core/prompts/_shared/NAME.md` and inlining trimmed content
+- Throws `Include not found: _shared/NAME.md` when referenced file doesn't exist
+- Multiple includes in one text are all replaced
+- Created `packages/core/prompts/_shared/safety-rules.md` and `tone-guidelines.md` per docs §二
+- Added test file with 4 cases (single include, multiple includes, no include, missing include)
+- Exported `expandIncludes` from prompts/index.ts barrel
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 77/77 tests pass (11 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** (pending)

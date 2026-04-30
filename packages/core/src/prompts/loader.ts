@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const promptsDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../prompts');
@@ -73,4 +74,21 @@ function extractYamlField(text: string, field: string): string {
     throw new Error(`Missing required frontmatter field: ${field}`);
   }
   return match[1]!;
+}
+
+export async function expandIncludes(text: string): Promise<string> {
+  const re = /<<include:([\w-]+)>>/g;
+  const matches = Array.from(text.matchAll(re));
+  let result = text;
+  for (const m of matches) {
+    const includePath = join(promptsDir, '_shared', `${m[1]}.md`);
+    let content: string;
+    try {
+      content = await readFile(includePath, 'utf-8');
+    } catch {
+      throw new Error(`Include not found: _shared/${m[1]}.md`);
+    }
+    result = result.replace(m[0], content.trim());
+  }
+  return result;
 }

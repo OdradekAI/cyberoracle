@@ -78,6 +78,7 @@
 | M2-032  | ✅ Pass | Session 32 |
 | M2-033  | ✅ Pass | Session 33 |
 | M2-034  | ✅ Pass | Session 34 |
+| M2-035  | ✅ Pass | Session 35 |
 
 ### Session 1 — 2026-04-30
 
@@ -994,3 +995,37 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `71013ef`
+
+---
+
+### Session 35 — 2026-05-01
+
+**Feature:** M2-035 — Cyber cat with idle animations, hover head tilt, click fortune stick draw
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/CyberCat.ts` — plain TS class drawing a cat character at left-bottom (width*0.12, height*0.85)
+- Body: dark purple oval (#2D1B4E) with lighter purple head (#3D2B5E), triangular ears with pink inner, pink nose, subtle smile
+- Idle tail sway: sine wave (2s period), drawn behind body with quadratic curve + glowing tip
+- Random eye expression: eyes switch to >\_< (cyan X shapes) for 500ms every ~10s (L5 random layer)
+- Normal eyes: glowing cyan circles with dark pupils and white highlights
+- Collar LEDs: 5-LED strip on body with rainbow color cycling (2s full cycle, each LED offset)
+- Hover: head tilts toward cursor via `setMousePosition(mx, my)` + interpolated tilt (max ~15°)
+- Click: triggers `fortuneSticks.triggerDraw()` via callback — reuses M2-034 fortune stick animation
+- Added `triggerDraw()` public method to FortuneSticks for external invocation
+- `registerHit(registry)` wires into M2-026 HitRegistry for bbox hit detection
+- Respects `prefers-reduced-motion` — tail sway disabled
+- Integrated into `CanvasStage.tsx`: cyberCatRef, cyberCat.draw(mainCtx, t) in rAF loop, mouse position forwarding, resize + cleanup
+
+**Verification (playwright):**
+
+- Rendering: 7738 non-transparent pixels, 2687 purple body pixels, 37 cyan eye pixels at left-bottom
+- Cursor: `default` → `pointer` on hover — hit detection confirmed
+- Eyes: 17 cyan pixels in eye region — glowing eyes confirmed
+- Collar LEDs: red(2), green(1), blue(2) — rainbow cycling confirmed
+- Click → fortune draw: console logs `Fortune stick drawn (姻缘): 大吉`, 395 white pixels above containers — cross-component trigger confirmed
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** (pending)

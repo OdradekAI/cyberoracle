@@ -9,6 +9,7 @@ import { BackgroundLayer0 } from './BackgroundLayer0';
 import { BaguaDiagram } from './BaguaDiagram';
 import { PalmDiagram } from './PalmDiagram';
 import { FortuneSticks } from './FortuneSticks';
+import { CyberCat } from './CyberCat';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -72,6 +73,7 @@ export default function CanvasStage() {
   const baguaRef = useRef<BaguaDiagram | null>(null);
   const palmDiagramRef = useRef<PalmDiagram | null>(null);
   const fortuneSticksRef = useRef<FortuneSticks | null>(null);
+  const cyberCatRef = useRef<CyberCat | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
   const [baziPanelOpen, setBaziPanelOpen] = useState(false);
 
@@ -110,6 +112,7 @@ export default function CanvasStage() {
     if (baguaRef.current) baguaRef.current.resize(width, height);
     if (palmDiagramRef.current) palmDiagramRef.current.resize(width, height);
     if (fortuneSticksRef.current) fortuneSticksRef.current.resize(width, height);
+    if (cyberCatRef.current) cyberCatRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -195,6 +198,14 @@ export default function CanvasStage() {
     fortuneSticks.registerHit(registryRef.current);
     fortuneSticksRef.current = fortuneSticks;
 
+    // Create cyber cat
+    const cyberCat = new CyberCat(width, height);
+    cyberCat.registerHit(registryRef.current);
+    cyberCat.setDrawFortuneCallback(() => {
+      fortuneSticks.triggerDraw();
+    });
+    cyberCatRef.current = cyberCat;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     let prevBgTime = performance.now();
@@ -240,6 +251,9 @@ export default function CanvasStage() {
       // Draw fortune stick containers
       fortuneSticks.draw(mainCtx, t);
 
+      // Draw cyber cat
+      cyberCat.draw(mainCtx, t);
+
       rafRef.current = requestAnimationFrame(mainLoop);
     }
     rafRef.current = requestAnimationFrame(mainLoop);
@@ -254,6 +268,7 @@ export default function CanvasStage() {
       registryRef.current.handleMouseMove(mx, my);
       ball.setMousePosition(mx, my);
       tarot.setMousePosition(mx, my);
+      cyberCat.setMousePosition(mx, my);
     }
     function onMouseClick(e: MouseEvent) {
       const mc = mainCanvasRef.current;
@@ -282,6 +297,8 @@ export default function CanvasStage() {
       palmDiagramRef.current = null;
       fortuneSticks.destroy();
       fortuneSticksRef.current = null;
+      cyberCat.destroy();
+      cyberCatRef.current = null;
       window.removeEventListener('bagua-click', onBaguaClick);
       window.removeEventListener('palm-diagram-click', onPalmDiagramClick);
       mainCanvas.removeEventListener('mousemove', onMouseMove);

@@ -119,6 +119,15 @@ export class FortuneSticks {
     console.log(`Fortune stick drawn (${container.label}):`, container.stickText);
   }
 
+  /** External trigger for fortune stick draw (e.g. from cyber cat click) */
+  triggerDraw(): void {
+    // Pick a random container to animate
+    const idx = Math.floor(Math.random() * this.containers.length);
+    const container = this.containers[idx]!;
+    if (container.shaking || container.stickFlying) return;
+    this.onContainerClick(container);
+  }
+
   draw(ctx: CanvasRenderingContext2D, t: number): void {
     const dt = t;
 

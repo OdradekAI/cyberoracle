@@ -669,3 +669,33 @@
 - `pnpm test`: all tests pass
 
 **Commit:** `6000211`
+
+---
+
+### Session 25 — 2026-04-30
+
+**Feature:** M2-025 — Canvas 4-layer rendering infrastructure
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/CanvasStage.tsx` — 4-layer canvas stack
+- Layer 1: OffscreenCanvas renders static cyberpunk background (dark bg + grid lines + radial glow) once on mount
+- Layer 2: Background canvas stamps pre-rendered static bg at ~10fps via frame-skip counter (every 6th frame)
+- Layer 3: Main canvas runs requestAnimationFrame loop with ambient particle placeholders + cancel on unmount
+- Layer 4: HTML overlay div (pointer-events: none) with centered "赛博玄学馆" text
+- DPR-aware sizing: canvas pixel dimensions scaled by devicePixelRatio
+- Responsive: fills viewport at 375×812 (mobile) and 1280×720 (desktop)
+- Updated `apps/web/src/app/page.tsx` to render `<CanvasStage />`
+
+**Verification (playwright):**
+
+- Page loads HTTP 200 with correct title "赛博玄学馆 · CyberOracle"
+- 2 canvas elements present with DPR-scaled pixel dimensions
+- HTML overlay renders "赛博玄学馆" text over canvas stack
+- Responsive: fills 375px mobile viewport correctly
+- Only console error: favicon.ico 404 (expected)
+- `pnpm typecheck`: 11/11 workspace projects pass
+- `pnpm test`: all tests pass
+
+**Commit:** pending

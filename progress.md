@@ -851,3 +851,31 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `a021c33`
+
+---
+
+### Session 31 — 2026-04-30
+
+**Feature:** M2-031 — Background Layer 0 — code rain, data particles, distant halos
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/BackgroundLayer0.ts` — draws to background canvas at ~10fps
+- Code rain (top-left, 320×280 region): 22 Python-themed source lines scroll vertically at 0.3px/frame, 1 line highlighted every 800ms with brighter purple text + subtle background bar
+- 40 data particles (colors: #A855F7, #7C3AED, #22D3EE, #6366F1) float at 0.3-0.8px/frame with alpha 0.3-0.7
+- 4 distant neon halos: radial gradients with breathing sine wave (6-10s period, opacity 0.6-0.9), positioned randomly with 100px margins
+- Background parallax at 0.2px/frame horizontal
+- Respects `prefers-reduced-motion` — particles and code rain disabled when preference set
+- Integrated into `CanvasStage.tsx`: bgLayer0Ref, bgLayer0.draw(bgCtx, t, bgDt) in background loop, resize + cleanup
+
+**Verification (playwright):**
+
+- Code rain: 5637 purple text pixels in top-left 320×300 region; highlighted line moved from y=144 to y=177 over 1s (confirms 800ms highlight cycling + vertical scroll)
+- Data particles: 75 isolated colored clusters detected across canvas (outside code rain area), consistent with 40 particles at 1-3px diameter
+- Distant halos: 129 cells with larger color clusters (radial gradients of 4 halos covering multiple 10px grid cells)
+- Color diversity confirmed: 1145 purple pixels, 89 cyan pixels, 585 indigo pixels in particle/halo region
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** (pending)

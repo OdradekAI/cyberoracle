@@ -5,6 +5,7 @@ import { HitRegistry } from './hit-detection';
 import { CrystalBall } from './CrystalBall';
 import { TarotGroup } from './TarotGroup';
 import { NeonSigns } from './NeonSigns';
+import { BackgroundLayer0 } from './BackgroundLayer0';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -64,6 +65,7 @@ export default function CanvasStage() {
   const crystalBallRef = useRef<CrystalBall | null>(null);
   const tarotRef = useRef<TarotGroup | null>(null);
   const neonRef = useRef<NeonSigns | null>(null);
+  const bgLayer0Ref = useRef<BackgroundLayer0 | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
 
   const resize = useCallback(() => {
@@ -87,6 +89,7 @@ export default function CanvasStage() {
     if (crystalBallRef.current) crystalBallRef.current.resize(width, height);
     if (tarotRef.current) tarotRef.current.resize(width, height);
     if (neonRef.current) neonRef.current.resize(width, height);
+    if (bgLayer0Ref.current) bgLayer0Ref.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -141,12 +144,21 @@ export default function CanvasStage() {
     const neon = new NeonSigns(width, height);
     neonRef.current = neon;
 
+    // Create background layer 0
+    const bgLayer0 = new BackgroundLayer0(width, height);
+    bgLayer0Ref.current = bgLayer0;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
+    let prevBgTime = performance.now();
     function drawBackground(t: number) {
       if (!bgCtx) return;
+      const bgDt = t - prevBgTime;
+      prevBgTime = t;
       // Stamp the pre-rendered static background
       bgCtx.drawImage(offscreen as CanvasImageSource, 0, 0, width, height);
+      // Draw background layer 0 (code rain, particles, halos)
+      bgLayer0.draw(bgCtx, t, bgDt);
       // Draw neon signs on background canvas
       neon.draw(bgCtx, t);
     }
@@ -206,6 +218,8 @@ export default function CanvasStage() {
       tarotRef.current = null;
       neon.destroy();
       neonRef.current = null;
+      bgLayer0.destroy();
+      bgLayer0Ref.current = null;
       mainCanvas.removeEventListener('mousemove', onMouseMove);
       mainCanvas.removeEventListener('click', onMouseClick);
       window.removeEventListener('resize', resize);

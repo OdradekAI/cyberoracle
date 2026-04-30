@@ -594,3 +594,30 @@
 - `pnpm test`: all tests pass
 
 **Commit:** `b57b0e8`
+
+---
+
+### Session 22 — 2026-04-30
+
+**Feature:** M2-022 — POST /api/render-image poster PNG generation endpoint
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/server/src/app/api/render-image/route.tsx` with POST handler
+- Reads `/storage/results/{id}.json`, selects PalmReadingPoster or FaceReadingPoster based on `kind`
+- Calls `renderToPng(element, {width: 800})` to generate PNG buffer
+- Saves buffer to `/storage/results/{id}.png` and returns PNG with `content-type: image/png`
+- Error handling: 400 for missing/invalid id, 404 for not found, 500 for render failure
+- Updated `apps/server/next.config.mjs`: added `@resvg/resvg-js` to `serverExternalPackages` AND webpack `externals` to prevent bundling of native `.node` binaries
+- Key discovery: `@resvg/resvg-js` loads platform-specific `.node` binaries via `require()` in `js-binding.js`, which webpack can't parse. Fix: mark as external in both Next.js config and webpack config
+
+**Verification (playwright — manual curl):**
+
+- Palm reading render → 200, 142KB valid PNG (magic bytes `89 50 4E 47`)
+- Face reading render → 200, 109KB valid PNG
+- Missing id → 400, invalid id → 404
+- `pnpm typecheck`: 11/11 workspace projects pass
+- `pnpm test`: all tests pass
+
+**Commit:** pending

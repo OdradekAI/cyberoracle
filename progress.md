@@ -784,3 +784,5 @@
 - Click unflip: pixel colors change back after second click (back→front)
 - Zero console errors
 - `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `57d54b0`

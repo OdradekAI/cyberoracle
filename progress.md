@@ -515,3 +515,25 @@
 - `pnpm -r typecheck`: 7/7 workspace projects pass
 
 **Commit:** `3f029fa`
+
+---
+
+### Session 19 — 2026-04-30
+
+**Feature:** M2-019 — DailyFortuneCard.tsx
+**Status:** Passed
+
+**What was done:**
+
+- Created `packages/poster/src/components/DailyFortuneCard.tsx` — daily fortune share-card template
+- Layout: title + date/ganzhi/solarTerm header → ratings (5 metrics with star-dot bars) → lucky info (4 items in grid) → advice (do/avoid with Signpost/Wave icons) → oneLine fortune in gold-bordered card → watermark
+- Defines `DailyFortuneCardData` interface locally (poster tsconfig rootDir constraint)
+- Helper components: `StarBar` (filled/empty dot visualization), `LuckyItem` (label+value pair)
+- 6 unit tests all pass: sample data, watermark, empty solarTerm, low ratings, high ratings, desktop source
+
+**Verification:**
+
+- `pnpm test`: 73/73 tests pass (8 files)
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** pending

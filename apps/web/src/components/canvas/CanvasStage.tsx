@@ -7,6 +7,7 @@ import { TarotGroup } from './TarotGroup';
 import { NeonSigns } from './NeonSigns';
 import { BackgroundLayer0 } from './BackgroundLayer0';
 import { BaguaDiagram } from './BaguaDiagram';
+import { PalmDiagram } from './PalmDiagram';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -68,6 +69,7 @@ export default function CanvasStage() {
   const neonRef = useRef<NeonSigns | null>(null);
   const bgLayer0Ref = useRef<BackgroundLayer0 | null>(null);
   const baguaRef = useRef<BaguaDiagram | null>(null);
+  const palmDiagramRef = useRef<PalmDiagram | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
   const [baziPanelOpen, setBaziPanelOpen] = useState(false);
 
@@ -104,6 +106,7 @@ export default function CanvasStage() {
     if (neonRef.current) neonRef.current.resize(width, height);
     if (bgLayer0Ref.current) bgLayer0Ref.current.resize(width, height);
     if (baguaRef.current) baguaRef.current.resize(width, height);
+    if (palmDiagramRef.current) palmDiagramRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -173,6 +176,17 @@ export default function CanvasStage() {
     }
     window.addEventListener('bagua-click', onBaguaClick);
 
+    // Create palm diagram
+    const palmDiagram = new PalmDiagram(width, height);
+    palmDiagram.registerHit(registryRef.current);
+    palmDiagramRef.current = palmDiagram;
+
+    // Listen for palm diagram click → navigate to upload
+    function onPalmDiagramClick() {
+      window.location.href = '/upload?kind=palm';
+    }
+    window.addEventListener('palm-diagram-click', onPalmDiagramClick);
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     let prevBgTime = performance.now();
@@ -212,6 +226,9 @@ export default function CanvasStage() {
       // Draw tarot cards
       tarot.draw(mainCtx, t);
 
+      // Draw palm diagram
+      palmDiagram.draw(mainCtx, t);
+
       rafRef.current = requestAnimationFrame(mainLoop);
     }
     rafRef.current = requestAnimationFrame(mainLoop);
@@ -250,7 +267,10 @@ export default function CanvasStage() {
       bgLayer0Ref.current = null;
       bagua.destroy();
       baguaRef.current = null;
+      palmDiagram.destroy();
+      palmDiagramRef.current = null;
       window.removeEventListener('bagua-click', onBaguaClick);
+      window.removeEventListener('palm-diagram-click', onPalmDiagramClick);
       mainCanvas.removeEventListener('mousemove', onMouseMove);
       mainCanvas.removeEventListener('click', onMouseClick);
       window.removeEventListener('resize', resize);

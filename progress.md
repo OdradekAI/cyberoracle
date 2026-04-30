@@ -76,6 +76,7 @@
 | M2-030  | ✅ Pass | Session 30 |
 | M2-031  | ✅ Pass | Session 31 |
 | M2-032  | ✅ Pass | Session 32 |
+| M2-033  | ✅ Pass | Session 33 |
 
 ### Session 1 — 2026-04-30
 
@@ -928,3 +929,35 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `4d9695d`
+
+---
+
+### Session 33 — 2026-04-30
+
+**Feature:** M2-033 — Palm diagram with idle cycling lines, hover scan line, click upload navigation
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/PalmDiagram.ts` — plain TS class drawing hand outline with 3 palm lines
+- Hand outline: quadratic bezier curves forming palm + 5 fingers silhouette, purple stroke with transparent fill
+- 3 palm lines (心/智/命 = heart/wisdom/life): smooth curves through control points, labels rendered above each line
+- Idle cycling: each line illuminates in sequence (line A 0-1s, line B 1-2s, line C 2-3s) with sine-wave brightness
+- Hover: all 3 lines fully illuminate + cyan scan line sweeps top-to-bottom (1s loop) with trailing glow gradient
+- Hover glow border: purple shadowBlur rect around palm bounding box
+- Click: dispatches `CustomEvent('palm-diagram-click')` → CanvasStage navigates to `/upload?kind=palm`
+- `registerHit(registry)` wires into M2-026 HitRegistry for bbox hit detection
+- Position: right-upper area (cx=width*0.82, cy=height*0.28)
+- Respects `prefers-reduced-motion` — scan line disabled when set
+- Integrated into `CanvasStage.tsx`: palmDiagramRef, palmDiagram.draw(mainCtx, t) in rAF loop, resize + cleanup
+
+**Verification (playwright):**
+
+- Rendering: 10024 non-transparent pixels, 9867 purple pixels in right-upper palm area — hand outline + lines confirmed
+- Cursor: `default` → `pointer` on hover — hit detection confirmed
+- Scan line: 1253 cyan pixels detected in palm region on hover — sweep animation confirmed
+- Click navigation: URL changes to `/upload?kind=palm` — click handler works
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** (pending)

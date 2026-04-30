@@ -822,3 +822,30 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `c9e4df9`
+
+---
+
+### Session 30 — 2026-04-30
+
+**Feature:** M2-030 — Neon sign system with pre-rendered glow sprites and glitch
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/NeonSigns.ts` — draws to background canvas at ~10fps
+- 4 neon signs: "赛博玄学馆" (main title, center above ball), "今日运势" (top-left), "八字精批" (top-right), "上上签" (bottom-right, warm amber)
+- Pre-rendered glow sprites via `document.createElement('canvas')` with `shadowBlur=20` — drawn once, reused each frame (≤8 concurrent instances tracked via counter)
+- Breathing: each sign oscillates amplitude via sine wave with unique period (2-3s) and staggered phase offset
+- Entry sweep: signs light up in sequence on mount (100ms stagger between each, 500ms fade-in)
+- Glitch: main title randomly triggers RGB channel split + horizontal slice offset every 8-12s, 200ms duration. Respects `prefers-reduced-motion`
+- Integrated into `CanvasStage.tsx`: neonRef, neon.draw(bgCtx, t) in background update loop, resize + cleanup
+- Fixed font size parsing: `parseInt(font)` can't parse "bold 24px serif" → regex extraction `font.match(/(\d+(?:\.\d+)?)px/)`
+
+**Verification (playwright):**
+
+- All 4 signs render: main title 934 purple pixels, top-left 406 cyan pixels, bottom-right amber detected
+- Breathing confirmed: title center pixel RGB(160,81,235) → RGB(121,62,177) over 1.25s (blue channel drops 58 points)
+- Entry sweep confirmed: title RGB(40,23,61) at T+50ms → RGB(138,71,203) at T+1050ms (sign lights up progressively)
+- Glitch code verified: RGB split drawing with 4px offset, 200ms duration, 8-12s random interval
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass

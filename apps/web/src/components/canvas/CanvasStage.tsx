@@ -4,6 +4,7 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import { HitRegistry } from './hit-detection';
 import { CrystalBall } from './CrystalBall';
 import { TarotGroup } from './TarotGroup';
+import { NeonSigns } from './NeonSigns';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -62,6 +63,7 @@ export default function CanvasStage() {
   const registryRef = useRef<HitRegistry>(new HitRegistry());
   const crystalBallRef = useRef<CrystalBall | null>(null);
   const tarotRef = useRef<TarotGroup | null>(null);
+  const neonRef = useRef<NeonSigns | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
 
   const resize = useCallback(() => {
@@ -84,6 +86,7 @@ export default function CanvasStage() {
 
     if (crystalBallRef.current) crystalBallRef.current.resize(width, height);
     if (tarotRef.current) tarotRef.current.resize(width, height);
+    if (neonRef.current) neonRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -134,14 +137,20 @@ export default function CanvasStage() {
       tarot.setSequencePhase(phase, selectedCard);
     });
 
+    // Create neon signs
+    const neon = new NeonSigns(width, height);
+    neonRef.current = neon;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
-    function drawBackground() {
+    function drawBackground(t: number) {
       if (!bgCtx) return;
       // Stamp the pre-rendered static background
       bgCtx.drawImage(offscreen as CanvasImageSource, 0, 0, width, height);
+      // Draw neon signs on background canvas
+      neon.draw(bgCtx, t);
     }
-    drawBackground();
+    drawBackground(performance.now());
 
     // Layer 3: Main canvas — rAF loop (60fps)
     function mainLoop() {
@@ -154,7 +163,7 @@ export default function CanvasStage() {
 
       // Update background at ~10fps
       if (frameCountRef.current % BG_FRAME_SKIP === 0) {
-        drawBackground();
+        drawBackground(t);
       }
 
       // Draw crystal ball
@@ -195,6 +204,8 @@ export default function CanvasStage() {
       crystalBallRef.current = null;
       tarot.destroy();
       tarotRef.current = null;
+      neon.destroy();
+      neonRef.current = null;
       mainCanvas.removeEventListener('mousemove', onMouseMove);
       mainCanvas.removeEventListener('click', onMouseClick);
       window.removeEventListener('resize', resize);

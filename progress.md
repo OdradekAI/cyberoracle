@@ -621,3 +621,27 @@
 - `pnpm test`: all tests pass
 
 **Commit:** `62182b6`
+
+---
+
+### Session 23 — 2026-04-30
+
+**Feature:** M2-023 — GET /api/result/:id and GET /api/result/:id/image fetch endpoints
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/server/src/app/api/result/[id]/route.ts` — GET returns result JSON
+- Created `apps/server/src/app/api/result/[id]/image/route.ts` — GET streams PNG with `Cache-Control: public, max-age=604800`
+- Both endpoints: 404 for missing id, 410 for expired results (>7 days per PRD §10.1)
+
+**Verification (playwright — manual curl):**
+
+- `GET /api/result/test-fetch` → 200 with valid JSON
+- `GET /api/result/nonexistent` → 404
+- `GET /api/result/test-fetch/image` → 200, valid PNG (magic bytes), correct cache headers
+- `GET /api/result/test-expired` → 410 with "Result expired"
+- `pnpm typecheck`: 11/11 workspace projects pass
+- `pnpm test`: all tests pass
+
+**Commit:** pending

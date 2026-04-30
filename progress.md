@@ -820,3 +820,5 @@
 - Done: sequence completes at ~5s, state differs from initial — full 4-act structure verified
 - Zero console errors
 - `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `c9e4df9`

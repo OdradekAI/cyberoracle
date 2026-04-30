@@ -786,3 +786,37 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `57d54b0`
+
+---
+
+### Session 29 — 2026-04-30
+
+**Feature:** M2-028 — Crystal ball click 4-act dramatic sequence
+**Status:** Passed
+
+**What was done:**
+
+- Added dramatic sequence state machine to `CrystalBall.ts`: `idle` → `setup` → `buildup` → `climax` → `resolution` → `done`
+- Setup (T+0-300ms): scale 1.0→0.95→1.0 bounce via sine, click feedback within 50ms
+- Buildup (T+300-2200ms): fog accelerates 1.5x→4.5x, particles increase to 3×, ball pulses with subtle scale animation, halo expands progressively
+- Climax (T+2200-2400ms): all animations freeze (fogSpeed=0, no particle updates), white flash overlay (80ms in, 120ms out, peak alpha 0.8)
+- Resolution (T+2400-4500ms): fog slows to 0.5x, result text types in at 60ms/char below ball, selected card flips at center (coordinated with TarotGroup)
+- Done (T+4500ms+): sequence completes, re-clickable for new sequence
+- Added `setSequenceCallback` on CrystalBall to notify TarotGroup of phase changes
+- Updated `TarotGroup.ts`: added `setSequencePhase(phase, selectedCard)` method, `flyProgress` on card state
+  - Buildup: cards fly toward ball center with ease-out cubic interpolation
+  - Climax: cards freeze, non-selected dim to 20%
+  - Resolution: selected card at center scales 1.3x and auto-flips, others at 15% opacity
+  - Done: cards hidden (return early from draw)
+- Wired callback in `CanvasStage.tsx`: `ball.setSequenceCallback → tarot.setSequencePhase`
+- Fixed structural TS error: duplicate `ctx.restore()` from incomplete old→new method replacement
+
+**Verification (playwright):**
+
+- Setup: pixel changes within 50ms at ball center — click feedback confirmed
+- Buildup: 3600 bright pixels in 60×60 sample area — fog acceleration + particles ×3 confirmed
+- Climax: max brightness 192 (vs normal ~100) — white flash detected, freeze confirmed
+- Resolution: purple text pixels found at Y 589-626 below ball — result text rendering confirmed
+- Done: sequence completes at ~5s, state differs from initial — full 4-act structure verified
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass

@@ -6,6 +6,14 @@ const L3_PERIOD = 2;
 const PARTICLE_SPAWN_RATE = 7;
 const PARTICLE_MAX = 30;
 
+// Dramatic sequence timing (ms)
+const SETUP_DURATION = 300;
+const BUILDUP_END = 2200;
+const CLIMAX_FREEZE = 200;
+const RESOLUTION_END = 4500;
+
+type SequencePhase = 'idle' | 'setup' | 'buildup' | 'climax' | 'resolution' | 'done';
+
 interface Particle {
   x: number;
   y: number;
@@ -26,6 +34,15 @@ export class CrystalBall {
   private particles: Particle[] = [];
   private spawnAccum = 0;
   private unregisterHit: (() => void) | null = null;
+
+  // Dramatic sequence state
+  private seqPhase: SequencePhase = 'idle';
+  private seqStart = 0;
+  private selectedCardIdx = -1;
+  private resultText = '';
+  private resultCharIdx = 0;
+  private lastCharTime = 0;
+  private onSequenceState: ((phase: SequencePhase, selectedCard: number) => void) | null = null;
 
   constructor(
     private width: number,
@@ -52,9 +69,34 @@ export class CrystalBall {
         this.hovered = false;
       },
       onClick: () => {
-        // M2-028 will implement the dramatic sequence
+        this.triggerSequence();
       },
     });
+  }
+
+  setSequenceCallback(cb: (phase: SequencePhase, selectedCard: number) => void): void {
+    this.onSequenceState = cb;
+  }
+
+  getPhase(): SequencePhase {
+    return this.seqPhase;
+  }
+
+  private triggerSequence(): void {
+    if (this.seqPhase !== 'idle' && this.seqPhase !== 'done') return;
+    this.seqPhase = 'setup';
+    this.seqStart = performance.now();
+    this.selectedCardIdx = Math.floor(Math.random() * 5);
+    this.resultText = '';
+    this.resultCharIdx = 0;
+    this.lastCharTime = 0;
+    this.onSequenceState?.('setup', this.selectedCardIdx);
+  }
+
+  cancelSequence(): void {
+    this.seqPhase = 'idle';
+    this.seqStart = 0;
+    this.selectedCardIdx = -1;
   }
 
   setMousePosition(x: number, y: number): void {
@@ -75,30 +117,43 @@ export class CrystalBall {
   }
 
   draw(ctx: CanvasRenderingContext2D, t: number, dt: number): void {
-    const { cx, cy, radius, hovered } = this;
+    const { cx, cy, radius } = this;
     const timeSec = t * 0.001;
+    const elapsed = this.seqStart > 0 ? t - this.seqStart : 0;
 
-    const scale = hovered ? 1.05 : 1;
-    const fogSpeed = hovered ? 1.5 : 1;
+    // Advance sequence phase
+    this.advancePhase(elapsed);
+
+    // Compute sequence-driven overrides
+    const seqScale = this.getSequenceScale(elapsed);
+    const fogSpeed = this.getSequenceFogSpeed(elapsed);
+    const particleRate = this.getSequenceParticleRate(elapsed);
+    const isFrozen = this.seqPhase === 'climax';
+
+    const hoverScale = this.hovered && this.seqPhase === 'idle' ? 1.05 : 1;
+    const scale = seqScale * hoverScale;
     const r = radius * scale;
 
     ctx.save();
     ctx.translate(cx, cy);
 
-    // Outer halo (amplitude 80-100%)
+    // Outer halo
     const haloAlpha = 0.15 + 0.1 * Math.sin(timeSec * 2);
-    const haloGrad = ctx.createRadialGradient(0, 0, r * 0.8, 0, 0, r * (hovered ? 1.6 : 1.35));
+    const haloMult = this.hovered && this.seqPhase === 'idle' ? 1.6 : 1.35;
+    const haloRadius =
+      this.seqPhase === 'buildup' ? r * (1.6 + (elapsed / BUILDUP_END) * 0.4) : r * haloMult;
+    const haloGrad = ctx.createRadialGradient(0, 0, r * 0.8, 0, 0, haloRadius);
     haloGrad.addColorStop(0, `rgba(168, 85, 247, ${haloAlpha})`);
     haloGrad.addColorStop(1, 'rgba(168, 85, 247, 0)');
     ctx.fillStyle = haloGrad;
     ctx.beginPath();
-    ctx.arc(0, 0, r * (hovered ? 1.6 : 1.35), 0, Math.PI * 2);
+    ctx.arc(0, 0, haloRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Fog rotation offset (hover: shift toward mouse)
+    // Fog rotation offset
     let fogOffsetX = 0;
     let fogOffsetY = 0;
-    if (hovered) {
+    if (this.hovered && this.seqPhase === 'idle') {
       const dx = this.mouseX - cx;
       const dy = this.mouseY - cy;
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -146,11 +201,12 @@ export class CrystalBall {
     // Ball border
     ctx.beginPath();
     ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.strokeStyle = hovered ? 'rgba(168, 85, 247, 0.5)' : 'rgba(168, 85, 247, 0.25)';
-    ctx.lineWidth = hovered ? 2 : 1;
+    const borderAlpha = this.seqPhase !== 'idle' ? 0.7 : this.hovered ? 0.5 : 0.25;
+    ctx.strokeStyle = `rgba(168, 85, 247, ${borderAlpha})`;
+    ctx.lineWidth = this.seqPhase !== 'idle' ? 2 : this.hovered ? 2 : 1;
     ctx.stroke();
 
-    // Surface highlight (glass reflection) — slow sweep
+    // Surface highlight
     const highlightAngle = timeSec * 0.3;
     const hlx = Math.cos(highlightAngle) * r * 0.35;
     const hly = Math.sin(highlightAngle) * r * 0.25 - r * 0.15;
@@ -166,18 +222,125 @@ export class CrystalBall {
     ctx.restore();
 
     // Spawn and update particles
-    this.updateParticles(ctx, dt);
+    if (!isFrozen) {
+      this.updateParticles(ctx, dt, particleRate);
+    }
+
+    // Climax white flash overlay
+    if (this.seqPhase === 'climax') {
+      const flashElapsed = elapsed - BUILDUP_END;
+      const flashAlpha =
+        flashElapsed < 80 ? (flashElapsed / 80) * 0.8 : 0.8 * (1 - (flashElapsed - 80) / 120);
+      if (flashAlpha > 0) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0, flashAlpha)})`;
+        ctx.fillRect(-r * 2, -r * 2, r * 4, r * 4);
+      }
+    }
+
+    // Resolution: result text
+    if (this.seqPhase === 'resolution' && elapsed >= 3200) {
+      this.drawResultText(ctx, r, t, elapsed);
+    }
 
     ctx.restore(); // end translate
   }
 
-  private updateParticles(ctx: CanvasRenderingContext2D, dt: number): void {
-    const r = this.radius * (this.hovered ? 1.05 : 1);
+  private advancePhase(elapsed: number): void {
+    if (this.seqPhase === 'idle' || this.seqPhase === 'done') return;
+
+    if (this.seqPhase === 'setup' && elapsed >= SETUP_DURATION) {
+      this.seqPhase = 'buildup';
+      this.onSequenceState?.('buildup', this.selectedCardIdx);
+    } else if (this.seqPhase === 'buildup' && elapsed >= BUILDUP_END) {
+      this.seqPhase = 'climax';
+      this.onSequenceState?.('climax', this.selectedCardIdx);
+    } else if (this.seqPhase === 'climax' && elapsed >= BUILDUP_END + CLIMAX_FREEZE) {
+      this.seqPhase = 'resolution';
+      this.onSequenceState?.('resolution', this.selectedCardIdx);
+    } else if (this.seqPhase === 'resolution' && elapsed >= RESOLUTION_END) {
+      this.seqPhase = 'done';
+      this.onSequenceState?.('done', this.selectedCardIdx);
+    }
+  }
+
+  private getSequenceScale(elapsed: number): number {
+    if (this.seqPhase === 'setup') {
+      // Bounce: 1.0 → 0.95 → 1.0
+      const progress = elapsed / SETUP_DURATION;
+      return 1 - 0.05 * Math.sin(progress * Math.PI);
+    }
+    if (this.seqPhase === 'buildup') {
+      // Subtle pulse growing
+      const progress = elapsed / BUILDUP_END;
+      return 1 + 0.03 * Math.sin(progress * Math.PI * 4) * progress;
+    }
+    return 1;
+  }
+
+  private getSequenceFogSpeed(elapsed: number): number {
+    if (this.seqPhase === 'idle' || this.seqPhase === 'done') {
+      return this.hovered ? 1.5 : 1;
+    }
+    if (this.seqPhase === 'setup') return 1.5;
+    if (this.seqPhase === 'buildup') {
+      const progress = elapsed / BUILDUP_END;
+      return 1.5 + progress * 3; // accelerate to 4.5x
+    }
+    if (this.seqPhase === 'climax') return 0; // frozen
+    return 0.5; // slow resolution
+  }
+
+  private getSequenceParticleRate(elapsed: number): number {
+    if (this.seqPhase === 'idle' || this.seqPhase === 'done') return PARTICLE_SPAWN_RATE;
+    if (this.seqPhase === 'buildup') {
+      const progress = elapsed / BUILDUP_END;
+      return PARTICLE_SPAWN_RATE * (1 + progress * 2); // up to 3x
+    }
+    return PARTICLE_SPAWN_RATE;
+  }
+
+  private drawResultText(
+    ctx: CanvasRenderingContext2D,
+    r: number,
+    t: number,
+    elapsed: number,
+  ): void {
+    const messages = ['命运已揭示', '星辰已排列', '缘分已注定'];
+    if (!this.resultText) {
+      this.resultText = messages[this.selectedCardIdx % messages.length] ?? messages[0]!;
+    }
+
+    // Type in effect: 60ms per character
+    const typeStart = 3200;
+    const typeElapsed = elapsed - typeStart;
+    const targetChars = Math.floor(typeElapsed / 60) + 1;
+    if (targetChars > this.resultCharIdx) {
+      this.resultCharIdx = Math.min(targetChars, [...this.resultText].length);
+    }
+
+    const displayText = [...this.resultText].slice(0, this.resultCharIdx).join('');
+    if (!displayText) return;
+
+    const fadeIn = Math.min(1, (elapsed - typeStart) / 500);
+
+    ctx.save();
+    ctx.globalAlpha = fadeIn;
+    ctx.fillStyle = 'rgba(200, 180, 230, 0.9)';
+    ctx.font = '14px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(displayText, 0, r * 1.8);
+    ctx.restore();
+  }
+
+  private updateParticles(ctx: CanvasRenderingContext2D, dt: number, rate: number): void {
+    const r = this.radius * (this.hovered && this.seqPhase === 'idle' ? 1.05 : 1);
 
     // Spawn
     const dtSec = dt * 0.001;
-    this.spawnAccum += PARTICLE_SPAWN_RATE * dtSec;
-    while (this.spawnAccum >= 1 && this.particles.length < PARTICLE_MAX) {
+    this.spawnAccum += rate * dtSec;
+    const maxP = this.seqPhase === 'buildup' ? PARTICLE_MAX * 3 : PARTICLE_MAX;
+    while (this.spawnAccum >= 1 && this.particles.length < maxP) {
       this.spawnAccum -= 1;
       const angle = Math.random() * Math.PI * 2;
       const dist = Math.random() * r * 0.4;
@@ -205,8 +368,7 @@ export class CrystalBall {
 
       const progress = p.life / p.maxLife;
       const alpha = Math.sin(progress * Math.PI) * 0.6;
-      const colorProgress = progress;
-      const isPurple = colorProgress < 0.6;
+      const isPurple = progress < 0.6;
       const cr = isPurple ? 168 : 34;
       const cg = isPurple ? 85 : 211;
       const cb = isPurple ? 247 : 238;
@@ -224,6 +386,7 @@ export class CrystalBall {
       this.unregisterHit = null;
     }
     this.particles = [];
+    this.cancelSequence();
   }
 }
 

@@ -20,14 +20,19 @@ const CARD_FACES = [
   { symbol: '❋', label: '雪花', meaning: '沉淀后必见清澄' },
 ] as const;
 
+type SeqPhase = 'idle' | 'setup' | 'buildup' | 'climax' | 'resolution' | 'done';
+
 interface CardState {
   x: number;
   y: number;
+  origX: number;
+  origY: number;
   phase: number;
   flipped: boolean;
   flipProgress: number;
   flipStart: number;
   hovered: boolean;
+  flyProgress: number;
 }
 
 export class TarotGroup {
@@ -38,6 +43,8 @@ export class TarotGroup {
   private mouseX = 0;
   private mouseY = 0;
   private unregisterFns: (() => void)[] = [];
+  private seqPhase: SeqPhase = 'idle';
+  private selectedCard = -1;
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -49,11 +56,14 @@ export class TarotGroup {
     this.cards = CARD_FACES.map((_, i) => ({
       x: 0,
       y: 0,
+      origX: 0,
+      origY: 0,
       phase: (i / CARD_FACES.length) * Math.PI * 2 + (Math.random() - 0.5) * 0.4,
       flipped: false,
       flipProgress: 0,
       flipStart: 0,
       hovered: false,
+      flyProgress: 0,
     }));
     this.layoutCards();
   }
@@ -67,6 +77,8 @@ export class TarotGroup {
       const card = this.cards[i]!;
       card.x = startX + i * (CARD_WIDTH + CARD_SPACING) + CARD_WIDTH / 2;
       card.y = baseY;
+      card.origX = card.x;
+      card.origY = card.y;
     }
   }
 
@@ -115,7 +127,19 @@ export class TarotGroup {
     this.width = width;
     this.height = height;
     this.layoutCards();
-    // Re-registration handled by CanvasStage calling registerHit
+  }
+
+  setSequencePhase(phase: SeqPhase, selectedCard: number): void {
+    this.seqPhase = phase;
+    this.selectedCard = selectedCard;
+    if (phase === 'idle') {
+      // Reset cards to original positions
+      for (const card of this.cards) {
+        card.flyProgress = 0;
+        card.flipped = false;
+        card.flipProgress = 0;
+      }
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D, t: number): void {
@@ -135,29 +159,128 @@ export class TarotGroup {
     index: number,
     timeSec: number,
   ): void {
+    const isInSequence = this.seqPhase !== 'idle' && this.seqPhase !== 'done';
+    const isSelected = index === this.selectedCard;
+
+    // Dramatic sequence: compute fly position toward ball center
+    let drawX = card.origX;
+    let drawY = card.origY;
+    let floatOffset =
+      Math.sin((timeSec / FLOAT_PERIOD) * Math.PI * 2 + card.phase) * FLOAT_AMPLITUDE;
+    let swayRad = (Math.sin(timeSec * 1.2 + card.phase * 0.7) * SWAY_DEGREES * Math.PI) / 180;
+    let scale = 1;
+    let opacity = 1;
+
+    if (this.seqPhase === 'buildup') {
+      // Cards fly toward ball center (above it)
+      const ballCx = this.width / 2;
+      const ballCy = this.height / 2 - Math.min(this.width, this.height) * 0.12 * 0.5;
+      const flyTarget = 1; // fully flown
+      card.flyProgress = Math.min(card.flyProgress + 0.02, flyTarget);
+      const p = card.flyProgress;
+      const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+      drawX = card.origX + (ballCx - card.origX) * eased;
+      drawY = card.origY + (ballCy - card.origY) * eased;
+      floatOffset *= 1 - eased;
+      swayRad *= 1 - eased;
+    } else if (this.seqPhase === 'climax') {
+      // Cards frozen near ball
+      const ballCx = this.width / 2;
+      const ballCy = this.height / 2 - Math.min(this.width, this.height) * 0.12 * 0.5;
+      drawX = card.origX + (ballCx - card.origX);
+      drawY = card.origY + (ballCy - card.origY);
+      floatOffset = 0;
+      swayRad = 0;
+      opacity = isSelected ? 1 : 0.2;
+    } else if (this.seqPhase === 'resolution') {
+      if (isSelected) {
+        // Selected card stays at center, flips
+        const ballCx = this.width / 2;
+        const ballCy = this.height / 2 - Math.min(this.width, this.height) * 0.12 * 0.5;
+        drawX = ballCx;
+        drawY = ballCy;
+        floatOffset = 0;
+        swayRad = 0;
+        scale = 1.3;
+
+        // Auto-flip selected card
+        if (!card.flipped && card.flipStart === 0) {
+          card.flipped = true;
+          card.flipStart = performance.now();
+        }
+      } else {
+        // Non-selected cards dim and stay at ball area
+        const ballCx = this.width / 2;
+        const ballCy = this.height / 2 - Math.min(this.width, this.height) * 0.12 * 0.5;
+        drawX = card.origX + (ballCx - card.origX);
+        drawY = card.origY + (ballCy - card.origY);
+        opacity = 0.15;
+        floatOffset = 0;
+        swayRad = 0;
+      }
+    } else if (this.seqPhase === 'done') {
+      // Cards stay in final state until new sequence
+      return;
+    }
+
+    if (isInSequence) {
+      // Override hover state during sequence
+      const riseY = 0;
+
+      // Flip animation progress
+      let flipProgress = card.flipProgress;
+      if (card.flipStart > 0) {
+        const elapsed = performance.now() - card.flipStart;
+        if (elapsed < FLIP_DURATION) {
+          const linear = elapsed / FLIP_DURATION;
+          flipProgress = (1 - Math.cos(linear * Math.PI)) / 2;
+        } else {
+          flipProgress = card.flipped ? 1 : 0;
+          card.flipStart = 0;
+        }
+      } else {
+        flipProgress = card.flipped ? 1 : 0;
+      }
+      card.flipProgress = flipProgress;
+
+      const showingFront = flipProgress < 0.5;
+      const flipScaleX = Math.abs(1 - flipProgress * 2);
+      const effectiveScaleX = Math.max(flipScaleX, 0.05) * scale;
+
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.translate(drawX, drawY + floatOffset - riseY);
+      ctx.rotate(swayRad);
+      ctx.scale(effectiveScaleX, scale);
+
+      const hw = CARD_WIDTH / 2;
+      const hh = CARD_HEIGHT / 2;
+
+      if (showingFront) {
+        this.drawCardFront(ctx, hw, hh, false);
+      } else {
+        this.drawCardBack(ctx, hw, hh, face, isSelected);
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // Normal (idle) rendering
     const isHovered = card.hovered;
     const isSibling = this.hoveredIdx >= 0 && this.hoveredIdx !== index;
 
-    // Float offset (L2 frequency, 3s period, staggered phase)
-    const floatOffset =
-      Math.sin((timeSec / FLOAT_PERIOD) * Math.PI * 2 + card.phase) * FLOAT_AMPLITUDE;
-
-    // Sway rotation (±2°)
-    const swayDeg = Math.sin(timeSec * 1.2 + card.phase * 0.7) * SWAY_DEGREES;
-    const swayRad = (swayDeg * Math.PI) / 180;
-
     // Hover state
     const riseY = isHovered ? HOVER_RISE : 0;
-    const scale = isHovered ? HOVER_SCALE : 1;
+    const hoverScale = isHovered ? HOVER_SCALE : 1;
     const siblingOffset = isSibling ? SIBLING_RECEDE : 0;
-    const opacity = isSibling ? SIBLING_DIM : 1;
+    opacity = isSibling ? SIBLING_DIM : 1;
 
     // Flip animation progress
     let flipProgress = card.flipProgress;
     if (card.flipStart > 0) {
       const elapsed = performance.now() - card.flipStart;
       if (elapsed < FLIP_DURATION) {
-        // Decelerate-to-mid-accelerate easing (cosine)
         const linear = elapsed / FLIP_DURATION;
         flipProgress = (1 - Math.cos(linear * Math.PI)) / 2;
       } else {
@@ -173,37 +296,33 @@ export class TarotGroup {
     let tiltX = 0;
     let tiltY = 0;
     if (isHovered) {
-      const dx = this.mouseX - card.x;
-      const dy = this.mouseY - (card.y + floatOffset);
+      const dx = this.mouseX - card.origX;
+      const dy = this.mouseY - (card.origY + floatOffset);
       tiltX = (dx / (CARD_WIDTH / 2)) * 8;
       tiltY = (dy / (CARD_HEIGHT / 2)) * 5;
     }
 
-    // Flip visual: scaleX goes 1 → 0 → 1 (or reverse)
     const showingFront = flipProgress < 0.5;
     const scaleX = Math.abs(1 - flipProgress * 2);
-    const effectiveScaleX = Math.max(scaleX, 0.05) * scale;
+    const effectiveScaleX = Math.max(scaleX, 0.05) * hoverScale;
 
     ctx.save();
     ctx.globalAlpha = opacity;
-    ctx.translate(card.x + siblingOffset, card.y + floatOffset - riseY);
+    ctx.translate(card.origX + siblingOffset, card.origY + floatOffset - riseY);
     ctx.rotate(swayRad);
 
-    // Apply 3D tilt approximation
     if (isHovered && (tiltX !== 0 || tiltY !== 0)) {
       ctx.transform(1, tiltY * 0.01, tiltX * 0.01, 1, 0, 0);
     }
 
-    ctx.scale(effectiveScaleX, scale);
+    ctx.scale(effectiveScaleX, hoverScale);
 
     const hw = CARD_WIDTH / 2;
     const hh = CARD_HEIGHT / 2;
 
     if (showingFront) {
-      // Front face: card back design
       this.drawCardFront(ctx, hw, hh, isHovered);
     } else {
-      // Back face: meaning
       this.drawCardBack(ctx, hw, hh, face, isHovered);
     }
 

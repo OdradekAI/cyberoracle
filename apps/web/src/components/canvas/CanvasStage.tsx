@@ -129,6 +129,11 @@ export default function CanvasStage() {
     tarot.registerHit(registryRef.current);
     tarotRef.current = tarot;
 
+    // Wire crystal ball sequence → tarot group
+    ball.setSequenceCallback((phase, selectedCard) => {
+      tarot.setSequencePhase(phase, selectedCard);
+    });
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     function drawBackground() {

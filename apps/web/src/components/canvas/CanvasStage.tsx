@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
+import { HitRegistry } from './hit-detection';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -56,6 +57,8 @@ export default function CanvasStage() {
   const mainCanvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
   const frameCountRef = useRef(0);
+  const registryRef = useRef<HitRegistry>(new HitRegistry());
+  const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
 
   const resize = useCallback(() => {
     const bgCanvas = bgCanvasRef.current;
@@ -106,6 +109,9 @@ export default function CanvasStage() {
     const bgCtx = bgCanvas.getContext('2d');
     const mainCtx = mainCanvas.getContext('2d');
 
+    // Wire registry cursor callback
+    registryRef.current.onCursorChange((c) => setCursor(c));
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     function drawBackground() {
@@ -144,10 +150,28 @@ export default function CanvasStage() {
     }
     rafRef.current = requestAnimationFrame(mainLoop);
 
+    // Mouse event handlers for hit detection
+    function onMouseMove(e: MouseEvent) {
+      const mc = mainCanvasRef.current;
+      if (!mc) return;
+      const rect = mc.getBoundingClientRect();
+      registryRef.current.handleMouseMove(e.clientX - rect.left, e.clientY - rect.top);
+    }
+    function onMouseClick(e: MouseEvent) {
+      const mc = mainCanvasRef.current;
+      if (!mc) return;
+      const rect = mc.getBoundingClientRect();
+      registryRef.current.handleClick(e.clientX - rect.left, e.clientY - rect.top);
+    }
+    mainCanvas.addEventListener('mousemove', onMouseMove);
+    mainCanvas.addEventListener('click', onMouseClick);
+
     window.addEventListener('resize', resize);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
+      mainCanvas.removeEventListener('mousemove', onMouseMove);
+      mainCanvas.removeEventListener('click', onMouseClick);
       window.removeEventListener('resize', resize);
     };
   }, [resize]);
@@ -170,6 +194,7 @@ export default function CanvasStage() {
           top: 0,
           left: 0,
           zIndex: 1,
+          cursor,
         }}
       />
       {/* Layer 4: HTML overlay */}

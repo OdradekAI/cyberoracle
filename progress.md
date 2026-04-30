@@ -1123,3 +1123,33 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `6c31449`
+
+---
+
+### Session 39 — 2026-05-01
+
+**Feature:** M2-039 — Fortune sequence particles (200+ burst from crystal ball)
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/particle-burst.ts` with `ParticleBurst` class
+- Pre-allocated pool of 300 particles (no per-frame allocations), dead particles recycled to pool
+- `burst(ox, oy, count, r, g, b, speed, lifeMs)` method fires radial burst from origin
+- Particles: alpha decay via sin(progress\*PI), slight gravity + drag, size shrinks over life
+- Wired to crystal ball sequence callback in CanvasStage.tsx:
+  - `buildup` phase (T+300): 200 purple particles (rgb 168,85,247) from ball center, 1.5s life, speed 3
+  - `resolution` phase (T+2400): 50 gold starlight particles (rgb 255,215,0) from below ball, 2s life, speed 2
+- Particles drawn on main canvas after all interactive elements (foreground layer)
+- Pool recycling: particles return to pool when life expires, oldest recycled if pool exhausted
+
+**Verification (playwright):**
+
+- Before click: 127 bright pixels (baseline)
+- Buildup (T+800): 187 purple burst particles detected — 200 burst confirmed
+- Resolution (T+3300): 18 gold starlight pixels — 50 burst confirmed (many decayed)
+- After sequence (T+6300): 140 bright pixels — back to baseline, particles fully recycled
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `7ee0de1`

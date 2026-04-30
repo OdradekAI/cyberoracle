@@ -58,6 +58,7 @@
 | M2-012  | ✅ Pass | Session 12 |
 | M2-013  | ✅ Pass | Session 13 |
 | M2-014  | ✅ Pass | Session 14 |
+| M2-015  | ✅ Pass | Session 15 |
 
 ### Session 1 — 2026-04-30
 
@@ -407,3 +408,31 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `bf5fadb`
+
+### Session 15 — 2026-04-30
+
+**Feature:** M2-015 — Satori-friendly primitives
+**Status:** completed
+
+**What was done:**
+
+- Created `packages/poster/src/tokens/{colors,typography,layout,index}.ts` — design tokens per docs/2satori长图组件.md §三
+- Created 6 satori-compatible primitive components in `packages/poster/src/primitives/`:
+  - Box: auto-applies display:flex, only includes defined style properties (satori can't handle undefined values)
+  - Text: fontFamily Noto Serif SC by default, maps size/weight/color/lineHeight to inline style
+  - SectionNumber: circular badge with paperDeep background and gold text
+  - Card: paper background (#F8F5EE), 16px borderRadius, 1px line border, SectionNumber + heading + children
+  - Divider: 1px line colored separator with optional marginY
+  - Tag: gold-bordered label for summary emphasis
+- Created test file with 20 tests: each primitive renders to valid PNG, composable layouts work
+
+**What failed / remaining:**
+
+- Initial implementation had all style props (including undefined) in the style object, which caused satori's expand.ts to crash with "Cannot read properties of undefined (reading 'trim')". Fixed by only including defined values.
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/poster test`: 32/32 tests pass (4 files)
+- `pnpm -r typecheck`: 7/7 workspace projects pass
+
+**Commit:** `{pending}`

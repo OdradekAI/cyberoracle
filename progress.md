@@ -56,6 +56,7 @@
 | M2-010  | ✅ Pass | Session 10 |
 | M2-011  | ✅ Pass | Session 11 |
 | M2-012  | ✅ Pass | Session 12 |
+| M2-013  | ✅ Pass | Session 13 |
 
 ### Session 1 — 2026-04-30
 
@@ -353,3 +354,30 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `33e1992`
+
+### Session 13 — 2026-04-30
+
+**Feature:** M2-013 — Reading service orchestrator
+**Status:** completed
+
+**What was done:**
+
+- Created `apps/server/src/services/reading-service.ts` with `generatePalmReading()` and `generateFaceReading()`
+- 3-stage pipeline: VLM observation → LLM interpretation → safety check + schema validation
+- Stage 1: loadPrompt vision-observe-palm/face + expandIncludes + callVLM → PalmObservationSchema/FaceObservationSchema validation
+- Returns rejected when observation.valid===false with reason enum
+- Stage 2: loadPrompt reading-write-palm/face + expandIncludes + fillTemplate + callLLMStream → accumulate buffer + onChunk callback
+- Stage 3: JSON.parse → schema safeParse → checkContent safety check
+- Returns typed union: {status:'ok'|'rejected'|'failed', data?, reason?, detail?}
+- 11 unit tests: palm rejected (not_palm, minor), palm ok, onChunk callback, VLM throw, LLM throw, JSON parse fail, schema fail, face rejected (not_face, multiple_faces), face ok
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/server test`: 31/31 tests pass (4 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** `{pending}`

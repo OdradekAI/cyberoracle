@@ -10,6 +10,7 @@ import { BaguaDiagram } from './BaguaDiagram';
 import { PalmDiagram } from './PalmDiagram';
 import { FortuneSticks } from './FortuneSticks';
 import { CyberCat } from './CyberCat';
+import { OracleGirl } from './OracleGirl';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -74,8 +75,11 @@ export default function CanvasStage() {
   const palmDiagramRef = useRef<PalmDiagram | null>(null);
   const fortuneSticksRef = useRef<FortuneSticks | null>(null);
   const cyberCatRef = useRef<CyberCat | null>(null);
+  const oracleGirlRef = useRef<OracleGirl | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
   const [baziPanelOpen, setBaziPanelOpen] = useState(false);
+  const [speechBubble, setSpeechBubble] = useState<string | null>(null);
+  const speechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Escape key listener for bazi panel
   useEffect(() => {
@@ -113,6 +117,7 @@ export default function CanvasStage() {
     if (palmDiagramRef.current) palmDiagramRef.current.resize(width, height);
     if (fortuneSticksRef.current) fortuneSticksRef.current.resize(width, height);
     if (cyberCatRef.current) cyberCatRef.current.resize(width, height);
+    if (oracleGirlRef.current) oracleGirlRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -206,6 +211,16 @@ export default function CanvasStage() {
     });
     cyberCatRef.current = cyberCat;
 
+    // Create oracle girl
+    const oracleGirl = new OracleGirl(width, height);
+    oracleGirl.registerHit(registryRef.current);
+    oracleGirl.setSpeechCallback((text: string) => {
+      if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
+      setSpeechBubble(text);
+      speechTimerRef.current = setTimeout(() => setSpeechBubble(null), 3000);
+    });
+    oracleGirlRef.current = oracleGirl;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     let prevBgTime = performance.now();
@@ -235,6 +250,9 @@ export default function CanvasStage() {
       if (frameCountRef.current % BG_FRAME_SKIP === 0) {
         drawBackground(t);
       }
+
+      // Draw oracle girl (behind crystal ball)
+      oracleGirl.draw(mainCtx, t);
 
       // Draw crystal ball
       ball.draw(mainCtx, t, 16.67);
@@ -299,6 +317,9 @@ export default function CanvasStage() {
       fortuneSticksRef.current = null;
       cyberCat.destroy();
       cyberCatRef.current = null;
+      oracleGirl.destroy();
+      oracleGirlRef.current = null;
+      if (speechTimerRef.current) clearTimeout(speechTimerRef.current);
       window.removeEventListener('bagua-click', onBaguaClick);
       window.removeEventListener('palm-diagram-click', onPalmDiagramClick);
       mainCanvas.removeEventListener('mousemove', onMouseMove);
@@ -455,6 +476,31 @@ export default function CanvasStage() {
                 提交
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Oracle girl speech bubble */}
+        {speechBubble && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '38%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: 'rgba(15, 12, 25, 0.92)',
+              border: '1px solid rgba(168, 85, 247, 0.5)',
+              borderRadius: 10,
+              padding: '10px 18px',
+              color: 'rgba(200, 180, 230, 0.95)',
+              fontFamily: 'serif',
+              fontSize: 15,
+              maxWidth: 260,
+              textAlign: 'center' as const,
+              pointerEvents: 'none',
+              animation: 'fadeIn 200ms ease-out',
+            }}
+          >
+            {speechBubble}
           </div>
         )}
       </div>

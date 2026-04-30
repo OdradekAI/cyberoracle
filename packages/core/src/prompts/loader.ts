@@ -9,6 +9,8 @@ export interface PromptMeta {
   version: string;
   targetModel: string;
   temperature: number;
+  outputFormat?: string;
+  maxTokens?: number;
 }
 
 export interface LoadedPrompt {
@@ -41,6 +43,10 @@ export function loadPrompt(name: string): LoadedPrompt {
     version: extractYamlField(frontmatterText, 'version'),
     targetModel: extractYamlField(frontmatterText, 'targetModel'),
     temperature: parseFloat(extractYamlField(frontmatterText, 'temperature')),
+    outputFormat: extractOptionalYamlField(frontmatterText, 'outputFormat'),
+    maxTokens: extractOptionalYamlField(frontmatterText, 'maxTokens')
+      ? parseInt(extractOptionalYamlField(frontmatterText, 'maxTokens')!, 10)
+      : undefined,
   };
 
   // Split on ---USER---
@@ -74,6 +80,12 @@ function extractYamlField(text: string, field: string): string {
     throw new Error(`Missing required frontmatter field: ${field}`);
   }
   return match[1]!;
+}
+
+function extractOptionalYamlField(text: string, field: string): string | undefined {
+  const regex = new RegExp(`^${field}:\\s*['"]?(.+?)['"]?\\s*$`, 'm');
+  const match = regex.exec(text);
+  return match?.[1];
 }
 
 export async function expandIncludes(text: string): Promise<string> {

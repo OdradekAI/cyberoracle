@@ -50,6 +50,7 @@
 | M2-004  | ✅ Pass | Session 4 |
 | M2-005  | ✅ Pass | Session 5 |
 | M2-006  | ✅ Pass | Session 6 |
+| M2-007  | ✅ Pass | Session 7 |
 
 ### Session 1 — 2026-04-30
 
@@ -198,3 +199,28 @@
 - `pnpm typecheck`: passes
 
 **Commit:** `bebbcb8`
+
+### Session 7 — 2026-04-30
+
+**Feature:** M2-007 — Create vision-observe-face.md prompt file
+**Status:** completed
+
+**What was done:**
+
+- Created `packages/core/prompts/vision-observe-face.md` per docs §四 with full frontmatter (version v1.1, targetModel qwen-vl-max/glm-4v/gpt-4o, temperature 0.2, maxTokens 800, outputFormat json)
+- System section includes <<include:safety-rules>> and covers: 任务, 图片合法性判断 (5 reasons: not_face/minor/multiple_faces/low_quality/unsafe), 观察维度 (10 fields), 输出格式, 1 完整示例
+- ---USER--- separator with '请按系统指令观察以下面部照片，输出 JSON：'
+- Extended PromptMeta with optional outputFormat and maxTokens fields
+- Added extractOptionalYamlField helper to loader
+- Test file with 7 tests: load success, outputFormat, targetModel, safety-rules include, 5 rejection reasons, 10 observation fields, user template
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 97/97 tests pass (13 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** (pending)

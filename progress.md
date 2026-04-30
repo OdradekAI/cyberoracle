@@ -61,6 +61,7 @@
 | M2-015  | ✅ Pass | Session 15 |
 | M2-016  | ✅ Pass | Session 16 |
 | M2-017  | ✅ Pass | Session 17 |
+| M2-018  | ✅ Pass | Session 18 |
 
 ### Session 1 — 2026-04-30
 
@@ -488,3 +489,29 @@
 - `pnpm -r typecheck`: 7/7 workspace projects pass
 
 **Commit:** `a58b4c5`
+
+### Session 18 — 2026-04-30
+
+**Feature:** M2-018 — FaceReadingPoster full satori long-image template
+**Status:** completed
+
+**What was done:**
+
+- Created 5 face-specific SVG icons in `packages/poster/src/icons/`:
+  - EyebrowIcon, EyeIcon, NoseIcon, MouthIcon, FaceOutlineIcon — all 28×28 stroke-only with gold color
+- Created `packages/poster/src/components/FaceReadingPoster.tsx` with 6-module layout matching PalmReadingPoster structure
+- Module 1 uses FaceOutlineIcon (120px) instead of PalmDiagram
+- mainLines section maps eyebrow/eye/nose/mouth/face icons via FACE_LINE_ICONS lookup
+- Defined `FaceReadingPosterData` interface locally (same pattern as PalmReadingPoster)
+- Created test file with 9 tests: sample data, watermark, QR, 4 mainLines, all illustrations, desktop, 3 auxiliary
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/poster test`: 67/67 tests pass (7 files)
+- `pnpm -r typecheck`: 7/7 workspace projects pass
+
+**Commit:** `{pending}`

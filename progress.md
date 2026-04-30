@@ -1062,3 +1062,34 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `acc5091`
+
+---
+
+### Session 37 — 2026-05-01
+
+**Feature:** M2-037 — AI poetry scroll with golden flow, hover expand, click poem typing
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/PoetryScroll.ts` — plain TS class drawing a scroll at right-bottom (width*0.88, height*0.78)
+- Idle: golden shimmer gradient animation on top/bottom edges (3s period, sine phase)
+- Hover: partial expansion (40% target, interpolated 0.08 per frame) showing "点击揭帖" label in gold
+- Click: full expansion (800ms) → character-by-character poem typing (50ms per char) with 4 hardcoded stub poems
+- States: idle → hover → expanding → typing → complete, each with stateStartTime tracking
+- Scroll visual: dark purple paper with rounded corners, wooden roller end caps, purple border
+- Poem text: gold color (255,215,0), serif font, vertically centered in expanded scroll area
+- `registerHit(registry)` wires into M2-026 HitRegistry
+- Respects `prefers-reduced-motion` — golden flow disabled
+- Integrated into `CanvasStage.tsx`: poetryScrollRef, draw in rAF loop, resize + cleanup
+
+**Verification (playwright):**
+
+- Idle: 4800 non-transparent pixels in scroll area
+- Hover: cursor → pointer (hit detection confirmed)
+- Click + expansion: 19200 non-transparent pixels (4x bigger area = expanded)
+- Poem typing: 1099 gold pixels at 2.5s → 1137 at 5.5s (character-by-character growth confirmed)
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `ba02ea4`

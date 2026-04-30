@@ -6,6 +6,7 @@ import { CrystalBall } from './CrystalBall';
 import { TarotGroup } from './TarotGroup';
 import { NeonSigns } from './NeonSigns';
 import { BackgroundLayer0 } from './BackgroundLayer0';
+import { BaguaDiagram } from './BaguaDiagram';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -66,7 +67,19 @@ export default function CanvasStage() {
   const tarotRef = useRef<TarotGroup | null>(null);
   const neonRef = useRef<NeonSigns | null>(null);
   const bgLayer0Ref = useRef<BackgroundLayer0 | null>(null);
+  const baguaRef = useRef<BaguaDiagram | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
+  const [baziPanelOpen, setBaziPanelOpen] = useState(false);
+
+  // Escape key listener for bazi panel
+  useEffect(() => {
+    if (!baziPanelOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setBaziPanelOpen(false);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [baziPanelOpen]);
 
   const resize = useCallback(() => {
     const bgCanvas = bgCanvasRef.current;
@@ -90,6 +103,7 @@ export default function CanvasStage() {
     if (tarotRef.current) tarotRef.current.resize(width, height);
     if (neonRef.current) neonRef.current.resize(width, height);
     if (bgLayer0Ref.current) bgLayer0Ref.current.resize(width, height);
+    if (baguaRef.current) baguaRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -148,6 +162,17 @@ export default function CanvasStage() {
     const bgLayer0 = new BackgroundLayer0(width, height);
     bgLayer0Ref.current = bgLayer0;
 
+    // Create bagua diagram
+    const bagua = new BaguaDiagram(width, height);
+    bagua.registerHit(registryRef.current);
+    baguaRef.current = bagua;
+
+    // Listen for bagua click → open bazi panel
+    function onBaguaClick() {
+      setBaziPanelOpen(true);
+    }
+    window.addEventListener('bagua-click', onBaguaClick);
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     let prevBgTime = performance.now();
@@ -180,6 +205,9 @@ export default function CanvasStage() {
 
       // Draw crystal ball
       ball.draw(mainCtx, t, 16.67);
+
+      // Draw bagua diagram
+      bagua.draw(mainCtx, t);
 
       // Draw tarot cards
       tarot.draw(mainCtx, t);
@@ -220,6 +248,9 @@ export default function CanvasStage() {
       neonRef.current = null;
       bgLayer0.destroy();
       bgLayer0Ref.current = null;
+      bagua.destroy();
+      baguaRef.current = null;
+      window.removeEventListener('bagua-click', onBaguaClick);
       mainCanvas.removeEventListener('mousemove', onMouseMove);
       mainCanvas.removeEventListener('click', onMouseClick);
       window.removeEventListener('resize', resize);
@@ -259,22 +290,123 @@ export default function CanvasStage() {
           pointerEvents: 'none',
         }}
       >
-        {/* Placeholder: center text */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            color: 'rgba(200, 180, 230, 0.6)',
-            fontFamily: 'serif',
-            fontSize: '14px',
-            letterSpacing: 4,
-            pointerEvents: 'auto',
-          }}
-        >
-          赛博玄学馆
-        </div>
+        {/* Bazi input panel */}
+        {baziPanelOpen && (
+          <div
+            onClick={() => setBaziPanelOpen(false)}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: 'rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'auto',
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: 'rgba(15, 12, 25, 0.95)',
+                border: '1px solid rgba(168, 85, 247, 0.4)',
+                borderRadius: 12,
+                padding: 24,
+                minWidth: 280,
+                color: 'rgba(200, 180, 230, 0.9)',
+                fontFamily: 'serif',
+              }}
+            >
+              <h3 style={{ margin: '0 0 16px', fontSize: 18, textAlign: 'center' }}>生辰八字</h3>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                <input
+                  id="bazi-year"
+                  placeholder="年"
+                  style={{
+                    flex: 1,
+                    background: 'rgba(168, 85, 247, 0.1)',
+                    border: '1px solid rgba(168, 85, 247, 0.3)',
+                    borderRadius: 6,
+                    padding: '8px 6px',
+                    color: 'rgba(200, 180, 230, 0.9)',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    outline: 'none',
+                  }}
+                />
+                <input
+                  id="bazi-month"
+                  placeholder="月"
+                  style={{
+                    flex: 1,
+                    background: 'rgba(168, 85, 247, 0.1)',
+                    border: '1px solid rgba(168, 85, 247, 0.3)',
+                    borderRadius: 6,
+                    padding: '8px 6px',
+                    color: 'rgba(200, 180, 230, 0.9)',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    outline: 'none',
+                  }}
+                />
+                <input
+                  id="bazi-day"
+                  placeholder="日"
+                  style={{
+                    flex: 1,
+                    background: 'rgba(168, 85, 247, 0.1)',
+                    border: '1px solid rgba(168, 85, 247, 0.3)',
+                    borderRadius: 6,
+                    padding: '8px 6px',
+                    color: 'rgba(200, 180, 230, 0.9)',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    outline: 'none',
+                  }}
+                />
+                <input
+                  id="bazi-hour"
+                  placeholder="时"
+                  style={{
+                    flex: 1,
+                    background: 'rgba(168, 85, 247, 0.1)',
+                    border: '1px solid rgba(168, 85, 247, 0.3)',
+                    borderRadius: 6,
+                    padding: '8px 6px',
+                    color: 'rgba(200, 180, 230, 0.9)',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+              <button
+                onClick={() => {
+                  const year = (document.getElementById('bazi-year') as HTMLInputElement)?.value;
+                  const month = (document.getElementById('bazi-month') as HTMLInputElement)?.value;
+                  const day = (document.getElementById('bazi-day') as HTMLInputElement)?.value;
+                  const hour = (document.getElementById('bazi-hour') as HTMLInputElement)?.value;
+                  console.log('Bazi submit:', { year, month, day, hour });
+                  setBaziPanelOpen(false);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  background: 'rgba(168, 85, 247, 0.3)',
+                  border: '1px solid rgba(168, 85, 247, 0.5)',
+                  borderRadius: 6,
+                  color: 'rgba(200, 180, 230, 0.9)',
+                  fontSize: 15,
+                  cursor: 'pointer',
+                }}
+              >
+                提交
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

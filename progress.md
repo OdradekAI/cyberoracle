@@ -62,6 +62,20 @@
 | M2-016  | ✅ Pass | Session 16 |
 | M2-017  | ✅ Pass | Session 17 |
 | M2-018  | ✅ Pass | Session 18 |
+| M2-019  | ✅ Pass | Session 19 |
+| M2-020  | ✅ Pass | Session 20 |
+| M2-021  | ✅ Pass | Session 21 |
+| M2-022  | ✅ Pass | Session 22 |
+| M2-023  | ✅ Pass | Session 23 |
+| M2-024  | ✅ Pass | Session 24 |
+| M2-025  | ✅ Pass | Session 25 |
+| M2-026  | ✅ Pass | Session 26 |
+| M2-027  | ✅ Pass | Session 27 |
+| M2-028  | ✅ Pass | Session 28 |
+| M2-029  | ✅ Pass | Session 29 |
+| M2-030  | ✅ Pass | Session 30 |
+| M2-031  | ✅ Pass | Session 31 |
+| M2-032  | ✅ Pass | Session 32 |
 
 ### Session 1 — 2026-04-30
 
@@ -879,3 +893,38 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `76e88cd`
+
+---
+
+### Session 32 — 2026-04-30
+
+**Feature:** M2-032 — Bagua diagram with rotation, hover acceleration, click opens bazi input panel
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/BaguaDiagram.ts` — plain TS class drawing octagonal diagram with yin-yang center
+- Idle: rotates clockwise at 20s/revolution, respects `prefers-reduced-motion`
+- Hover: rotation accelerates to 8s/revolution + gold (#9A7B3F) outer glow via shadowBlur
+- Click: dispatches `CustomEvent('bagua-click')` to window for React to pick up
+- Yin-yang center: two halves with arcs + small dots, octagon border with 8 trigram characters (☰☱☲☳☴☵☶☷)
+- `registerHit(registry)` wires into M2-026 HitRegistry for bbox hit detection
+- Integrated into `CanvasStage.tsx`: baguaRef, bagua.draw(mainCtx, t) in rAF loop, resize + cleanup
+- Added bazi input panel in HTML overlay: modal backdrop + inner form with 4 inputs (年/月/日/时) + 提交 button
+- Panel closes on Escape (window-level keydown listener), outside click, or submit
+- Submit reads input values via getElementById and logs to console (real submission deferred)
+- Fixed Escape key: moved from inner div onKeyDown (unfocusable) to window-level useEffect listener
+
+**Verification (playwright):**
+
+- Rendering: 400 non-transparent pixels in 20×20 sample at bagua center (cx=192, cy=324)
+- Cursor: `default` → `pointer` on hover — hit detection confirmed
+- Gold glow: 562 gold-ish pixels in bagua region on hover
+- Click → panel: all 4 inputs present, submit button with "提交", heading "生辰八字"
+- Submit: panel closes, console logs `Bazi submit: {year: 1990, month: 5, day: 15, hour: 14}`
+- Outside click closes panel: confirmed
+- Escape closes panel: confirmed
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** (pending)

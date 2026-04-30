@@ -57,6 +57,7 @@
 | M2-011  | ✅ Pass | Session 11 |
 | M2-012  | ✅ Pass | Session 12 |
 | M2-013  | ✅ Pass | Session 13 |
+| M2-014  | ✅ Pass | Session 14 |
 
 ### Session 1 — 2026-04-30
 
@@ -381,3 +382,28 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `e4a2ae7`
+
+### Session 14 — 2026-04-30
+
+**Feature:** M2-014 — Fallback content service
+**Status:** completed
+
+**What was done:**
+
+- Created `packages/core/src/fallbacks/index.ts` with getPalmFallback(), getFaceFallback(), getDailyFallback(), getCompanionLine()
+- Palm/face fallbacks: full gentle-failure JSON validated against PalmReadingResultSchema/FaceReadingResultSchema
+- Daily fallback: moderate ratings (3-4), dynamic date via `new Date().toLocaleDateString()`
+- Companion line pools: morning(5), idle(5), tap(5), celebrate(3), sad(3)
+- Created `packages/core/src/fallbacks/__tests__/fallbacks.test.ts` with 15 tests
+- Updated barrel export in `packages/core/src/index.ts`
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 150/150 tests pass (17 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** `{pending}`

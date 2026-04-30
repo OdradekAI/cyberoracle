@@ -60,6 +60,7 @@
 | M2-014  | ✅ Pass | Session 14 |
 | M2-015  | ✅ Pass | Session 15 |
 | M2-016  | ✅ Pass | Session 16 |
+| M2-017  | ✅ Pass | Session 17 |
 
 ### Session 1 — 2026-04-30
 
@@ -463,3 +464,27 @@
 - `pnpm -r typecheck`: 7/7 workspace projects pass
 
 **Commit:** `3c9ea8b`
+
+### Session 17 — 2026-04-30
+
+**Feature:** M2-017 — PalmReadingPoster full satori long-image template
+**Status:** completed
+
+**What was done:**
+
+- Created `packages/poster/src/components/PalmReadingPoster.tsx` with 6-module layout per docs/2satori长图组件.md §七
+- Modules: title area → left PalmDiagram + right overview card → 3 mainLines with Heart/Brain/Leaf icons → auxiliary with Signpost/Wave icons → temperament → summary with scene illustration (Mountain/River/Cloud/Lotus selected by data.summary.illustration) → disclaimer → watermark
+- Defined `PalmReadingPosterData` interface locally (avoids poster→core tsconfig rootDir constraint)
+- Supports web/desktop source variant, optional QR data URL, custom date
+- Created test file with 8 tests: sample data, watermark, QR, all 4 illustrations, 3 auxiliary items, desktop variant
+
+**What failed / remaining:**
+
+- Initial version imported `PalmReadingResult` type from `@cyberoracle/core`, but poster's tsconfig has `rootDir: ./src` which forbids resolving external TS source. Fixed by defining the data interface locally.
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/poster test`: 58/58 tests pass (6 files)
+- `pnpm -r typecheck`: 7/7 workspace projects pass
+
+**Commit:** `{pending}`

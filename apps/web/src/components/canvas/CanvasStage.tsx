@@ -3,6 +3,7 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { HitRegistry } from './hit-detection';
 import { CrystalBall } from './CrystalBall';
+import { TarotGroup } from './TarotGroup';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -60,6 +61,7 @@ export default function CanvasStage() {
   const frameCountRef = useRef(0);
   const registryRef = useRef<HitRegistry>(new HitRegistry());
   const crystalBallRef = useRef<CrystalBall | null>(null);
+  const tarotRef = useRef<TarotGroup | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
 
   const resize = useCallback(() => {
@@ -79,6 +81,9 @@ export default function CanvasStage() {
       const ctx = canvas.getContext('2d');
       if (ctx) ctx.scale(dpr, dpr);
     }
+
+    if (crystalBallRef.current) crystalBallRef.current.resize(width, height);
+    if (tarotRef.current) tarotRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -119,6 +124,11 @@ export default function CanvasStage() {
     ball.registerHit(registryRef.current);
     crystalBallRef.current = ball;
 
+    // Create tarot card group
+    const tarot = new TarotGroup(width, height);
+    tarot.registerHit(registryRef.current);
+    tarotRef.current = tarot;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     function drawBackground() {
@@ -145,6 +155,9 @@ export default function CanvasStage() {
       // Draw crystal ball
       ball.draw(mainCtx, t, 16.67);
 
+      // Draw tarot cards
+      tarot.draw(mainCtx, t);
+
       rafRef.current = requestAnimationFrame(mainLoop);
     }
     rafRef.current = requestAnimationFrame(mainLoop);
@@ -158,6 +171,7 @@ export default function CanvasStage() {
       const my = e.clientY - rect.top;
       registryRef.current.handleMouseMove(mx, my);
       ball.setMousePosition(mx, my);
+      tarot.setMousePosition(mx, my);
     }
     function onMouseClick(e: MouseEvent) {
       const mc = mainCanvasRef.current;
@@ -174,6 +188,8 @@ export default function CanvasStage() {
       cancelAnimationFrame(rafRef.current);
       ball.destroy();
       crystalBallRef.current = null;
+      tarot.destroy();
+      tarotRef.current = null;
       mainCanvas.removeEventListener('mousemove', onMouseMove);
       mainCanvas.removeEventListener('click', onMouseClick);
       window.removeEventListener('resize', resize);

@@ -756,3 +756,31 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `20c4d8f`
+
+---
+
+### Session 28 — 2026-04-30
+
+**Feature:** M2-029 — Tarot cards with idle float, hover tilt, click flip
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/TarotGroup.ts` — plain TS class drawing 5 tarot cards to main canvas
+- Idle state: vertical float (4px amplitude, 3s period, staggered phase per card), ±2° sway rotation, dark purple card backgrounds with `?` symbol and subtle glow border
+- Hover state: card rises 12px, scales 1.1x, glow intensifies with shadowBlur; siblings dim to 70% opacity + recede 4px; 3D tilt follows mouse via perspective transform
+- Click flip: cosine easing over 300ms (decelerate-to-mid-accelerate), front face (dark card back) ↔ back face (symbol + label + meaning text); second click unflips
+- 5 card faces with symbols (☀/★/☽/⚡/❋) and Chinese fortune meanings
+- All 5 cards register individually with M2-026 HitRegistry for bbox hit detection
+- Integrated into CanvasStage.tsx: tarotRef, tarot.draw() in rAF loop, tarot.setMousePosition() in mouse handler, resize + cleanup
+- Fixed TypeScript error: `showFront` → `showingFront` variable name mismatch
+
+**Verification (playwright):**
+
+- 26 non-transparent pixel samples in card region confirm rendering
+- Cursor changes to `pointer` on all 5 individual card positions, returns to `default` when away
+- Sibling dimming: card 1 alpha drops from 255 to 178 (~70%) when card 0 hovered
+- Click flip: pixel colors change after first click (front→back)
+- Click unflip: pixel colors change back after second click (back→front)
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass

@@ -52,6 +52,7 @@
 | M2-006  | ✅ Pass | Session 6 |
 | M2-007  | ✅ Pass | Session 7 |
 | M2-008  | ✅ Pass | Session 8 |
+| M2-009  | ✅ Pass | Session 9 |
 
 ### Session 1 — 2026-04-30
 
@@ -249,3 +250,27 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `0c0a025`
+
+### Session 9 — 2026-04-30
+
+**Feature:** M2-009 — Create reading-write-face.md prompt file
+**Status:** completed
+
+**What was done:**
+
+- Created `packages/core/prompts/reading-write-face.md` per docs §六 with frontmatter (version v2.1, targetModel deepseek-v3/qwen-plus/gpt-4o-mini, temperature 0.7, maxTokens 1500, outputFormat json)
+- System section includes <<include:safety-rules>> and <<include:tone-guidelines>>
+- Body covers: 特别强调 (4 face compliance points: 不评价美丑/不预测健康/不涉及姻缘事件/映射到性格倾向), 撰写原则 (7 items), 输出 Schema, 输出要求, 1 完整示例 (沉稳内蕴型)
+- ---USER--- separator with {{observations}} template variable
+- Test file with 12 tests: load/version/outputFormat/targetModel/maxTokens, include markers, expandIncludes resolution, 特别强调 section with 4 compliance points, schema fields, face disclaimer, example output, user template, fillTemplate substitution
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/core test`: 121/121 tests pass (15 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** `{pending}`

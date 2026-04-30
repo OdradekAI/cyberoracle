@@ -54,6 +54,7 @@
 | M2-008  | ✅ Pass | Session 8  |
 | M2-009  | ✅ Pass | Session 9  |
 | M2-010  | ✅ Pass | Session 10 |
+| M2-011  | ✅ Pass | Session 11 |
 
 ### Session 1 — 2026-04-30
 
@@ -299,3 +300,30 @@
 - `pnpm typecheck`: 11/11 packages pass
 
 **Commit:** `3c5c6a4`
+
+### Session 11 — 2026-04-30
+
+**Feature:** M2-011 — VLM client with provider chain
+**Status:** completed
+
+**What was done:**
+
+- Created `apps/server/src/lib/vlm-client.ts` with `callVLM(options)` function
+- Provider chain: Qwen VL-Max → GLM-4V → GPT-4o (fallback order per PRD §4.4)
+- API keys read from process.env (QWEN_API_KEY, GLM_API_KEY, OPENAI_API_KEY) — never logged
+- Providers without API keys are skipped; NoProviderAvailableError if none available
+- Returns raw string content (caller responsible for JSON.parse + Zod validation)
+- Image input supported via content array with `image_url` type in messages
+- Non-200 responses trigger fallback to next provider
+- 9 unit tests: no keys error, all fail error, Qwen first, GLM fallback, GPT ultimate fallback, skip providers without keys, temperature/maxTokens forwarding, API key never logged, non-200 response handling
+
+**What failed / remaining:**
+
+- None
+
+**Verification:**
+
+- `pnpm --filter @cyberoracle/server test`: 12/12 tests pass (2 files)
+- `pnpm typecheck`: 11/11 packages pass
+
+**Commit:** `{pending}`

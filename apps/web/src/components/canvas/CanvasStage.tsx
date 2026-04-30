@@ -8,6 +8,7 @@ import { NeonSigns } from './NeonSigns';
 import { BackgroundLayer0 } from './BackgroundLayer0';
 import { BaguaDiagram } from './BaguaDiagram';
 import { PalmDiagram } from './PalmDiagram';
+import { FortuneSticks } from './FortuneSticks';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -70,6 +71,7 @@ export default function CanvasStage() {
   const bgLayer0Ref = useRef<BackgroundLayer0 | null>(null);
   const baguaRef = useRef<BaguaDiagram | null>(null);
   const palmDiagramRef = useRef<PalmDiagram | null>(null);
+  const fortuneSticksRef = useRef<FortuneSticks | null>(null);
   const [cursor, setCursor] = useState<React.CSSProperties['cursor']>('default');
   const [baziPanelOpen, setBaziPanelOpen] = useState(false);
 
@@ -107,6 +109,7 @@ export default function CanvasStage() {
     if (bgLayer0Ref.current) bgLayer0Ref.current.resize(width, height);
     if (baguaRef.current) baguaRef.current.resize(width, height);
     if (palmDiagramRef.current) palmDiagramRef.current.resize(width, height);
+    if (fortuneSticksRef.current) fortuneSticksRef.current.resize(width, height);
   }, []);
 
   useEffect(() => {
@@ -187,6 +190,11 @@ export default function CanvasStage() {
     }
     window.addEventListener('palm-diagram-click', onPalmDiagramClick);
 
+    // Create fortune stick containers
+    const fortuneSticks = new FortuneSticks(width, height);
+    fortuneSticks.registerHit(registryRef.current);
+    fortuneSticksRef.current = fortuneSticks;
+
     // Layer 2: Background canvas — stamp static bg + slow animations (~10fps)
     const BG_FRAME_SKIP = 6; // update every 6th frame (~10fps at 60fps)
     let prevBgTime = performance.now();
@@ -229,6 +237,9 @@ export default function CanvasStage() {
       // Draw palm diagram
       palmDiagram.draw(mainCtx, t);
 
+      // Draw fortune stick containers
+      fortuneSticks.draw(mainCtx, t);
+
       rafRef.current = requestAnimationFrame(mainLoop);
     }
     rafRef.current = requestAnimationFrame(mainLoop);
@@ -269,6 +280,8 @@ export default function CanvasStage() {
       baguaRef.current = null;
       palmDiagram.destroy();
       palmDiagramRef.current = null;
+      fortuneSticks.destroy();
+      fortuneSticksRef.current = null;
       window.removeEventListener('bagua-click', onBaguaClick);
       window.removeEventListener('palm-diagram-click', onPalmDiagramClick);
       mainCanvas.removeEventListener('mousemove', onMouseMove);

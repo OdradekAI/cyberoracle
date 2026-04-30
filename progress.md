@@ -77,6 +77,7 @@
 | M2-031  | ✅ Pass | Session 31 |
 | M2-032  | ✅ Pass | Session 32 |
 | M2-033  | ✅ Pass | Session 33 |
+| M2-034  | ✅ Pass | Session 34 |
 
 ### Session 1 — 2026-04-30
 
@@ -961,3 +962,35 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `404591a`
+
+---
+
+### Session 34 — 2026-04-30
+
+**Feature:** M2-034 — Fortune stick containers with idle glow, hover tooltip, click shake + stick fly-out
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/FortuneSticks.ts` — plain TS class with 3 stick containers
+- 3 containers (姻缘/事业/财运) laid horizontally at left-lower area (width*0.15, height*0.72)
+- Idle: each container has a purple glow pillar rising from inside with breathing L2 (3s period) and staggered phase
+- Container outline: rounded rect with purple stroke, 4 thin stick lines visible above rim
+- Hover: glow intensifies, label enlarges 1.15x, tooltip "Click to draw" fades in after 300ms delay
+- Click: container shakes (5 frames at 50ms intervals, ±4px offset) → stick flies up with spring physics (0.4s rise + 0.2s bounce settle) → fortune text (e.g. 大吉) fades in character-by-character at 80ms/char → auto-reset after 3s
+- Fortune text pool: [大吉, 中吉, 小吉, 吉, 末吉, 凶, 小凶, 大吉] — randomly selected on click
+- Each container registers individually with M2-026 HitRegistry (ids: fortune-stick-姻缘, fortune-stick-事业, fortune-stick-财运)
+- Respects `prefers-reduced-motion`
+- Integrated into `CanvasStage.tsx`: fortuneSticksRef, fortuneSticks.draw(mainCtx, t) in rAF loop, resize + cleanup
+
+**Verification (playwright):**
+
+- 3 containers render: each has ~2900 purple pixels — confirmed
+- Cursor: `default` → `pointer` on middle container — hit detection confirmed
+- Tooltip: 244 light pixels above container after 400ms hover — "Click to draw" confirmed
+- Click animation: 212 white pixels (stick body) + 30 gold pixels (fortune text) after 1.2s — shake + fly-out + text reveal confirmed
+- Console: `Fortune stick drawn (事业): 大吉` — click handler confirmed
+- Zero console errors
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** (pending)

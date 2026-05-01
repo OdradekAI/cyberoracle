@@ -6,11 +6,11 @@ test.describe('Web smoke tests', () => {
     await expect(page).toHaveTitle(/赛博玄学馆|CyberOracle/);
   });
 
-  test('home page renders content from workspace packages', async ({ page }) => {
+  test('home page renders canvas with 4-layer architecture', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('text=@cyberoracle/core')).toBeVisible();
-    await expect(page.locator('text=@cyberoracle/poster')).toBeVisible();
-    await expect(page.locator('text=@cyberoracle/ui')).toBeVisible();
+    const canvases = page.locator('canvas');
+    await expect(canvases).toHaveCount(2);
+    await expect(canvases.first()).toBeVisible();
   });
 });
 

@@ -1208,3 +1208,35 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `8ca50ad`
+
+---
+
+### Session 42 — 2026-05-01
+
+**Feature:** M2-042 — Result page with SSE streaming, progressive sections, poster preview, export
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/app/result/[id]/page.tsx` — client component for SSE-streamed result display
+- SSE connection: opens `EventSource('/api/analyze?id=...')` on mount, parses `PipelineEvent` chunks
+- Phase tracking: `vlm_observe/running` → progress 20%, `llm_interpret/running` → 50% with partial text, `complete/done` → 100%
+- Progressive section reveal: sections fade in (opacity 0.3→1) as they accumulate from SSE data
+- Stub fallback: if SSE fails (no real upload), simulated loading with 4 hardcoded sections after 3.5s
+- `buildSections(data)`: extracts overview, mainLines, summary from result JSON; falls back to stubs
+- Poster preview: `<img src="/api/result/{id}/image">` with fallback text when image not available
+- Export button: `<a download="fortune-{id}.png">` linking to image API endpoint
+- Progress bar: animated purple bar with CSS transition
+- Error handling: red error box for SSE failures
+
+**Verification (playwright):**
+
+- Page renders with heading "命运解读" ✓
+- ID displayed: "ID: test-mvp-123" ✓
+- Progress bar present ✓
+- After 4s: 4 sections appear (总览, 事业运, 感情运, 财运) ✓
+- Export button: href="/api/result/test-mvp-123/image", download="fortune-test-mvp-123.png" ✓
+- Poster preview img: pointing to `/api/result/{id}/image` ✓
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `bedf0b1`

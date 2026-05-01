@@ -80,6 +80,7 @@
 | M2-034  | ✅ Pass | Session 34 |
 | M2-035  | ✅ Pass | Session 35 |
 | M2-043  | ✅ Pass | Session 43 |
+| M2-044  | ✅ Pass | Session 44 |
 
 ### Session 1 — 2026-04-30
 
@@ -1274,3 +1275,34 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `604e64f`
+
+---
+
+### Session 44 — 2026-05-01
+
+**Feature:** M2-044 — Share page + Download page stub
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/app/share/[id]/page.tsx` — server component with SEO metadata (title, description, og:tags)
+- Sticky CTA bar at top: "获得更深度的玄学体验" + link to /download
+- Result content rendered via iframe to /result/{id} (reuses existing result page)
+- Created `apps/web/src/app/download/page.tsx` — coming-soon page with:
+  - Hero section with crystal ball icon
+  - 3 feature bullets: Live2D 桌面伙伴, 全局快捷呼出, 本地加密历史
+  - 3 platform buttons: macOS Universal, Windows x64, Linux AppImage — all disabled with "即将上线" label
+  - Back to home link
+  - SEO metadata with title and description
+- Fixed ESLint: unused `params` in `generateMetadata` → `params: _params`
+- Playwright test: 4/4 pass
+
+**Verification (playwright):**
+
+- Share page: CTA bar visible, sticky position confirmed, iframe loads result content ✓
+- Share SEO: title contains "命运解读 — 赛博玄学馆", og:title present ✓
+- Download page: 3 feature bullets, 3 "即将上线" labels, 3 platform names ✓
+- Download SEO: title "下载桌面版 — 赛博玄学馆", meta description contains Live2D ✓
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `bf556d6`

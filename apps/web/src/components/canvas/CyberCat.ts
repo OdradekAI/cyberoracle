@@ -32,6 +32,8 @@ export class CyberCat {
   private unregisterHit: (() => void) | null = null;
   private reducedMotion = false;
   private onDrawFortune: (() => void) | null = null;
+  private onClickNotify: (() => void) | null = null;
+  private bellyUp = false;
 
   constructor(
     private width: number,
@@ -45,6 +47,14 @@ export class CyberCat {
 
   setDrawFortuneCallback(cb: () => void): void {
     this.onDrawFortune = cb;
+  }
+
+  setClickCallback(cb: () => void): void {
+    this.onClickNotify = cb;
+  }
+
+  setBellyUp(value: boolean): void {
+    this.bellyUp = value;
   }
 
   registerHit(registry: HitRegistry): void {
@@ -64,6 +74,9 @@ export class CyberCat {
         this.hovered = false;
       },
       onClick: () => {
+        if (this.onClickNotify) {
+          this.onClickNotify();
+        }
         if (this.onDrawFortune) {
           this.onDrawFortune();
         }
@@ -81,6 +94,11 @@ export class CyberCat {
 
     ctx.save();
     ctx.translate(this.cx, this.cy);
+
+    // Belly-up easter egg: flip cat upside down
+    if (this.bellyUp) {
+      ctx.rotate(Math.PI);
+    }
 
     // Head tilt toward cursor on hover
     if (this.hovered) {

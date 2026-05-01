@@ -15,6 +15,7 @@ import { PoetryScroll } from './PoetryScroll';
 import { AmbientParticles } from './ambient-particles';
 import { ParticleBurst } from './particle-burst';
 import { getPerformanceTier, getTierConfig } from './perf-tier';
+import { EasterEggs, verifyRhythmLayering } from './easter-eggs';
 
 /**
  * 4-layer canvas rendering architecture:
@@ -87,6 +88,9 @@ export default function CanvasStage() {
   const [baziPanelOpen, setBaziPanelOpen] = useState(false);
   const [speechBubble, setSpeechBubble] = useState<string | null>(null);
   const speechTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const easterEggsRef = useRef<EasterEggs>(new EasterEggs());
+  const [midnightFilter, setMidnightFilter] = useState<string | null>(null);
+  const [midnightText, setMidnightText] = useState<string | null>(null);
 
   // Escape key listener for bazi panel
   useEffect(() => {
@@ -147,6 +151,21 @@ export default function CanvasStage() {
       canvas.style.height = `${height}px`;
       const ctx = canvas.getContext('2d');
       if (ctx) ctx.scale(dpr, dpr);
+    }
+
+    // Easter eggs: midnight check
+    const ee = easterEggsRef.current;
+    ee.checkMidnight();
+    setMidnightFilter(ee.getMidnightFilter());
+    if (ee.getMidnightText()) {
+      setMidnightText(ee.getMidnightText());
+      setTimeout(() => setMidnightText(null), 3000);
+    }
+
+    // Rhythm layering verification (dev-only)
+    const rhythm = verifyRhythmLayering();
+    if (!rhythm.valid) {
+      console.warn('[Rhythm] Layering warnings:', rhythm.warnings);
     }
 
     // Layer 1: OffscreenCanvas — render static background once
@@ -228,6 +247,12 @@ export default function CanvasStage() {
     cyberCat.registerHit(registryRef.current);
     cyberCat.setDrawFortuneCallback(() => {
       fortuneSticks.triggerDraw();
+    });
+    cyberCat.setClickCallback(() => {
+      const bellyUp = easterEggsRef.current.onCatClick(performance.now());
+      if (bellyUp) {
+        cyberCat.setBellyUp(true);
+      }
     });
     cyberCatRef.current = cyberCat;
 
@@ -312,6 +337,10 @@ export default function CanvasStage() {
       fortuneSticks.draw(mainCtx, t);
 
       // Draw cyber cat
+      // Check belly-up expiry
+      if (!easterEggsRef.current.isBellyUp(t)) {
+        cyberCat.setBellyUp(false);
+      }
       cyberCat.draw(mainCtx, t);
 
       // Draw poetry scroll
@@ -374,6 +403,7 @@ export default function CanvasStage() {
       ambientParticlesRef.current = null;
       particleBurst.destroy();
       particleBurstRef.current = null;
+      ee.destroy();
       window.removeEventListener('bagua-click', onBaguaClick);
       window.removeEventListener('palm-diagram-click', onPalmDiagramClick);
       mainCanvas.removeEventListener('mousemove', onMouseMove);
@@ -383,7 +413,15 @@ export default function CanvasStage() {
   }, [resize]);
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div
+      style={{
+        position: 'relative',
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        filter: midnightFilter ?? undefined,
+      }}
+    >
       <canvas
         ref={bgCanvasRef}
         style={{
@@ -415,6 +453,25 @@ export default function CanvasStage() {
           pointerEvents: 'none',
         }}
       >
+        {/* Midnight easter egg text */}
+        {midnightText && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 20,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              color: 'rgba(100, 150, 200, 0.8)',
+              fontFamily: 'serif',
+              fontSize: 22,
+              letterSpacing: 8,
+              pointerEvents: 'none',
+            }}
+          >
+            {midnightText}
+          </div>
+        )}
+
         {/* Bazi input panel */}
         {baziPanelOpen && (
           <div

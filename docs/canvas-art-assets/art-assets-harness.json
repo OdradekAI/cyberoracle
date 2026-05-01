@@ -1,0 +1,1044 @@
+{
+  "_comment": "Art assets harness for CyberOracle Canvas. This follows the structure of .claude/skills/cyberoracle-harness/templates/feature-list.json, but each feature describes an art-production unit instead of an engineering feature. priority: lower = earlier. passes=false means not yet production-ready. referenceImages point to local repo images that should be used as visual anchors.",
+  "milestone": "ART-ASSETS-M0-M4",
+  "milestoneTitle": "Canvas 游戏化美术资源生产清单",
+  "sourceDocs": [
+    "docs/inspiration.png (primary visual target)",
+    "docs/6canvas动态化交互设计spec.md (Canvas interaction and motion spec)",
+    "docs/canvas-art-assets/IMAGE2_PRODUCTION_SPEC.md (image2 production guidance)",
+    "docs/canvas-art-assets/DYNAMIC_EFFECT_TECH_PLAN.md (dynamic effect technical plan)",
+    "docs/canvas-art-assets/ART_ASSET_PRODUCTION_PLAN.md (art production plan)",
+    "docs/canvas-art-assets/raster/crop-guide.json (first-pass crop coordinates)",
+    "docs/canvas-art-assets/prompts/image2-prompts.jsonl (batch prompt source)"
+  ],
+  "globalArtDirection": {
+    "style": "premium 2D anime game art, cyberpunk occult fortune telling booth, high-fidelity gacha/event-screen polish",
+    "palette": ["#A855F7", "#22D3EE", "#F472B6", "#F59E0B", "#0B0420"],
+    "focusRules": [
+      "Crystal orb is always the brightest primary focus",
+      "Oracle face and hands are secondary focus",
+      "Cat, fortune sticks, bagua, palm panel and scroll are readable interaction entrances but must not steal focus",
+      "Important Chinese text should be rendered by Canvas or HTML, not baked into AI art",
+      "All clickable assets need idle micro-motion with amplitude <= 5%"
+    ],
+    "runtimePrinciple": "Use high-resolution bitmap sprites for detail and Canvas for drawImage, transform, state, VFX, hit detection and performance degradation."
+  },
+  "referenceImages": {
+    "primaryInspiration": "docs/inspiration.png",
+    "masterKeyArt": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png",
+    "backgroundPlateConcept": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-background-plate-v2.png",
+    "propAtlasConcept": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+    "oracleCharacterSheetConcept": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-oracle-character-sheet.png",
+    "uiVfxAtlasConcept": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-ui-vfx-atlas-v2.png"
+  },
+  "recommendedOutputRoot": "apps/web/public/canvas-assets",
+  "features": [
+    {
+      "id": "ART-001",
+      "category": "art-foundation",
+      "module": "visual-direction",
+      "assetCategory": "key-art",
+      "description": "主视觉基准图与风格锁定，用来统一所有后续资产的精细度、构图、光照和材质密度",
+      "order": 1,
+      "functionRole": "作为整个 art-assets 流程的视觉验收基准，不直接作为 runtime 交互背景",
+      "renderLayer": "reference-only",
+      "interactionEntry": "none",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png"
+      ],
+      "outputAssets": [
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png",
+        "docs/canvas-art-assets/art-review/contact-sheet-key-art.png"
+      ],
+      "actions": [
+        "Compare against inspiration image",
+        "Lock composition hierarchy",
+        "Extract palette and material notes",
+        "Use as QA target for all later sprites"
+      ],
+      "prompt": "Premium 2D anime game key art, cyberpunk occult fortune telling booth, central glowing crystal orb, white-haired oracle girl, tarot cards, bagua, holographic palm panel, cyber cat, fortune sticks, poem scroll, robotic arm, neon purple cyan magenta lighting, dense game event screen polish, high fidelity materials, no readable text.",
+      "acceptanceSteps": [
+        "第一眼焦点是水晶球，其次是占卜师脸和手",
+        "画面复杂但中心区域不混乱",
+        "紫/青/品红/暗金色关系与 inspiration.png 接近",
+        "可识别 9 个交互入口的视觉雏形",
+        "不得出现大量错误中文文字作为关键内容"
+      ],
+      "testStrategy": "manual",
+      "priority": 1,
+      "dependsOn": [],
+      "passes": false
+    },
+    {
+      "id": "ART-002",
+      "category": "background",
+      "module": "L0-background",
+      "assetCategory": "background-plate",
+      "description": "无主角背景底板，承载赛博玄学馆空间氛围，并给中心水晶球、角色和道具留出可读空间",
+      "order": 2,
+      "functionRole": "Canvas L0/L1 静态底图；OffscreenCanvas 预渲染，程序叠加暗角、代码雨、远景粒子和低频霓虹呼吸",
+      "renderLayer": "L0-background",
+      "interactionEntry": "none",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-background-plate-v2.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png"
+      ],
+      "outputAssets": [
+        "backgrounds/cyber-booth-bg@1x.webp",
+        "backgrounds/cyber-booth-bg@2x.webp",
+        "backgrounds/cyber-booth-bg-source.png"
+      ],
+      "actions": [
+        "Generate or select background plate",
+        "Remove baked main character and central major props",
+        "Keep central area clear",
+        "Export 1920px and 1280px WebP runtime versions",
+        "Prepare optional darker mobile crop"
+      ],
+      "prompt": "Premium 2D anime game background plate, cyberpunk occult fortune telling booth at night, neon purple and cyan lighting, dense futuristic city details, hanging lanterns, holographic signs, wet reflective table, central area intentionally clear for a crystal orb and character overlay, no main character, no readable text, high fidelity environment art, game event screen polish, 16:9.",
+      "acceptanceSteps": [
+        "中间 40% 区域能放下水晶球、塔罗和角色，不被背景细节干扰",
+        "远景细节丰富，但眯眼看时不会抢过中心焦点",
+        "边缘霓虹亮度低于中心水晶球预期谷值",
+        "WebP 后 1920px 版本体积建议小于 1.5MB",
+        "没有不可修复的错误文字或突兀 logo"
+      ],
+      "testStrategy": "manual",
+      "priority": 2,
+      "dependsOn": ["ART-001"],
+      "passes": false
+    },
+    {
+      "id": "ART-003",
+      "category": "runtime-manifest",
+      "module": "asset-config",
+      "assetCategory": "manifest",
+      "description": "建立 Canvas runtime 美术资源 manifest，统一记录图片路径、图层、锚点、命中区域、默认位置和加载优先级",
+      "order": 3,
+      "functionRole": "让后续 AssetLoader、HitRegistry 和 SpriteEntity 可以稳定消费美术资源",
+      "renderLayer": "config",
+      "interactionEntry": "all",
+      "referenceImages": [
+        "docs/canvas-art-assets/raster/crop-guide.json",
+        "docs/canvas-art-assets/raster/raster-asset-manifest.json"
+      ],
+      "outputAssets": ["manifest.json", "manifest.schema.json"],
+      "actions": [
+        "Define asset id naming",
+        "Record naturalSize and anchor",
+        "Record render layer and zIndex",
+        "Record hit shapes",
+        "Mark preload tier P0/P1/P2",
+        "Map every runtime sprite to source reference"
+      ],
+      "prompt": "",
+      "acceptanceSteps": [
+        "每个 P0/P1 sprite 都有 id、src、naturalSize、anchor、layer、hit、preloadTier",
+        "所有 id 使用英文 kebab-case",
+        "可点击元素 hitbox 比视觉区域略大 8-12px",
+        "manifest 能明确追溯到 sourceReference",
+        "JSON 可被 Node JSON.parse 正常解析"
+      ],
+      "testStrategy": "manual",
+      "priority": 3,
+      "dependsOn": ["ART-002"],
+      "passes": false
+    },
+    {
+      "id": "ART-004",
+      "category": "core-prop",
+      "module": "crystal-orb",
+      "assetCategory": "interactive-sprite",
+      "description": "核心水晶球 sprite、底座、辉光和玻璃高光层，是主功能综合运势占卜的视觉中心",
+      "order": 4,
+      "functionRole": "P0 主交互入口；承载 idle 呼吸、hover、press、四幕占卜流程、粒子爆发和结果揭晓",
+      "renderLayer": "L2-main",
+      "interactionEntry": "综合运势占卜",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideId": "crystal-orb-large"
+      },
+      "outputAssets": [
+        "sprites/crystal-orb-base.png",
+        "sprites/crystal-orb.webp",
+        "sprites/crystal-orb-glow.webp",
+        "sprites/crystal-orb-glass-highlight.webp",
+        "sprites/crystal-orb-inner-mask.webp"
+      ],
+      "actions": [
+        "Crop from prop atlas",
+        "Remove background manually",
+        "Repair glass and glow edge",
+        "Export glow mask",
+        "Export runtime WebP",
+        "Configure circular hit region and anchor [0.5, 0.73]"
+      ],
+      "motionSpec": {
+        "idle": "scale 1.00-1.015, 2s period, inner fog rotation, base emits 5-10 particles/s",
+        "hover": "scale 1.05, glow alpha up, inner fog follows mouse, feedback <100ms",
+        "press": "scale 0.95 within 50ms then rebound",
+        "sequence": "setup 0-300ms, buildup 300-2200ms, climax freeze 2200-2400ms, resolution 2400-4500ms"
+      },
+      "prompt": "High fidelity glowing crystal orb on ornate cyberpunk mechanical base, transparent-background game sprite, glass material, purple cyan inner nebula, occult circular markings, emissive rim light, clean silhouette, generous transparent padding, no readable text.",
+      "acceptanceSteps": [
+        "透明边缘干净，玻璃不出现硬锯齿",
+        "本体和 glow 可以分开绘制",
+        "缩放到 512px 仍能看出玻璃、底座和内部细节",
+        "中心亮度足以成为全画面第一焦点",
+        "命中区域为球体圆形，不包括过多底座空白"
+      ],
+      "testStrategy": "manual",
+      "priority": 4,
+      "dependsOn": ["ART-003"],
+      "passes": false
+    },
+    {
+      "id": "ART-005",
+      "category": "core-prop",
+      "module": "tarot-cards",
+      "assetCategory": "interactive-sprite-set",
+      "description": "5 张塔罗牌背面、正面模板和辉光层，用于每日一抽和水晶球四幕流程中的飞牌/翻牌",
+      "order": 5,
+      "functionRole": "P0 交互入口；承担 idle 浮动、hover 聚焦、click 翻牌、buildup 飞入、climax 选中",
+      "renderLayer": "L2-main",
+      "interactionEntry": "塔罗占卜",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-ui-vfx-atlas-v2.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideIds": [
+          "tarot-card-01",
+          "tarot-card-02",
+          "tarot-card-03",
+          "tarot-card-04",
+          "tarot-card-05"
+        ]
+      },
+      "outputAssets": [
+        "sprites/tarot-card-01-back.webp",
+        "sprites/tarot-card-02-back.webp",
+        "sprites/tarot-card-03-back.webp",
+        "sprites/tarot-card-04-back.webp",
+        "sprites/tarot-card-05-back.webp",
+        "sprites/tarot-card-front-template.webp",
+        "sprites/tarot-card-glow.webp"
+      ],
+      "actions": [
+        "Crop 5 card backs",
+        "Create or generate one clean front template",
+        "Remove unreadable baked text",
+        "Export glow outline mask",
+        "Configure rectangular hitboxes",
+        "Record per-card phase offsets"
+      ],
+      "motionSpec": {
+        "idle": "float amplitude 4px, 3s period, phase stagger, sway +/-2deg",
+        "hover": "rise 12px, scale 1.1, siblings dim to 70%, feedback <100ms",
+        "click": "flip 300ms, scaleX 1->0->1, reveal card meaning",
+        "sequence": "fly into crystal orbit during buildup; selected card remains at climax"
+      },
+      "prompt": "Five ornate tarot card game sprites, cyberpunk occult design, purple black gold palette, glowing geometric celestial backs, clean front template, separated objects with generous spacing, transparent background preferred, high fidelity card material, no readable text.",
+      "acceptanceSteps": [
+        "5 张牌风格一致但图案有差异",
+        "牌面缩小到 runtime 尺寸仍清晰",
+        "正面模板可以承载程序绘制的中文牌意",
+        "hover glow 不遮挡牌面细节",
+        "翻牌时正反面比例一致"
+      ],
+      "testStrategy": "manual",
+      "priority": 5,
+      "dependsOn": ["ART-004"],
+      "passes": false
+    },
+    {
+      "id": "ART-006",
+      "category": "side-prop",
+      "module": "bagua-dial",
+      "assetCategory": "interactive-sprite",
+      "description": "八卦阴阳盘透明 sprite，用于八字精批入口",
+      "order": 6,
+      "functionRole": "P1 交互入口；承担左侧玄学符号识别、低速旋转和 hover 加速",
+      "renderLayer": "L2-side",
+      "interactionEntry": "八字测算",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideId": "bagua-dial"
+      },
+      "outputAssets": [
+        "sprites/bagua-dial.webp",
+        "sprites/bagua-dial-glow.webp",
+        "sprites/bagua-dial-gold-outline.webp"
+      ],
+      "actions": [
+        "Crop bagua dial",
+        "Clean circular edge",
+        "Remove broken text if necessary",
+        "Create hover gold outline",
+        "Configure circular hitbox"
+      ],
+      "motionSpec": {
+        "idle": "clockwise rotation, 20s period",
+        "hover": "rotation accelerates to 8s period, gold glow",
+        "click": "open bazi input overlay"
+      },
+      "prompt": "Neon bagua yin-yang dial game sprite, cyberpunk occult hologram, cyan purple glow, circular clean silhouette, detailed trigram rings, transparent background, no readable text, high fidelity 2D game prop.",
+      "acceptanceSteps": [
+        "圆形边缘干净，旋转时不跳边",
+        "阴阳与八卦符号可识别",
+        "hover 金色描边能与冷色背景区分",
+        "整体亮度低于水晶球",
+        "作为左侧入口可读但不抢主焦点"
+      ],
+      "testStrategy": "manual",
+      "priority": 6,
+      "dependsOn": ["ART-003"],
+      "passes": false
+    },
+    {
+      "id": "ART-007",
+      "category": "side-prop",
+      "module": "palm-panel",
+      "assetCategory": "interactive-sprite",
+      "description": "手相分析全息面板和掌纹发光层，用于上传手掌照片或 AI 手相分析入口",
+      "order": 7,
+      "functionRole": "P2 交互入口；承担右上信息面板、扫描线和掌纹循环点亮",
+      "renderLayer": "L2-side",
+      "interactionEntry": "手相分析",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-ui-vfx-atlas-v2.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideId": "palm-panel"
+      },
+      "outputAssets": [
+        "sprites/palm-panel.webp",
+        "sprites/palm-lines-glow.webp",
+        "vfx/scan-line.webp"
+      ],
+      "actions": [
+        "Crop holographic panel",
+        "Separate palm line glow if possible",
+        "Create scan-line VFX",
+        "Remove unreadable baked annotations",
+        "Configure rectangular hitbox"
+      ],
+      "motionSpec": {
+        "idle": "panel breathes subtly; three palm lines light up in cycle",
+        "hover": "all lines illuminate; scan line sweeps vertically in 1.2s",
+        "click": "open upload or palm analysis modal"
+      },
+      "prompt": "Holographic palm reading panel game sprite, cyberpunk transparent UI glass, glowing hand outline and palm lines, cyan purple neon, clean rectangular silhouette, separated scan-line effect, no readable text, high fidelity UI prop.",
+      "acceptanceSteps": [
+        "掌形和三条主线清楚可读",
+        "面板透明感强，但边缘不脏",
+        "扫描线可单独叠加",
+        "文字区域为空或可被程序文字覆盖",
+        "右上角放置时不会过亮"
+      ],
+      "testStrategy": "manual",
+      "priority": 7,
+      "dependsOn": ["ART-003"],
+      "passes": false
+    },
+    {
+      "id": "ART-008",
+      "category": "character-prop",
+      "module": "cyber-cat",
+      "assetCategory": "interactive-character-sprite",
+      "description": "赛博猫主体、眼睛表情、尾巴和颈圈 glow，用于抽签入口和彩蛋",
+      "order": 8,
+      "functionRole": "P1 交互入口和情绪彩蛋；承担 idle 生命感、hover 亲近感、click 抽签、10 连点翻肚皮彩蛋",
+      "renderLayer": "L3-character-prop",
+      "interactionEntry": "抽签 / 猫彩蛋",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideId": "cyber-cat"
+      },
+      "outputAssets": [
+        "sprites/cyber-cat-body.webp",
+        "sprites/cyber-cat-eyes-open.webp",
+        "sprites/cyber-cat-eyes-blink.webp",
+        "sprites/cyber-cat-eyes-happy.webp",
+        "sprites/cyber-cat-tail.webp",
+        "sprites/cyber-cat-collar-glow.webp",
+        "sprites/cyber-cat-belly-up.webp"
+      ],
+      "actions": [
+        "Crop cat body",
+        "Manually repair fur and whisker edges",
+        "Separate eyes if possible",
+        "Separate tail if possible",
+        "Create collar glow mask",
+        "Generate belly-up variant for easter egg"
+      ],
+      "motionSpec": {
+        "idle": "body floats 2px, tail sways, eyes blink every 4-8s, collar LED cycles",
+        "hover": "head tilt and brighter eyes",
+        "click": "trigger fortune stick draw",
+        "easterEgg": "10 rapid clicks trigger belly-up animation with cooldown"
+      },
+      "prompt": "Cyber black cat game character sprite, cute occult companion, one cyan eye and one purple eye, small mechanical collar with glowing charm, premium anime game asset, clean silhouette, separate eye expressions and tail, transparent background, no readable text.",
+      "acceptanceSteps": [
+        "猫在左下角能明显看出可互动，但不抢水晶球焦点",
+        "眼睛表情切换不会错位",
+        "毛边和胡须不能被自动抠图切坏",
+        "颈圈 glow 可独立控制",
+        "翻肚皮彩蛋姿势与原角色一致"
+      ],
+      "testStrategy": "manual",
+      "priority": 8,
+      "dependsOn": ["ART-003"],
+      "passes": false
+    },
+    {
+      "id": "ART-009",
+      "category": "interactive-prop",
+      "module": "fortune-sticks",
+      "assetCategory": "interactive-sprite-set",
+      "description": "姻缘、事业、财运三个签筒和飞签，用于三个专项占卜入口",
+      "order": 9,
+      "functionRole": "P1 三个独立交互入口；承担专项占卜分类、签筒晃动、飞签和签文揭晓",
+      "renderLayer": "L3-prop",
+      "interactionEntry": "姻缘 / 事业 / 财运",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideIds": ["fortune-stick-love", "fortune-stick-career", "fortune-stick-money"]
+      },
+      "outputAssets": [
+        "sprites/fortune-stick-love.webp",
+        "sprites/fortune-stick-career.webp",
+        "sprites/fortune-stick-money.webp",
+        "sprites/fortune-stick-single.webp",
+        "sprites/fortune-stick-glow.webp"
+      ],
+      "actions": [
+        "Crop three containers",
+        "Remove or replace broken baked labels",
+        "Create one flying stick sprite",
+        "Create inside glow pillar",
+        "Configure three separate rectangular hitboxes"
+      ],
+      "motionSpec": {
+        "idle": "purple glow pillar breathes inside container",
+        "hover": "container rises 4px, label brightens, tooltip after 300ms",
+        "click": "shake container, single stick flies out, text types in"
+      },
+      "prompt": "Three ornate cyberpunk fortune stick jars game sprites, love career wealth variants, purple gold black materials, glowing sticks inside, clean separated transparent objects, one single flying fortune stick, high fidelity 2D game prop, no readable text.",
+      "acceptanceSteps": [
+        "三个签筒风格一致且能区分类别",
+        "类别文字最好留空给程序绘制",
+        "飞签与签筒比例协调",
+        "签筒底部 anchor 可稳定贴桌面",
+        "hover 光柱不会遮住主体细节"
+      ],
+      "testStrategy": "manual",
+      "priority": 9,
+      "dependsOn": ["ART-003"],
+      "passes": false
+    },
+    {
+      "id": "ART-010",
+      "category": "interactive-prop",
+      "module": "poem-scroll",
+      "assetCategory": "interactive-sprite",
+      "description": "AI 诗签卷轴的收起态、展开态、流光边缘和纸面文本区域",
+      "order": 10,
+      "functionRole": "P2 交互入口；承载 AI 古诗占卜、卷轴展开动画和结果文本",
+      "renderLayer": "L3-prop",
+      "interactionEntry": "AI 诗签",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-ui-vfx-atlas-v2.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideId": "poem-scroll"
+      },
+      "outputAssets": [
+        "sprites/poem-scroll-closed.webp",
+        "sprites/poem-scroll-open.webp",
+        "sprites/poem-scroll-edge-glow.webp",
+        "sprites/poem-scroll-roller-left.webp",
+        "sprites/poem-scroll-roller-right.webp"
+      ],
+      "actions": [
+        "Crop scroll",
+        "Remove unreadable poem text or create clean text area",
+        "Create closed and open states",
+        "Separate roller ends if possible",
+        "Create edge-flow glow"
+      ],
+      "motionSpec": {
+        "idle": "golden edge flow loops",
+        "hover": "scroll expands 5-10%",
+        "click": "scroll fully opens; poem text appears with typing effect"
+      },
+      "prompt": "Ancient AI poem scroll game sprite, cyberpunk occult paper and metallic rollers, purple gold glow, clean blank writing area for runtime text, closed and open states, transparent background, high fidelity 2D prop, no readable text.",
+      "acceptanceSteps": [
+        "纸面区域足够干净，可放程序生成的四句诗",
+        "闭合态和展开态风格一致",
+        "卷轴两端适合做展开动画",
+        "边缘流光可独立控制",
+        "不能保留 AI 生成的错误中文正文"
+      ],
+      "testStrategy": "manual",
+      "priority": 10,
+      "dependsOn": ["ART-003"],
+      "passes": false
+    },
+    {
+      "id": "ART-011",
+      "category": "sequence-prop",
+      "module": "robo-arm",
+      "assetCategory": "segmented-sprite",
+      "description": "机械臂分段 sprite，用于水晶球 buildup 中伸出、触碰球面并触发高潮冻结",
+      "order": 11,
+      "functionRole": "主流程戏剧化道具；让占卜启动从普通 loading 变成有动作的仪式",
+      "renderLayer": "L3-sequence-prop",
+      "interactionEntry": "crystal-sequence-only",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideId": "robo-arm"
+      },
+      "outputAssets": [
+        "sprites/robo-arm-base.webp",
+        "sprites/robo-arm-upper.webp",
+        "sprites/robo-arm-lower.webp",
+        "sprites/robo-arm-hand.webp",
+        "sprites/robo-arm-joint-glow.webp"
+      ],
+      "actions": [
+        "Crop full arm as fallback",
+        "Separate base, upper, lower and hand segments",
+        "Repair metal edge and joint holes",
+        "Create joint glow mask",
+        "Record pivot points for each segment"
+      ],
+      "motionSpec": {
+        "idle": "hidden or subtle joint breathing",
+        "buildup": "extends from right/bottom during T+1800-2200ms",
+        "climax": "touches crystal orb, triggers ripple, all animation freezes 200ms"
+      },
+      "prompt": "Segmented cyberpunk robotic arm game sprite, ornate mechanical joints with purple emissive lights, separated upper arm lower arm claw hand and base, transparent background, high fidelity metal material, clean pivots for animation, no readable text.",
+      "acceptanceSteps": [
+        "至少有整臂 fallback sprite",
+        "生产级版本应拆出 3-4 个可旋转段",
+        "每段 pivot 点明确",
+        "金属边缘干净，不粘背景",
+        "触碰水晶球时手爪比例可信"
+      ],
+      "testStrategy": "manual",
+      "priority": 11,
+      "dependsOn": ["ART-004"],
+      "passes": false
+    },
+    {
+      "id": "ART-012",
+      "category": "ambient-prop",
+      "module": "data-fish",
+      "assetCategory": "ambient-sprite-set",
+      "description": "全息数据鱼 sprite，用于背景和中景的慢速漂浮，强化赛博玄学氛围",
+      "order": 12,
+      "functionRole": "环境生命感资产；非交互，用低频视差和透明度制造空间层次",
+      "renderLayer": "L1-ambient",
+      "interactionEntry": "none",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-background-plate-v2.png"
+      ],
+      "sourceCrop": {
+        "source": "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png",
+        "cropGuideIds": ["data-fish-left", "data-fish-right"]
+      },
+      "outputAssets": [
+        "sprites/data-fish-small.webp",
+        "sprites/data-fish-large.webp",
+        "sprites/data-fish-glow.webp"
+      ],
+      "actions": [
+        "Crop fish sprites",
+        "Repair transparent tail edge",
+        "Create mirrored variants if needed",
+        "Export low-alpha runtime versions"
+      ],
+      "motionSpec": {
+        "idle": "float horizontally 8-20px/s, alpha 0.35-0.75, parallax depth varies",
+        "sequence": "slightly dim during crystal buildup to keep focus centered"
+      },
+      "prompt": "Holographic data fish game sprite, cyberpunk translucent fish made of blue cyan code particles, purple rim light, clean transparent background, soft emissive tail, high fidelity ambient prop, no readable text.",
+      "acceptanceSteps": [
+        "鱼尾半透明边缘自然",
+        "缩小后仍可读为全息鱼",
+        "颜色不能过亮抢水晶球",
+        "可水平镜像使用",
+        "适合 L0/L1 低频移动"
+      ],
+      "testStrategy": "manual",
+      "priority": 12,
+      "dependsOn": ["ART-002"],
+      "passes": false
+    },
+    {
+      "id": "ART-013",
+      "category": "character",
+      "module": "oracle-character",
+      "assetCategory": "layered-character",
+      "description": "占卜师半身分层资源，用于 Web 端假 Live2D 和未来桌面端 Live2D 角色方向",
+      "order": 13,
+      "functionRole": "沉浸和陪伴核心资产；承担眨眼、头发微动、光环旋转、手部光屏和点击寄语",
+      "renderLayer": "L3-character",
+      "interactionEntry": "占卜师寄语 / 未来桌面伙伴",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-oracle-character-sheet.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png"
+      ],
+      "outputAssets": [
+        "characters/oracle/oracle-body.webp",
+        "characters/oracle/oracle-head.webp",
+        "characters/oracle/oracle-front-hair.webp",
+        "characters/oracle/oracle-back-hair.webp",
+        "characters/oracle/oracle-eye-left-open.webp",
+        "characters/oracle/oracle-eye-left-closed.webp",
+        "characters/oracle/oracle-eye-right-open.webp",
+        "characters/oracle/oracle-eye-right-closed.webp",
+        "characters/oracle/oracle-mouth-neutral.webp",
+        "characters/oracle/oracle-mouth-smile.webp",
+        "characters/oracle/oracle-hand-left.webp",
+        "characters/oracle/oracle-hand-right.webp",
+        "characters/oracle/oracle-headgear-ring.webp",
+        "characters/oracle/oracle-accessories.webp"
+      ],
+      "actions": [
+        "Use character sheet as reference",
+        "Generate or commission layered bust",
+        "Separate face, hair, eyes, mouth, hands, accessories and halo",
+        "Export transparent PNG source and WebP runtime",
+        "Record per-layer pivot and zIndex"
+      ],
+      "motionSpec": {
+        "idle": "body floats +/-2px, blink every 4-7s, hair shifts subtly, halo rotates 6s period",
+        "hover": "optional soft gaze or hand-screen brightening",
+        "click": "speech bubble with oracle message",
+        "sequence": "during analysis, hand screen shows scrolling analyzing text"
+      },
+      "prompt": "Anime cyberpunk fortune teller character sheet, white hair oracle girl, mysterious gentle expression, purple eyes, mechanical halo headpiece, occult talisman accessories, black and violet outfit, front bust view plus expression insets, separated details for eyes hair hands accessories, premium Live2D-ready game character design, clean layer-friendly shapes, no readable text.",
+      "acceptanceSteps": [
+        "分层是真分层，不是一张图塞进 PSD",
+        "眼睛闭合和睁开可无缝切换",
+        "前发/后发能做轻微错峰位移",
+        "手和光屏区域不挡水晶球主焦点",
+        "角色气质与 inspiration.png 一致"
+      ],
+      "testStrategy": "manual",
+      "priority": 13,
+      "dependsOn": ["ART-001"],
+      "passes": false
+    },
+    {
+      "id": "ART-014",
+      "category": "ui-vfx",
+      "module": "result-panel",
+      "assetCategory": "ui-sprite-set",
+      "description": "结果面板九宫格边框、按钮边框、tooltip 框和分享/再算操作区域美术",
+      "order": 14,
+      "functionRole": "HTML overlay 和 Canvas reveal 的结果容器；承载 Resolution 阶段文本、按钮和分享出口",
+      "renderLayer": "HTML-overlay / L4-vfx",
+      "interactionEntry": "结果揭晓 / 分享 / 再算一次",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-ui-vfx-atlas-v2.png"
+      ],
+      "outputAssets": [
+        "ui/result-panel-frame.webp",
+        "ui/result-panel-corner.webp",
+        "ui/button-primary-frame.webp",
+        "ui/tooltip-frame.webp",
+        "ui/modal-backplate.webp"
+      ],
+      "actions": [
+        "Crop UI frames from atlas",
+        "Create clean blank text areas",
+        "Prepare 9-slice scalable frame pieces",
+        "Avoid baked AI text",
+        "Export HTML overlay compatible assets"
+      ],
+      "motionSpec": {
+        "reveal": "fade and scale in during T+3200-4500ms",
+        "hover": "buttons glow within 100ms",
+        "disabled": "gray 70%, no response"
+      },
+      "prompt": "Game UI atlas for cyberpunk occult fortune telling result panels, ornate neon purple cyan gold frames, tooltip frame, button frames, modal backplate, clean blank text areas, 9-slice friendly corners and edges, transparent background, premium 2D game UI polish, no readable text.",
+      "acceptanceSteps": [
+        "面板文字区干净，可读性高",
+        "边框能切成九宫格或适配不同尺寸",
+        "按钮 hover/disabled 有清晰状态",
+        "UI 不应盖住核心结果卡牌",
+        "中文文本由程序渲染，不依赖贴图"
+      ],
+      "testStrategy": "manual",
+      "priority": 14,
+      "dependsOn": ["ART-003"],
+      "passes": false
+    },
+    {
+      "id": "ART-015",
+      "category": "ui-vfx",
+      "module": "hover-press-vfx",
+      "assetCategory": "vfx-sprite-set",
+      "description": "通用 hover halo、press ripple、点击涟漪和聚焦光环，供所有可交互资产复用",
+      "order": 15,
+      "functionRole": "统一交互反馈语言；让所有可点击元素在 idle/hover/press/release 上有一致但不重复的反馈",
+      "renderLayer": "L4-vfx",
+      "interactionEntry": "all-clickable",
+      "referenceImages": [
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-ui-vfx-atlas-v2.png",
+        "docs/6canvas动态化交互设计spec.md"
+      ],
+      "outputAssets": [
+        "vfx/hover-halo-purple.webp",
+        "vfx/hover-halo-gold.webp",
+        "vfx/press-ripple.webp",
+        "vfx/focus-ring.webp",
+        "vfx/soft-glow-dot.webp"
+      ],
+      "actions": [
+        "Crop or generate reusable VFX sprites",
+        "Normalize alpha and size",
+        "Export purple, cyan and gold variants",
+        "Map VFX to visual states"
+      ],
+      "motionSpec": {
+        "hover": "halo appears within 100ms",
+        "press": "ripple expands within 50ms",
+        "release": "ripple fades and element rebounds",
+        "reducedMotion": "keep alpha changes, remove expansion"
+      },
+      "prompt": "Reusable game VFX atlas, hover halo, press ripple, focus ring, soft glow dot, purple cyan gold variants, transparent background, clean separated assets, cyberpunk occult style, high fidelity but lightweight, no readable text.",
+      "acceptanceSteps": [
+        "VFX 可以套用到水晶球、牌、八卦、手相、猫、签筒、卷轴",
+        "不会遮挡主体细节",
+        "低端设备可用简单 alpha 替代",
+        "同一屏幕强 VFX 不超过 1-2 个",
+        "hover 和 press 反馈时序符合 spec"
+      ],
+      "testStrategy": "manual",
+      "priority": 15,
+      "dependsOn": ["ART-014"],
+      "passes": false
+    },
+    {
+      "id": "ART-016",
+      "category": "ui-vfx",
+      "module": "reveal-burst-vfx",
+      "assetCategory": "vfx-sprite-set",
+      "description": "占卜高潮和结果揭晓所需的白闪、能量环、金色星光、粒子小贴图和爆发素材",
+      "order": 16,
+      "functionRole": "四幕结构中的 Climax 和 Resolution 关键视觉反馈",
+      "renderLayer": "L4-vfx",
+      "interactionEntry": "crystal-sequence",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-ui-vfx-atlas-v2.png",
+        "docs/6canvas动态化交互设计spec.md"
+      ],
+      "outputAssets": [
+        "vfx/white-flash-mask.webp",
+        "vfx/energy-ring.webp",
+        "vfx/gold-star.webp",
+        "vfx/purple-spark.webp",
+        "vfx/reveal-burst.webp",
+        "vfx/magic-dust.webp"
+      ],
+      "actions": [
+        "Generate VFX atlas",
+        "Crop burst and ring sprites",
+        "Create tiny particle sprites",
+        "Prepare gold and purple variants",
+        "Document particle color usage"
+      ],
+      "motionSpec": {
+        "setup": "small ripple and response flash",
+        "buildup": "particle rate increases 3x",
+        "climax": "200ms freeze plus white flash and energy ring",
+        "resolution": "gold starlight radiates from selected card/result panel"
+      },
+      "prompt": "Game VFX atlas for occult crystal fortune reveal, white flash mask, purple energy ring, gold star particles, reveal burst, magic dust, transparent background, clean separated sprites, premium 2D game polish, cyberpunk purple cyan gold, no readable text.",
+      "acceptanceSteps": [
+        "白闪可控，不造成全屏长时间刺眼",
+        "金色星光明显区别于常驻紫色粒子",
+        "能量环缩放时边缘不糊不裂",
+        "小粒子贴图适合对象池重复绘制",
+        "Climax 前 200ms 凝滞的视觉素材齐备"
+      ],
+      "testStrategy": "manual",
+      "priority": 16,
+      "dependsOn": ["ART-004", "ART-005", "ART-015"],
+      "passes": false
+    },
+    {
+      "id": "ART-017",
+      "category": "neon-sign",
+      "module": "neon-signs",
+      "assetCategory": "signage-sprite-set",
+      "description": "霓虹招牌底板、发光边框和可程序绘制文字区域，用于环境苏醒和入口暗示",
+      "order": 17,
+      "functionRole": "L1 场域建立；承担入场依次点亮、呼吸和偶发 glitch",
+      "renderLayer": "L1-neon",
+      "interactionEntry": "ambient-signage",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-background-plate-v2.png",
+        "docs/6canvas动态化交互设计spec.md"
+      ],
+      "outputAssets": [
+        "sprites/neon-sign-main-frame.webp",
+        "sprites/neon-sign-vertical-frame.webp",
+        "sprites/neon-sign-small-frame.webp",
+        "sprites/neon-sign-glow-purple.webp",
+        "sprites/neon-sign-glow-cyan.webp",
+        "sprites/neon-sign-glow-warm.webp"
+      ],
+      "actions": [
+        "Extract or generate blank neon sign frames",
+        "Keep text areas blank",
+        "Create glow layers",
+        "Prepare warm variant for fortune stick signage",
+        "Document intended runtime text"
+      ],
+      "motionSpec": {
+        "entry": "50-150ms staggered light-up sweep",
+        "idle": "breathing period 2-4s with phase offsets",
+        "glitch": "main title random glitch every 8-12s for 200ms",
+        "reducedMotion": "disable glitch and keep static glow"
+      },
+      "prompt": "Cyberpunk neon sign frame sprite set for occult fortune telling booth, blank sign boards, purple cyan and warm magenta variants, emissive border glow, vertical and horizontal formats, transparent background, no readable text, game background signage assets.",
+      "acceptanceSteps": [
+        "招牌文字区可由程序绘制中文",
+        "边框 glow 可单独控制",
+        "主招牌比边缘招牌更强但不压过水晶球",
+        "glitch 可通过程序切片实现",
+        "reduced-motion 下静态也好看"
+      ],
+      "testStrategy": "manual",
+      "priority": 17,
+      "dependsOn": ["ART-002"],
+      "passes": false
+    },
+    {
+      "id": "ART-018",
+      "category": "audio",
+      "module": "ritual-sfx",
+      "assetCategory": "sound-fx",
+      "description": "核心交互音效：hover、press、翻牌、水晶球启动、高潮钟声、结果星光、签筒摇晃、猫叫和机械臂",
+      "order": 18,
+      "functionRole": "增强仪式感和交互重量；声音是四幕结构的戏剧倍增器",
+      "renderLayer": "audio",
+      "interactionEntry": "all",
+      "referenceImages": ["docs/6canvas动态化交互设计spec.md"],
+      "outputAssets": [
+        "audio/ui-hover-soft.ogg",
+        "audio/ui-press-ripple.ogg",
+        "audio/card-flip.ogg",
+        "audio/crystal-start-hum.ogg",
+        "audio/climax-bell.ogg",
+        "audio/result-starlight.ogg",
+        "audio/fortune-stick-shake.ogg",
+        "audio/cyber-cat-meow.ogg",
+        "audio/robo-arm-servo.ogg"
+      ],
+      "actions": [
+        "Collect or synthesize short UI sounds",
+        "Normalize loudness",
+        "Export OGG and optional MP3 fallback",
+        "Document license source",
+        "Map sound to visual timeline"
+      ],
+      "motionSpec": {
+        "setup": "press ripple sound within 50ms",
+        "buildup": "low hum fades in",
+        "climax": "short bell or stop-gap silence after freeze",
+        "resolution": "soft gold starlight sound"
+      },
+      "prompt": "Not applicable. Use licensed SFX libraries or synthesize: soft neon UI hover, glass ripple, mystical low hum, clear bell, card flip, mechanical servo, cute short cat meow.",
+      "acceptanceSteps": [
+        "每个音效小于 2 秒，循环 hum 除外",
+        "音量统一，不刺耳",
+        "没有版权风险，记录来源和授权",
+        "用户未授权音频前不自动播放大声音",
+        "关闭音效后核心体验可用"
+      ],
+      "testStrategy": "manual",
+      "priority": 18,
+      "dependsOn": ["ART-015", "ART-016"],
+      "passes": false
+    },
+    {
+      "id": "ART-019",
+      "category": "responsive",
+      "module": "mobile-crops",
+      "assetCategory": "responsive-export",
+      "description": "桌面、平板、手机的背景裁切和 sprite 尺寸分档，保证不同屏幕构图仍以水晶球为中心",
+      "order": 19,
+      "functionRole": "适配 Web 端不同 viewport；避免手机端角色/道具遮挡主流程",
+      "renderLayer": "all",
+      "interactionEntry": "all",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-background-plate-v2.png"
+      ],
+      "outputAssets": [
+        "backgrounds/cyber-booth-bg-desktop.webp",
+        "backgrounds/cyber-booth-bg-tablet.webp",
+        "backgrounds/cyber-booth-bg-mobile.webp",
+        "manifest.responsive.json"
+      ],
+      "actions": [
+        "Define desktop 16:9 composition",
+        "Define tablet crop",
+        "Define mobile vertical crop or scaled layout",
+        "Record per-asset scaleDesktop/scaleMobile",
+        "Check hitboxes after scaling"
+      ],
+      "prompt": "If regenerating mobile background: vertical mobile crop of cyberpunk occult fortune telling booth, central crystal orb area clear, neon signs and props visible around edges, premium 2D anime game background, no readable text.",
+      "acceptanceSteps": [
+        "375px 宽手机上水晶球不小于可点击尺寸",
+        "可点击道具不重叠",
+        "背景不会因裁切丢掉核心氛围",
+        "手机首屏仍能看出至少 3 个入口",
+        "manifest 有 desktop/tablet/mobile scale 和 position"
+      ],
+      "testStrategy": "manual",
+      "priority": 19,
+      "dependsOn": ["ART-002", "ART-003", "ART-004", "ART-005"],
+      "passes": false
+    },
+    {
+      "id": "ART-020",
+      "category": "qa",
+      "module": "static-composition",
+      "assetCategory": "review-composite",
+      "description": "把所有已裁切 sprite 摆成一张静态合成图，和 inspiration.png 并排验收构图、焦点和材质密度",
+      "order": 20,
+      "functionRole": "进入工程接入前的美术质量闸口",
+      "renderLayer": "review-only",
+      "interactionEntry": "all",
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-master-key-art.png"
+      ],
+      "outputAssets": [
+        "docs/canvas-art-assets/art-review/static-composite-desktop.png",
+        "docs/canvas-art-assets/art-review/static-composite-mobile.png",
+        "docs/canvas-art-assets/art-review/static-composite-contact-sheet.png"
+      ],
+      "actions": [
+        "Place background and all P0/P1 sprites",
+        "Apply approximate scale and zIndex",
+        "Compare with inspiration image",
+        "Run squint test",
+        "Mark assets that need regeneration or repaint"
+      ],
+      "prompt": "",
+      "acceptanceSteps": [
+        "静态图不动也像游戏主界面",
+        "眯眼第一焦点是水晶球",
+        "第二焦点是占卜师脸和手",
+        "猫、签筒、八卦、手相、卷轴可识别但不抢主焦点",
+        "与 inspiration.png 并排时精细度不差一个等级"
+      ],
+      "testStrategy": "manual",
+      "priority": 20,
+      "dependsOn": [
+        "ART-002",
+        "ART-004",
+        "ART-005",
+        "ART-006",
+        "ART-007",
+        "ART-008",
+        "ART-009",
+        "ART-010",
+        "ART-011",
+        "ART-013",
+        "ART-014",
+        "ART-015",
+        "ART-016"
+      ],
+      "passes": false
+    },
+    {
+      "id": "ART-021",
+      "category": "qa",
+      "module": "runtime-readiness",
+      "assetCategory": "handoff-checklist",
+      "description": "工程接入前的 runtime 交付验收：图片格式、透明度、命名、manifest、性能预算、授权和回退资源",
+      "order": 21,
+      "functionRole": "确保美术资源可以安全交给 Canvas 开发，不导致加载、性能、版权和维护问题",
+      "renderLayer": "handoff",
+      "interactionEntry": "all",
+      "referenceImages": [
+        "docs/canvas-art-assets/ART_ASSET_PRODUCTION_PLAN.md",
+        "docs/canvas-art-assets/DYNAMIC_EFFECT_TECH_PLAN.md"
+      ],
+      "outputAssets": [
+        "docs/canvas-art-assets/art-review/runtime-readiness-report.md",
+        "manifest.json",
+        "LICENSES.assets.md"
+      ],
+      "actions": [
+        "Validate all referenced files exist",
+        "Check no runtime filename contains Chinese or spaces",
+        "Check all P0/P1 assets have WebP runtime version and PNG source",
+        "Check transparent edges on dark and light backgrounds",
+        "Check license source for third-party assets",
+        "Estimate total first-screen payload"
+      ],
+      "prompt": "",
+      "acceptanceSteps": [
+        "首屏 P0/P1 WebP 总体积建议 3-5MB 内",
+        "所有 P0/P1 资产有 sourceReference",
+        "所有可点击资产有 hitbox 和 anchor",
+        "所有第三方或外包素材有商用授权记录",
+        "低保真 fallback 或占位资源明确",
+        "交付报告列出未完成项和风险"
+      ],
+      "testStrategy": "manual",
+      "priority": 21,
+      "dependsOn": ["ART-020"],
+      "passes": false
+    }
+  ]
+}

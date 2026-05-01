@@ -1,0 +1,34 @@
+{
+  "name": "cyberoracle-canvas-art-colors",
+  "source": "docs/inspiration.png + docs/6canvas动态化交互设计spec.md",
+  "tokens": {
+    "surfaceVoid": "#050711",
+    "surfaceNight": "#0A0A12",
+    "surfacePanel": "#101633",
+    "surfacePanelDeep": "#071B42",
+    "neonPink": "#EC5CFF",
+    "neonPurple": "#A855F7",
+    "neonViolet": "#7C3AED",
+    "neonCyan": "#22D3EE",
+    "neonBlue": "#0EA5E9",
+    "neonIce": "#78F7FF",
+    "ritualGold": "#F59E0B",
+    "paperRose": "#FFE7F5",
+    "textPrimary": "#FBD5FF",
+    "textSecondary": "#D8B4FE",
+    "dangerGlitchRed": "#FF3B7A"
+  },
+  "canvasRgba": {
+    "centerHalo": "rgba(168, 85, 247, 0.32)",
+    "distantGrid": "rgba(34, 211, 238, 0.08)",
+    "edgeNeon": "rgba(236, 92, 255, 0.18)",
+    "particlePurple": "rgba(168, 85, 247, 0.62)",
+    "particleCyan": "rgba(34, 211, 238, 0.58)",
+    "modalScrim": "rgba(5, 7, 17, 0.68)"
+  },
+  "usage": {
+    "tailwind": "可映射到 packages/tokens/src/colors.ts 的 brand/dark 扩展；当前资源包不改代码。",
+    "canvas": "优先使用 canvasRgba，避免每帧 hex 转 rgba 的额外开销。",
+    "contrast": "文字优先使用 textPrimary；辅助文字使用 textSecondary，背景必须落在 surfaceVoid/surfaceNight/surfacePanel 上。"
+  }
+}

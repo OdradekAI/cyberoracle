@@ -1,0 +1,119 @@
+{
+  "source": "image2-concepts/cyberoracle-prop-atlas.png",
+  "sourceSize": [1672, 941],
+  "coordinateSystem": "pixel rectangles [x, y, width, height], approximate first-pass crops; refine manually before production export",
+  "crops": [
+    {
+      "id": "crystal-orb-large",
+      "rect": [34, 28, 338, 420],
+      "anchor": [0.5, 0.73],
+      "hit": { "type": "circle", "cx": 0.5, "cy": 0.36, "r": 0.31 },
+      "layer": "L2-main"
+    },
+    {
+      "id": "tarot-card-01",
+      "rect": [405, 70, 148, 265],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "rect" },
+      "layer": "L2-main"
+    },
+    {
+      "id": "tarot-card-02",
+      "rect": [570, 70, 148, 265],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "rect" },
+      "layer": "L2-main"
+    },
+    {
+      "id": "tarot-card-03",
+      "rect": [735, 70, 148, 265],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "rect" },
+      "layer": "L2-main"
+    },
+    {
+      "id": "tarot-card-04",
+      "rect": [900, 70, 148, 265],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "rect" },
+      "layer": "L2-main"
+    },
+    {
+      "id": "tarot-card-05",
+      "rect": [1065, 70, 148, 265],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "rect" },
+      "layer": "L2-main"
+    },
+    {
+      "id": "bagua-dial",
+      "rect": [1248, 48, 360, 360],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "circle", "cx": 0.5, "cy": 0.5, "r": 0.45 },
+      "layer": "L2-side"
+    },
+    {
+      "id": "palm-panel",
+      "rect": [372, 382, 335, 270],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "rect" },
+      "layer": "L2-side"
+    },
+    {
+      "id": "fortune-stick-love",
+      "rect": [725, 392, 134, 284],
+      "anchor": [0.5, 0.82],
+      "hit": { "type": "rect" },
+      "layer": "L3-prop"
+    },
+    {
+      "id": "fortune-stick-career",
+      "rect": [868, 392, 134, 284],
+      "anchor": [0.5, 0.82],
+      "hit": { "type": "rect" },
+      "layer": "L3-prop"
+    },
+    {
+      "id": "fortune-stick-money",
+      "rect": [1012, 392, 134, 284],
+      "anchor": [0.5, 0.82],
+      "hit": { "type": "rect" },
+      "layer": "L3-prop"
+    },
+    {
+      "id": "poem-scroll",
+      "rect": [1212, 390, 420, 305],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "rect" },
+      "layer": "L3-prop"
+    },
+    {
+      "id": "cyber-cat",
+      "rect": [42, 480, 260, 420],
+      "anchor": [0.5, 0.78],
+      "hit": { "type": "ellipse", "cx": 0.5, "cy": 0.52, "rx": 0.42, "ry": 0.46 },
+      "layer": "L3-character-prop"
+    },
+    {
+      "id": "robo-arm",
+      "rect": [290, 700, 555, 220],
+      "anchor": [0.72, 0.45],
+      "hit": { "type": "none" },
+      "layer": "L3-sequence-prop"
+    },
+    {
+      "id": "data-fish-left",
+      "rect": [860, 710, 338, 172],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "none" },
+      "layer": "L4-ambient"
+    },
+    {
+      "id": "data-fish-right",
+      "rect": [1190, 700, 440, 185],
+      "anchor": [0.5, 0.5],
+      "hit": { "type": "none" },
+      "layer": "L4-ambient"
+    }
+  ]
+}

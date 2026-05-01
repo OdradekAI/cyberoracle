@@ -1,0 +1,44 @@
+{
+  "name": "cyberoracle-image2-raster-assets",
+  "version": "0.2.0",
+  "generatedAt": "2026-04-30",
+  "generationMode": "built-in image generation, prompted as image2-style production assets",
+  "note": "The explicit CLI gpt-image-2 path was checked but OPENAI_API_KEY was not set in this environment. These files were generated with the built-in image generator and copied into docs/.",
+  "assets": [
+    {
+      "id": "master-key-art",
+      "file": "image2-concepts/cyberoracle-master-key-art.png",
+      "size": [1672, 941],
+      "role": "visual target and art direction lock",
+      "runtimeUse": "Do not use directly as the interactive app background unless prototyping; use it to guide slicing and final prompts."
+    },
+    {
+      "id": "background-plate",
+      "file": "image2-concepts/cyberoracle-background-plate-v2.png",
+      "size": [1672, 941],
+      "role": "L0/L1 background plate",
+      "runtimeUse": "Draw once to OffscreenCanvas, then overlay procedural code rain, low-frequency fish, haze and vignette."
+    },
+    {
+      "id": "prop-atlas",
+      "file": "image2-concepts/cyberoracle-prop-atlas.png",
+      "size": [1672, 941],
+      "role": "interactive prop source atlas",
+      "runtimeUse": "Crop into individual sprites, then export PNG/WebP. Use Canvas hit boxes from crop-guide.json."
+    },
+    {
+      "id": "oracle-character-sheet",
+      "file": "image2-concepts/cyberoracle-oracle-character-sheet.png",
+      "size": [1536, 1024],
+      "role": "character design and expression sheet",
+      "runtimeUse": "Use as character reference. For runtime, generate or manually paint separated bust/eyes/mouth/hair layers."
+    },
+    {
+      "id": "ui-vfx-atlas",
+      "file": "image2-concepts/cyberoracle-ui-vfx-atlas-v2.png",
+      "size": [1672, 941],
+      "role": "overlay and VFX art direction",
+      "runtimeUse": "Crop modal frames, tooltip frames, rings, burst shapes and scan strips for Canvas/HTML overlay."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "name": "cyberoracle-canvas-motion",
+  "unit": "ms unless noted",
+  "rhythmLayers": {
+    "L0_extremeSlow": {
+      "periodSeconds": [6, 10],
+      "uses": ["distant parallax", "wide halo breathing"],
+      "easing": "sine"
+    },
+    "L1_slow": {
+      "periodSeconds": 4,
+      "uses": ["main background breathing", "fortune teller body drift"],
+      "easing": "sine"
+    },
+    "L2_mid": {
+      "periodSeconds": 3,
+      "uses": ["tarot floating", "secondary neon pulse"],
+      "easing": "sine"
+    },
+    "L3_fast": {
+      "periodSeconds": 2,
+      "uses": ["crystal fog", "fortune stick glow"],
+      "easing": "sine"
+    },
+    "L4_event": {
+      "duration": [150, 500],
+      "uses": ["press ripple", "card flip", "glitch"],
+      "easing": "cubic-bezier(0.2, 0.8, 0.2, 1)"
+    }
+  },
+  "interaction": {
+    "hoverFeedbackMax": 100,
+    "pressFeedbackMax": 50,
+    "tooltipDelay": 300,
+    "pressScale": 0.95,
+    "hoverScale": 1.05,
+    "cardHoverScale": 1.1,
+    "cardHoverRisePx": 12
+  },
+  "divinationSequence": {
+    "setup": 300,
+    "buildupEnd": 2200,
+    "climaxFreeze": 200,
+    "resolutionEnd": 4500,
+    "typingCharInterval": 60
+  },
+  "performanceCaps": {
+    "activeShadowBlurInstances": 8,
+    "idleParticles": [80, 120],
+    "lowEndParticles": 50,
+    "highEndBurstParticles": 300,
+    "backgroundFps": 10,
+    "mainFpsTarget": 60,
+    "mainFpsFloor": 30
+  },
+  "reducedMotion": {
+    "disable": ["glitch", "mouse trail", "burst particles", "large parallax"],
+    "keep": ["static neon state", "core click feedback", "result reveal"]
+  }
+}

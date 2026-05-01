@@ -1,0 +1,1326 @@
+{
+  "name": "cyberoracle-generated-art-assets",
+  "version": "0.1.0",
+  "generatedAt": "2026-04-30",
+  "updatedAt": "2026-05-01",
+  "mode": "built-in image generation",
+  "status": "raw production sheets; not yet transparent runtime sprites",
+  "sourceHarness": "docs/canvas-art-assets/art-assets-harness.json",
+  "assets": [
+    {
+      "id": "background-plate-v2",
+      "file": "raw/background-plate-v2.png",
+      "harnessIds": ["ART-002", "ART-019", "ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-background-plate-v2.png"
+      ],
+      "role": "L0/L1 background plate candidate",
+      "nextSteps": [
+        "Export desktop/tablet/mobile WebP variants",
+        "Optionally regenerate a cleaner empty-center version",
+        "Apply runtime vignette and focus lighting in Canvas"
+      ],
+      "prompt": "Premium 2D anime game background plate, cyberpunk occult fortune telling booth at night, neon purple and cyan lighting, dense futuristic city details, hanging lanterns, holographic signs, wet reflective table, central area intentionally clear for a crystal orb and character overlay, no main character, no readable text, high fidelity environment art, game event screen polish, 16:9."
+    },
+    {
+      "id": "interactive-prop-atlas-v2",
+      "file": "raw/interactive-prop-atlas-v2.png",
+      "harnessIds": [
+        "ART-004",
+        "ART-005",
+        "ART-006",
+        "ART-007",
+        "ART-009",
+        "ART-010",
+        "ART-011",
+        "ART-012"
+      ],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png"
+      ],
+      "role": "primary P0/P1 interactive prop atlas",
+      "contains": [
+        "crystal orb",
+        "five tarot card backs",
+        "tarot front template",
+        "bagua dial",
+        "palm panel",
+        "fortune stick jars",
+        "single flying stick",
+        "closed/open scroll elements",
+        "segmented robotic arm parts",
+        "holographic data fish"
+      ],
+      "nextSteps": [
+        "Crop every object into separate PNG source files",
+        "Remove dark background and repair edges",
+        "Create glow masks for orb, bagua, palm panel and fish",
+        "Export runtime WebP files",
+        "Record anchors and hitboxes in manifest"
+      ],
+      "prompt": "High fidelity 2D game prop sprite atlas for a cyberpunk occult fortune-telling game, separated objects with generous spacing on a dark plain background: glowing crystal orb on mechanical base, five ornate tarot cards, neon bagua yin-yang dial, holographic palm reading panel, cyber black cat, three fortune stick jars, ancient AI poem scroll, segmented robotic arm, two holographic data fish, premium gacha game asset quality, emissive purple cyan gold glow, clean silhouettes, no readable text."
+    },
+    {
+      "id": "oracle-character-layer-sheet-v2",
+      "file": "raw/oracle-character-layer-sheet-v2.png",
+      "harnessIds": ["ART-013"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-oracle-character-sheet.png"
+      ],
+      "role": "oracle character layered source sheet",
+      "contains": [
+        "front bust",
+        "face variants",
+        "mouth variants",
+        "front hair",
+        "back hair",
+        "hands",
+        "halo",
+        "accessories",
+        "outfit parts"
+      ],
+      "nextSteps": [
+        "Crop bust and individual layer parts",
+        "Repair hair transparency manually",
+        "Create open/closed eye overlays",
+        "Record per-layer pivot and zIndex",
+        "Export WebP layers for fake Live2D"
+      ],
+      "prompt": "Anime cyberpunk fortune teller character sheet, white hair oracle girl, mysterious gentle expression, purple eyes, mechanical halo headpiece, occult talisman accessories, black and violet outfit, front bust view plus expression insets, separated details for eyes hair hands accessories, premium Live2D-ready game character design, clean layer-friendly shapes, no readable text."
+    },
+    {
+      "id": "ui-vfx-atlas-v2",
+      "file": "raw/ui-vfx-atlas-v2.png",
+      "harnessIds": ["ART-014", "ART-015", "ART-016"],
+      "referenceImages": [
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-ui-vfx-atlas-v2.png"
+      ],
+      "role": "UI frame and VFX source atlas",
+      "contains": [
+        "result panel frame",
+        "corner pieces",
+        "button frames",
+        "tooltip frame",
+        "hover rings",
+        "energy rings",
+        "burst",
+        "white flash ring",
+        "star particles",
+        "scan line"
+      ],
+      "nextSteps": [
+        "Crop 9-slice-friendly frame pieces",
+        "Crop ring, ripple, burst and particle sprites",
+        "Remove background if used as alpha sprites",
+        "Create purple/gold/cyan variants where needed",
+        "Define state mapping for hover/press/reveal"
+      ],
+      "prompt": "Game UI and VFX atlas for cyberpunk occult fortune telling app, transparent-style assets on dark background: result panel frame, neon tooltip frame, hover halo, press ripple, reveal burst, gold star particles, scan line, energy ring, purple cyan gold color palette, premium 2D game polish, clean separated assets, no readable text."
+    },
+    {
+      "id": "cyber-cat-sprite-sheet",
+      "file": "raw/cyber-cat-sprite-sheet-v1.png",
+      "harnessIds": ["ART-008"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-prop-atlas.png"
+      ],
+      "role": "cyber cat companion sprite sheet",
+      "contains": [
+        "sitting body",
+        "tail",
+        "open eyes",
+        "blink eyes",
+        "happy eyes",
+        "mischievous eyes",
+        "head tilt",
+        "belly-up pose",
+        "collar glow and charm"
+      ],
+      "nextSteps": [
+        "Crop sitting body, tail and belly-up pose",
+        "Crop head/expression variants if using overlays",
+        "Repair fur and whisker edges manually",
+        "Create collar glow mask",
+        "Configure ellipse hitbox"
+      ],
+      "prompt": "Cyber black cat game character sprite sheet, cute occult companion, one cyan eye and one purple eye, small mechanical collar with glowing charm, premium anime game asset, clean silhouette, separate eye expressions and tail, transparent background, no readable text."
+    },
+    {
+      "id": "neon-signage-atlas",
+      "file": "raw/neon-signage-atlas-v1.png",
+      "harnessIds": ["ART-017"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/raster/image2-concepts/cyberoracle-background-plate-v2.png"
+      ],
+      "role": "blank neon sign and glow source atlas",
+      "contains": [
+        "large horizontal sign",
+        "vertical sign",
+        "small rectangular labels",
+        "hanging sign frames",
+        "purple/cyan/magenta/gold glow plates",
+        "ambient portal/glow elements"
+      ],
+      "nextSteps": [
+        "Crop blank sign frames",
+        "Overlay runtime Chinese text via Canvas or HTML",
+        "Create static glow and glitch masks",
+        "Export reduced-motion static versions"
+      ],
+      "prompt": "Cyberpunk neon sign frame sprite set for occult fortune telling booth, blank sign boards, purple cyan and warm magenta variants, emissive border glow, vertical and horizontal formats, transparent background, no readable text, game background signage assets."
+    },
+    {
+      "id": "background-plate-clean-v3",
+      "file": "raw/background-plate-clean-v3.png",
+      "harnessIds": ["ART-002", "ART-019", "ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/background-plate-v2.png"
+      ],
+      "role": "cleaner empty-center background plate candidate",
+      "contains": [
+        "open central stage area",
+        "edge lanterns",
+        "distant cyberpunk city depth",
+        "right-side palm panel motif",
+        "left-side occult wall detail",
+        "floor ritual circle"
+      ],
+      "nextSteps": [
+        "Prefer this over background-plate-v2 for first runtime composition",
+        "Export desktop/tablet/mobile WebP variants",
+        "Darken the center slightly in Canvas with vignette",
+        "Overlay all P0/P1 sprites in a static composite test"
+      ],
+      "prompt": "Even cleaner high-fidelity 16:9 cyberpunk occult fortune-telling booth background plate, optimized for runtime sprite overlay. The center 55% must be open, darker, and uncluttered for crystal orb, tarot cards, oracle character, and result VFX overlays. Keep rich visual detail on the edges only: hanging lanterns, neon pipes, distant holographic signs, city depth, wet reflective floor/counter edges, subtle occult floor circle. No readable text, no logos, no watermark."
+    },
+    {
+      "id": "crystal-orb-production-sheet",
+      "file": "raw/crystal-orb-production-sheet-v1.png",
+      "harnessIds": ["ART-004", "ART-015", "ART-016"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/interactive-prop-atlas-v2.png"
+      ],
+      "role": "dedicated crystal orb and glow production sheet",
+      "contains": [
+        "glowing orb body",
+        "glass shell highlight",
+        "inner nebula/fog mask",
+        "mechanical base",
+        "purple glow mask",
+        "cyan rim glow",
+        "ripple rings",
+        "base particle nozzle"
+      ],
+      "nextSteps": [
+        "Crop orb body, base, glass highlight and fog mask separately",
+        "Create alpha sprites with manual edge repair",
+        "Use purple glow and ripple rings for hover/press/sequence VFX",
+        "Record crystal anchor [0.5, 0.73] and circular hitbox"
+      ],
+      "prompt": "Separated crystal orb production sheet with crop-ready parts: large glowing crystal orb body, ornate mechanical base, glass highlight overlay, inner nebula/fog mask, purple glow mask, cyan rim glow, small base particle nozzle detail, circular ripple ring. Plain dark navy background, premium 2D anime game prop asset, high-fidelity glass and metal, no readable text."
+    },
+    {
+      "id": "tarot-deck-sheet",
+      "file": "raw/tarot-deck-sheet-v1.png",
+      "harnessIds": ["ART-005"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/interactive-prop-atlas-v2.png"
+      ],
+      "role": "dedicated tarot backs, fronts and state overlays",
+      "contains": [
+        "five tarot card backs",
+        "five blank card fronts",
+        "purple selected frame",
+        "gold selected frame",
+        "dimmed-card overlay"
+      ],
+      "nextSteps": [
+        "Crop all backs and fronts at matching dimensions",
+        "Use blank fronts for runtime card meaning text",
+        "Crop selected frames and dim overlay",
+        "Record phase offsets and rectangular hitboxes"
+      ],
+      "prompt": "Crop-ready tarot card production sheet for a cyberpunk occult fortune-telling game. Include five ornate tarot card backs, five matching card front templates with blank central art/text areas, one generic card glow outline, one selected-card gold highlight frame, one dimmed-card overlay. No readable text, same size and aspect ratio."
+    },
+    {
+      "id": "fortune-scroll-sheet",
+      "file": "raw/fortune-scroll-sheet-v1.png",
+      "harnessIds": ["ART-009", "ART-010"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/interactive-prop-atlas-v2.png"
+      ],
+      "role": "dedicated fortune stick jars, single sticks and poem scroll states",
+      "contains": [
+        "three fortune stick jars",
+        "loose individual sticks",
+        "flying stick with purple trail",
+        "closed scroll",
+        "partially open scroll",
+        "fully open blank scroll",
+        "scroll roller ends",
+        "edge glow strips"
+      ],
+      "nextSteps": [
+        "Crop three jars and classify love/career/wealth by runtime labels",
+        "Crop single flying stick and trail",
+        "Crop scroll closed/open states",
+        "Keep plaques and scroll paper blank for runtime Chinese text"
+      ],
+      "prompt": "Crop-ready 2D game prop sheet containing three ornate fortune stick jars with blank front plaques, loose individual fortune sticks, one flying stick with purple trail, closed poem scroll, partially open poem scroll, fully open blank poem scroll, scroll roller ends separated, edge glow strips. No readable text."
+    },
+    {
+      "id": "robo-arm-segment-sheet",
+      "file": "raw/robo-arm-segment-sheet-v1.png",
+      "harnessIds": ["ART-011"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/interactive-prop-atlas-v2.png"
+      ],
+      "role": "dedicated segmented robotic arm production sheet",
+      "contains": [
+        "base joint",
+        "shoulder joint",
+        "upper arm segments",
+        "elbow joint",
+        "lower arm segments",
+        "wrist joint",
+        "claw hand open",
+        "claw hand closed",
+        "servo glow masks",
+        "contact sparks"
+      ],
+      "nextSteps": [
+        "Crop individual arm segments",
+        "Record pivot points at each circular joint",
+        "Use claw open/closed during buildup and climax",
+        "Crop contact spark for crystal-touch moment"
+      ],
+      "prompt": "Crop-ready segmented cyberpunk robotic arm sprite sheet. Include separate parts: base joint, shoulder joint, upper arm segment, elbow joint, lower arm segment, wrist joint, claw hand open, claw hand closed, fingertip glow, servo glow masks, small contact spark. Prioritize clean pivot points for animation."
+    },
+    {
+      "id": "particle-vfx-sheet",
+      "file": "raw/particle-vfx-sheet-v1.png",
+      "harnessIds": ["ART-015", "ART-016"],
+      "referenceImages": ["docs/canvas-art-assets/generated/raw/ui-vfx-atlas-v2.png"],
+      "role": "dedicated reusable particle and micro VFX sprite sheet",
+      "contains": [
+        "purple spark dots",
+        "cyan spark dots",
+        "gold star bursts",
+        "diamond glints",
+        "magic dust clusters",
+        "fog wisps",
+        "rune ring fragments",
+        "card flip glints",
+        "crystal shimmer streaks",
+        "mouse trail dots"
+      ],
+      "nextSteps": [
+        "Crop tiny particle sprites into a packed atlas",
+        "Use gold particles only for result reveal",
+        "Use purple/cyan particles for ambient and hover",
+        "Map sprites to low/mid/high particle tier counts"
+      ],
+      "prompt": "Small crop-ready VFX particle sprite sheet for cyberpunk occult fortune-telling interactions. Include separated tiny assets: purple spark dots, cyan spark dots, gold star bursts, diamond glints, soft magic dust clusters, tiny fog wisps, small rune ring fragments, card flip glints, crystal shimmer streaks, low-opacity mouse trail dots. No readable text."
+    },
+    {
+      "id": "bagua-palm-production-sheet",
+      "file": "raw/bagua-palm-production-sheet-v1.png",
+      "harnessIds": ["ART-006", "ART-007"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/interactive-prop-atlas-v2.png"
+      ],
+      "role": "dedicated bagua and palm interaction production sheet",
+      "contains": [
+        "bagua dial",
+        "separate outer bagua ring",
+        "inner yin-yang core",
+        "gold hover outline ring",
+        "holographic palm panel",
+        "palm line glow overlays",
+        "individual palm line strokes",
+        "vertical scan line",
+        "upload/photo glyph frame"
+      ],
+      "nextSteps": [
+        "Crop bagua ring and yin-yang core separately for rotation",
+        "Crop palm panel and line overlays",
+        "Use scan line as runtime hover effect",
+        "Keep upload/photo glyph optional for overlay UI"
+      ],
+      "prompt": "Crop-ready 2D game production sheet containing neon bagua yin-yang dial, separate outer ring, separate inner yin-yang core, gold hover outline ring, holographic palm reading panel, palm line glow overlays, three individual palm line strokes, vertical scan line, small upload/photo glyph frame. No readable text."
+    },
+    {
+      "id": "oracle-dialogue-handscreen-sheet",
+      "file": "raw/oracle-dialogue-handscreen-sheet-v1.png",
+      "harnessIds": ["ART-013", "ART-014"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/oracle-character-layer-sheet-v2.png"
+      ],
+      "role": "oracle dialogue, speech bubble and holographic hand-screen accessory sheet",
+      "contains": [
+        "speech bubble frames",
+        "dialogue tail shapes",
+        "holographic hand-screen panels",
+        "analyzing placeholder strips",
+        "emotion badges",
+        "small talisman cards",
+        "floating notification plate",
+        "companion message panel"
+      ],
+      "nextSteps": [
+        "Crop speech bubble frames and tails",
+        "Overlay runtime Chinese text separately",
+        "Crop hand-screen panels for oracle idle/analyzing state",
+        "Use emotion badges sparingly to avoid UI clutter"
+      ],
+      "prompt": "Crop-ready 2D game UI/character accessory sheet for oracle girl interactions. Include mystical speech bubble frames, dialogue tail shapes, holographic hand-screen panels, analyzing text placeholder strips with no readable text, emotion badges as symbols only, talisman cards, floating notification plate, companion message panel."
+    },
+    {
+      "id": "result-panel-state-sheet",
+      "file": "raw/result-panel-state-sheet-v1.png",
+      "harnessIds": ["ART-014"],
+      "referenceImages": ["docs/canvas-art-assets/generated/raw/ui-vfx-atlas-v2.png"],
+      "role": "dedicated fortune result panel state sheet",
+      "contains": [
+        "large blank result panel",
+        "compact result card",
+        "loading/analyzing panel",
+        "success/reveal panel",
+        "error/energy-low panel",
+        "share/export button frame",
+        "retry button frame",
+        "disabled button state",
+        "tab headers",
+        "decorative dividers"
+      ],
+      "nextSteps": [
+        "Crop 9-slice-friendly panel frames",
+        "Use error and energy-low panel for failure states",
+        "Crop share/retry/disabled button frames",
+        "Remove or avoid any icon that conflicts with runtime text"
+      ],
+      "prompt": "Crop-ready game UI state sheet for fortune result panels. Include large blank result panel, compact result card, loading/analyzing panel, success/reveal panel, error/energy-low panel, share/export button frames, retry button frame, disabled button state, small tab headers, decorative dividers. Blank text areas."
+    },
+    {
+      "id": "mobile-background-portrait",
+      "file": "raw/mobile-background-portrait-v1.png",
+      "harnessIds": ["ART-002", "ART-019", "ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/background-plate-clean-v3.png"
+      ],
+      "role": "vertical mobile background plate",
+      "contains": [
+        "open center vertical lane",
+        "edge lanterns",
+        "side bagua motif",
+        "side palm panel motif",
+        "distant city depth",
+        "reflective floor ritual circle"
+      ],
+      "nextSteps": [
+        "Export 9:16 mobile WebP",
+        "Overlay crystal orb and cards in central lane",
+        "Check 375px viewport touch target spacing",
+        "Use as mobile-specific background instead of cropping desktop plate"
+      ],
+      "prompt": "Vertical 9:16 mobile background plate for a cyberpunk occult fortune-telling booth. Center column open and darker for crystal orb and cards. Neon lanterns, holographic signs, occult wall ornaments, city depth and reflective floor details around top, sides, and bottom. No readable text, no main character, no large crystal orb."
+    },
+    {
+      "id": "ambient-neon-objects-sheet",
+      "file": "raw/ambient-neon-objects-sheet-v1.png",
+      "harnessIds": ["ART-012", "ART-017"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/background-plate-clean-v3.png"
+      ],
+      "role": "ambient neon object and background prop sheet",
+      "contains": [
+        "hanging lanterns",
+        "talisman strips",
+        "holographic code panels",
+        "small blank neon signs",
+        "chain ornaments",
+        "crystal pendants",
+        "floating data fish",
+        "decorative cables",
+        "occult wall plates",
+        "corner glow fixtures"
+      ],
+      "nextSteps": [
+        "Crop decorative objects for background parallax",
+        "Avoid talisman strips with malformed baked text",
+        "Use blank neon plates for runtime text",
+        "Use data fish as slow L1 ambient sprites"
+      ],
+      "prompt": "Crop-ready ambient object sheet for cyberpunk occult booth background. Include separate hanging lanterns, talisman strips with no readable text, holographic code panels with abstract code blocks, small blank neon signs, chain ornaments, crystal pendants, tiny floating data fish, decorative cables, occult wall plates, corner glow fixtures."
+    },
+    {
+      "id": "interaction-state-overlays-sheet",
+      "file": "raw/interaction-state-overlays-sheet-v1.png",
+      "harnessIds": ["ART-015"],
+      "referenceImages": ["docs/canvas-art-assets/generated/raw/ui-vfx-atlas-v2.png"],
+      "role": "common interactive state overlay source sheet",
+      "contains": [
+        "idle micro-glow",
+        "hover focus",
+        "press inner glow",
+        "disabled gray veil",
+        "loading shimmer",
+        "selected highlight",
+        "sibling dim overlay",
+        "tooltip pointer",
+        "cooldown lock",
+        "reduced-motion static glow",
+        "additional masks and backglows"
+      ],
+      "knownIssues": [
+        "This sheet contains baked English labels. Do not use the full sheet directly in runtime; crop only the visual overlays or regenerate a no-label version."
+      ],
+      "nextSteps": [
+        "Crop visual overlays and discard label areas",
+        "Regenerate a label-free version if exact clean states are required",
+        "Map overlays to VisualState idle/hover/press/loading/disabled/revealed"
+      ],
+      "prompt": "Crop-ready overlay sheet for common interactive states. Include overlays for idle micro-glow, hover focus, press inner glow, disabled gray veil, loading shimmer, selected highlight, sibling dim overlay, tooltip pointer, cooldown lock, reduced-motion static glow. No readable text requested, but generated result needs label cropping."
+    },
+    {
+      "id": "interaction-overlays-label-free-sheet",
+      "file": "raw/interaction-overlays-label-free-sheet-v1.png",
+      "harnessIds": ["ART-015"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/interaction-state-overlays-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/ui-vfx-atlas-v2.png"
+      ],
+      "role": "label-free common interactive state overlay source sheet",
+      "contains": [
+        "idle micro-glow variants",
+        "hover focus rings",
+        "press inner glow masks",
+        "disabled gray veils",
+        "loading shimmer overlays",
+        "selected gold highlight",
+        "sibling dim overlays",
+        "tooltip pointers",
+        "cooldown lock icon overlay",
+        "reduced-motion static glow"
+      ],
+      "nextSteps": [
+        "Prefer this over interaction-state-overlays-sheet for runtime cropping",
+        "Crop circle, card, rectangle and ellipse variants",
+        "Map to VisualState idle/hover/press/loading/disabled/revealed",
+        "Use gold selected overlays only during result reveal"
+      ],
+      "prompt": "Crop-ready overlay sheet for common interactive states with absolutely no labels or text. Include visual-only overlays for idle micro-glow, hover focus, press inner glow, disabled gray veil, loading shimmer, selected highlight, sibling dim overlay, tooltip pointer, cooldown lock, reduced-motion static glow. Circle, rounded-rectangle, card-shaped, ellipse, and soft veil variants."
+    },
+    {
+      "id": "data-fish-ambient-sheet",
+      "file": "raw/data-fish-ambient-sheet-v1.png",
+      "harnessIds": ["ART-012"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/ambient-neon-objects-sheet-v1.png"
+      ],
+      "role": "dedicated holographic data fish and ambient motion sprite sheet",
+      "contains": [
+        "small cyan data fish",
+        "medium purple data fish",
+        "large magenta-cyan data fish",
+        "left-facing variants",
+        "right-facing variants",
+        "fish glow masks",
+        "particle trails",
+        "code-pixel trails",
+        "distant fish silhouettes",
+        "parallax fog wisps",
+        "neon dust clusters"
+      ],
+      "nextSteps": [
+        "Crop fish by size and direction",
+        "Use small fish for distant parallax and large fish for occasional foreground pass",
+        "Use trails as separate low-alpha sprites",
+        "Keep fish alpha low during crystal buildup"
+      ],
+      "prompt": "Crop-ready sprite sheet for ambient holographic data fish and background motion props. Include small cyan data fish, medium purple data fish, large magenta-cyan data fish, left-facing and right-facing variants, fish glow masks, particle trails, code-pixel trails, tiny distant fish silhouettes, slow parallax fog wisps, neon dust clusters."
+    },
+    {
+      "id": "oracle-expression-hand-sheet",
+      "file": "raw/oracle-expression-hand-sheet-v1.png",
+      "harnessIds": ["ART-013"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/oracle-character-layer-sheet-v2.png"
+      ],
+      "role": "dedicated oracle expression and hand gesture production sheet",
+      "contains": [
+        "neutral expression",
+        "soft smile expression",
+        "eyes closed expression",
+        "thinking expression",
+        "surprised expression",
+        "gentle laugh expression",
+        "eye pairs",
+        "mouth shapes",
+        "open hands",
+        "crystal-framing hands",
+        "pointing finger",
+        "relaxed hand",
+        "talisman-holding hand"
+      ],
+      "nextSteps": [
+        "Crop face variants for expression swaps",
+        "Crop eye and mouth overlays if building more granular fake Live2D",
+        "Crop hand gestures for oracle idle and sequence states",
+        "Discard or repaint any baked talisman text if used close-up"
+      ],
+      "prompt": "Crop-ready 2D anime game character accessory sheet for a white-haired cyberpunk oracle girl. Include separated face expressions: neutral, soft smile, eyes closed, thinking, surprised, gentle laugh; separated eye pairs; separated mouth shapes; left hand open, right hand open, both hands framing a crystal orb, pointing finger, relaxed hand, talisman-holding hand."
+    },
+    {
+      "id": "desktop-static-composition-reference",
+      "file": "raw/desktop-static-composition-reference-v1.png",
+      "harnessIds": ["ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/background-plate-clean-v3.png",
+        "docs/canvas-art-assets/generated/raw/interactive-prop-atlas-v2.png"
+      ],
+      "role": "desktop static composition reference for final screen",
+      "contains": [
+        "full desktop scene composition",
+        "central crystal orb",
+        "oracle character",
+        "tarot cards",
+        "cyber cat",
+        "fortune stick jars",
+        "bagua",
+        "palm panel",
+        "poem scroll",
+        "robotic arm",
+        "ambient data fish",
+        "blank UI panels"
+      ],
+      "nextSteps": [
+        "Use as composition reference only",
+        "Compare runtime static composite against this reference",
+        "Keep center focus hierarchy: orb first, oracle face/hands second",
+        "Do not use directly as final runtime background because interactive props must remain separate"
+      ],
+      "prompt": "Polished 16:9 static composition reference for the final interactive CyberOracle Canvas screen: empty-center cyberpunk occult booth, central glowing crystal orb, five tarot cards around it, white-haired oracle girl behind the orb, cyber cat lower left, fortune stick jars, bagua, palm panel, poem scroll, robotic arm, neon signs and data fish around edges."
+    },
+    {
+      "id": "mobile-ui-panel-sheet",
+      "file": "raw/mobile-ui-panel-sheet-v1.png",
+      "harnessIds": ["ART-014", "ART-019"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/mobile-background-portrait-v1.png",
+        "docs/canvas-art-assets/generated/raw/result-panel-state-sheet-v1.png"
+      ],
+      "role": "mobile-oriented UI panel and control source sheet",
+      "contains": [
+        "compact result panel",
+        "bottom action bar frame",
+        "share button frame",
+        "retry button frame",
+        "upload button frame",
+        "tooltip bubble",
+        "small tabs",
+        "mobile modal frame",
+        "vertical title plaque",
+        "notification banner",
+        "safe-area ornamental corners"
+      ],
+      "nextSteps": [
+        "Crop mobile panels and buttons separately",
+        "Use with mobile-background-portrait for 375px QA",
+        "Keep all text rendered at runtime",
+        "Check safe-area spacing on phone viewports"
+      ],
+      "prompt": "Crop-ready 9:16-oriented mobile UI sheet for cyberpunk occult fortune-telling interactions. Include compact result panel, bottom action bar frame, small share button frame, retry button frame, upload button frame, tooltip bubble, small tabs, mobile modal frame, vertical title plaque, blank notification banner, safe-area friendly ornamental corners."
+    },
+    {
+      "id": "sound-status-icon-sheet",
+      "file": "raw/sound-status-icon-sheet-v2.png",
+      "harnessIds": ["ART-018", "ART-014"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/mobile-ui-panel-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/ui-vfx-atlas-v2.png"
+      ],
+      "role": "visual icon sheet for audio, status and utility controls",
+      "contains": [
+        "sound on icon",
+        "sound off icon",
+        "hover chime icon",
+        "card flip icon",
+        "crystal hum icon",
+        "reveal bell icon",
+        "export icon",
+        "share icon",
+        "retry icon",
+        "reduced motion icon",
+        "performance tier icons",
+        "lock/unlock icons",
+        "success icon",
+        "warning icon"
+      ],
+      "nextSteps": [
+        "Use as UI icon source only, not as audio assets",
+        "Crop circular and hex variants",
+        "Pair icons with real OGG/MP3 sound assets later",
+        "Avoid icons with unintended semantic ambiguity in final UI"
+      ],
+      "prompt": "Crop-ready icon sheet for optional audio/status controls in a cyberpunk occult game UI. Include visual-only icons for sound on, sound off, hover chime, card flip, crystal hum, reveal bell, export, share, retry, reduced motion, performance low, performance high, locked, unlocked, success, warning. Symbols only, no letters or numbers."
+    },
+    {
+      "id": "tarot-face-symbol-sheet",
+      "file": "raw/tarot-face-symbol-sheet-v1.png",
+      "harnessIds": ["ART-005", "ART-014", "ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/tarot-deck-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/fortune-result-card-illustration-sheet-v1.png"
+      ],
+      "role": "high-detail tarot face symbol and card illustration source sheet",
+      "contains": [
+        "sun compass symbol",
+        "moon crescent symbol",
+        "star wheel symbol",
+        "lotus symbol",
+        "oracle eye symbol",
+        "lightning omen symbol",
+        "yin-yang symbol",
+        "crystal mountain symbol",
+        "data constellation symbol",
+        "fate thread symbol",
+        "cyber koi symbol",
+        "oracle mirror symbol",
+        "blank lower caption frames"
+      ],
+      "nextSteps": [
+        "Crop each symbol into card face art",
+        "Keep lower caption frames blank and render Chinese text at runtime",
+        "Use symbols as result-card icons or tarot front overlays",
+        "Export transparent PNG source plus WebP runtime variants"
+      ],
+      "prompt": "Crop-ready tarot card face symbol and illustration sheet for a cyberpunk occult fortune-telling game. Twelve separate ornate arcana symbols: sun compass, moon crescent, star wheel, lotus, eye, lightning, yin-yang, crystal mountain, data constellation, fate thread, cyber koi, oracle mirror. Each symbol has a blank lower label frame, no text, no logos, no watermark."
+    },
+    {
+      "id": "fortune-result-card-illustration-sheet",
+      "file": "raw/fortune-result-card-illustration-sheet-v1.png",
+      "harnessIds": ["ART-014", "ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/result-panel-state-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/tarot-face-symbol-sheet-v1.png"
+      ],
+      "role": "fortune result illustration plates for revealed readings",
+      "contains": [
+        "great fortune plate",
+        "steady growth plate",
+        "hidden warning plate",
+        "love encounter plate",
+        "career opportunity plate",
+        "wealth flow plate",
+        "creative inspiration plate",
+        "rest and recovery plate",
+        "travel opening path plate",
+        "midnight omen plate",
+        "blank lower result text areas"
+      ],
+      "nextSteps": [
+        "Crop card plates at equal dimensions",
+        "Pair each plate with result copy rendered by UI layer",
+        "Use warning plate sparingly for failure or caution states",
+        "Create compressed WebP variants for runtime reveal panels"
+      ],
+      "prompt": "High-detail fortune result card illustration sheet. Ten separate rectangular tarot-like illustration plates with blank lower text areas: great fortune, steady growth, hidden warning, love encounter, career opportunity, wealth flow, creative inspiration, rest and recovery, travel and opening path, midnight omen. Symbolic only, no readable text."
+    },
+    {
+      "id": "category-fortune-charm-sheet",
+      "file": "raw/category-fortune-charm-sheet-v1.png",
+      "harnessIds": ["ART-005", "ART-009", "ART-014"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/fortune-scroll-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/result-panel-state-sheet-v1.png"
+      ],
+      "role": "category-specific charms, seals and prop badges",
+      "contains": [
+        "love category charms",
+        "career category charms",
+        "wealth category charms",
+        "blank jar plaques",
+        "small talisman cards",
+        "octagonal badges",
+        "round result seals",
+        "category glow motifs"
+      ],
+      "knownIssues": [
+        "Some small plaque/card details resemble pseudo text. Avoid using those areas directly or repaint them before close-up use."
+      ],
+      "nextSteps": [
+        "Crop love, career and wealth groups separately",
+        "Use runtime Chinese labels instead of baked plaque details",
+        "Use charms as hover badges on fortune jars and result cards",
+        "Repaint any pseudo-text plaques if they appear larger than icon size"
+      ],
+      "prompt": "Crop-ready category fortune prop and charm sheet for cyberpunk occult game UI. Love, career, and wealth themed charms, jar plaques, talismans, hover badges, result seals, glow motifs. Symbols only, no text, no logos, no watermark."
+    },
+    {
+      "id": "failure-reduced-motion-sheet",
+      "file": "raw/failure-reduced-motion-sheet-v1.png",
+      "harnessIds": ["ART-015", "ART-016", "ART-019"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/crystal-orb-production-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/interaction-overlays-label-free-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/result-panel-state-sheet-v1.png"
+      ],
+      "role": "failure, disabled and reduced-motion fallback visuals",
+      "contains": [
+        "dim crystal orb states",
+        "energy-low orb",
+        "fog dispersal overlays",
+        "broken ripple ring",
+        "static neon glow",
+        "low-particle dust field",
+        "error panel frames",
+        "disabled grayscale overlays",
+        "warning symbol",
+        "offline seal",
+        "retry button frame"
+      ],
+      "nextSteps": [
+        "Crop low-energy orb variants for disabled/loading-failed states",
+        "Use static glow and dust in reduced-motion mode",
+        "Crop warning symbols as UI overlays, not baked text labels",
+        "Map to error, timeout, asset-missing and prefers-reduced-motion states"
+      ],
+      "prompt": "Crop-ready failure and reduced-motion fallback visual sheet for a cyberpunk occult fortune-telling game. Include dim crystal orb state, energy-low orb, fog dispersal overlay, broken ripple ring, static neon glow, low-particle dust, error/retry frames, disabled grayscale overlay, simplified vignette, warning symbol, offline seal. No letters or numbers."
+    },
+    {
+      "id": "loading-preloader-ritual-sheet",
+      "file": "raw/loading-preloader-ritual-sheet-v1.png",
+      "harnessIds": ["ART-015", "ART-016", "ART-019"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/crystal-orb-production-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/tarot-deck-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/particle-vfx-sheet-v1.png"
+      ],
+      "role": "loading, preloader and ritual-progress source sheet",
+      "contains": [
+        "rotating crystal sigil stages",
+        "segmented loading rings",
+        "static fallback rings",
+        "pulsing dot row",
+        "miniature crystal orb loaders",
+        "card shuffle loader frames",
+        "data rain strips",
+        "progress bar frames",
+        "blank loading panels",
+        "low-motion still loader"
+      ],
+      "nextSteps": [
+        "Crop ring stages for CSS/canvas rotation",
+        "Use card shuffle frames during tarot asset preloading",
+        "Use data rain strips as optional background loader texture",
+        "Provide low-motion still loader for accessibility"
+      ],
+      "prompt": "Crop-ready loading and preloader ritual sheet for cyberpunk occult fortune game. Include rotating crystal sigil, loading ring stages, static fallback ring, pulsing dot row, miniature crystal orb loader, card-shuffle loader frames, data rain strip, progress bar frame, blank loading panel, low-motion still loader. No text."
+    },
+    {
+      "id": "master-key-art",
+      "file": "raw/master-key-art-v1.png",
+      "harnessIds": ["ART-001", "ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/desktop-static-composition-reference-v1.png",
+        "docs/canvas-art-assets/generated/raw/mobile-final-composition-reference-v1.png"
+      ],
+      "role": "primary visual direction and quality benchmark key art",
+      "contains": [
+        "central crystal orb focal point",
+        "white-haired oracle girl",
+        "tarot orbit",
+        "bagua dial",
+        "holographic palm panel",
+        "cyber cat",
+        "fortune jars",
+        "poem scroll",
+        "robotic arm",
+        "data fish",
+        "dense neon booth environment"
+      ],
+      "nextSteps": [
+        "Use as visual QA target, not as runtime background",
+        "Extract palette and material-density notes",
+        "Compare all future sprites against this key art",
+        "Keep runtime implementation layered instead of using this full image directly"
+      ],
+      "prompt": "Premium 2D anime game master key art for CyberOracle, cyberpunk occult fortune telling booth at night, central glowing crystal orb as brightest focus, white-haired oracle girl behind the orb with gentle mysterious expression, tarot cards orbiting, neon bagua dial, holographic palm panel, cyber black cat, fortune stick jars, poem scroll, segmented robotic arm, holographic data fish, dense purple cyan magenta gold lighting, wet reflective counter, high-fidelity gacha game event screen polish, composition inspired by a futuristic Chinese occult divination booth, no readable text, no logos, no watermark, 16:9 landscape."
+    },
+    {
+      "id": "runtime-layout-guide-label-free",
+      "file": "raw/runtime-layout-guide-label-free-v1.png",
+      "harnessIds": ["ART-003", "ART-019", "ART-021"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/background-plate-clean-v3.png",
+        "docs/canvas-art-assets/generated/raw/desktop-static-composition-reference-v1.png"
+      ],
+      "role": "label-free visual guide for layer placement, anchors, hit regions and safe areas",
+      "contains": [
+        "crystal orb hit circle",
+        "oracle silhouette placement",
+        "tarot card rectangles",
+        "cat ellipse",
+        "bagua circle",
+        "palm panel rectangle",
+        "fortune jar circles",
+        "poem scroll rectangle",
+        "robotic arm capsules",
+        "result panel zone",
+        "safe-area borders",
+        "anchor crosshair marks"
+      ],
+      "nextSteps": [
+        "Use as a visual reference when drafting runtime manifest values",
+        "Translate marked shapes into anchor and hitbox config",
+        "Do not ship this image in runtime UI",
+        "Keep all production labels in docs, not baked into the image"
+      ],
+      "prompt": "Label-free visual runtime layout guide for a cyberpunk occult Canvas game screen, 16:9 landscape. Absolutely no letters, no words, no numbers, no readable symbols. Show the fortune telling booth scene with semi-transparent colored geometry only: central crystal orb circular hit region, oracle bust silhouette, tarot card rectangles, cat ellipse, bagua circle, palm panel rectangle, fortune jar circles, poem scroll rectangle, robotic arm segmented capsule shapes, bottom result panel rectangle, responsive safe-area border lines, anchor crosshair icons made only from simple geometric marks. Dark premium game UI production board, purple cyan gold glowing linework, no text, no logo, no watermark."
+    },
+    {
+      "id": "p0-runtime-sprite-refinement-sheet",
+      "file": "raw/p0-runtime-sprite-refinement-sheet-v1.png",
+      "harnessIds": ["ART-004", "ART-005", "ART-006", "ART-007", "ART-014", "ART-015"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/crystal-orb-production-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/tarot-deck-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/bagua-palm-production-sheet-v1.png"
+      ],
+      "role": "cleaner P0 runtime sprite refinement source sheet",
+      "contains": [
+        "large crystal orb with base",
+        "separate glass highlight",
+        "purple glow halo",
+        "five matching tarot backs",
+        "blank tarot front",
+        "selected card frame",
+        "bagua dial",
+        "holographic palm panel"
+      ],
+      "nextSteps": [
+        "Prefer this sheet for first-pass P0 crop testing",
+        "Crop orb, highlight and glow as separate layers",
+        "Crop card back/front at matching dimensions",
+        "Use bagua and palm panel to replace lower-quality atlas crops if needed"
+      ],
+      "prompt": "Crop-ready clean P0 runtime sprite refinement sheet for cyberpunk occult fortune game, separated premium game sprites with generous spacing on a dark plain background: large crystal orb body on ornate mechanical base, separate glass highlight overlay, separate purple glow halo, five matching tarot card backs, one blank tarot card front, selected gold card frame, bagua dial, holographic palm panel, all objects isolated and clean silhouettes, no readable text, no logos, no watermark, high-fidelity 2D game art, purple cyan gold palette."
+    },
+    {
+      "id": "oracle-character-refinement-sheet",
+      "file": "raw/oracle-character-refinement-sheet-v1.png",
+      "harnessIds": ["ART-013"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/oracle-character-layer-sheet-v2.png",
+        "docs/canvas-art-assets/generated/raw/oracle-expression-hand-sheet-v1.png"
+      ],
+      "role": "higher-polish oracle character layer refinement sheet",
+      "contains": [
+        "full oracle bust",
+        "face variants",
+        "open eyes",
+        "closed eyes",
+        "neutral mouth",
+        "smile mouth",
+        "hand gestures",
+        "front hair",
+        "back hair",
+        "halo ring",
+        "talisman accessories"
+      ],
+      "nextSteps": [
+        "Use as visual target for final fake-Live2D layer cleanup",
+        "Crop full bust and expression variants",
+        "Manually separate eyes, mouth and hair where AI layer boundaries are imperfect",
+        "Keep oracle hands secondary to crystal orb focus"
+      ],
+      "prompt": "Premium layered oracle character refinement sheet for a cyberpunk occult fortune game, white-haired anime oracle girl, front bust, purple eyes, black violet gold outfit, mechanical halo headpiece, elegant hands posed around an invisible crystal orb, separated parts arranged with spacing: full bust, face close-up, open eyes, closed eyes, smile mouth, neutral mouth, left hand, right hand, front hair, back hair, halo ring, talisman accessories. Clean layer-friendly silhouettes, no readable text, no logos, no watermark, high-fidelity gacha game character art, dark plain background."
+    },
+    {
+      "id": "mobile-final-composition-reference",
+      "file": "raw/mobile-final-composition-reference-v1.png",
+      "harnessIds": ["ART-019", "ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/mobile-background-portrait-v1.png",
+        "docs/canvas-art-assets/generated/raw/master-key-art-v1.png"
+      ],
+      "role": "mobile final composition quality reference",
+      "contains": [
+        "vertical oracle composition",
+        "central crystal orb",
+        "tarot cards",
+        "cyber cat",
+        "robotic arm",
+        "palm panel",
+        "fortune jars",
+        "poem scroll",
+        "bagua floor motif",
+        "edge ornaments",
+        "safe central touch area"
+      ],
+      "nextSteps": [
+        "Use as mobile composition target only",
+        "Do not ship directly as a single runtime image",
+        "Compare 375px layout against this hierarchy",
+        "Ensure mobile hit targets do not overlap after responsive scaling"
+      ],
+      "prompt": "Mobile 9:16 final composition reference for CyberOracle interactive fortune game, premium anime cyberpunk occult booth, central crystal orb in lower middle, white-haired oracle girl above it, tarot cards around orb, cyber black cat near lower side, bagua dial, palm panel, fortune stick jars, poem scroll, robotic arm and neon lanterns around edges, clear central touch area, top and bottom safe areas, high-fidelity gacha event screen polish, purple cyan magenta gold lighting, no readable text, no logos, no watermark."
+    },
+    {
+      "id": "runtime-readiness-qa-contact-sheet",
+      "file": "raw/runtime-readiness-qa-contact-sheet-v1.png",
+      "harnessIds": ["ART-003", "ART-021"],
+      "referenceImages": [
+        "docs/canvas-art-assets/ART_ASSET_PRODUCTION_PLAN.md",
+        "docs/canvas-art-assets/DYNAMIC_EFFECT_TECH_PLAN.md",
+        "docs/canvas-art-assets/generated/raw/runtime-layout-guide-label-free-v1.png"
+      ],
+      "role": "visual QA reference for art handoff readiness",
+      "contains": [
+        "source asset thumbnail columns",
+        "transparent checkerboard edge preview",
+        "dark background edge preview",
+        "light background edge preview",
+        "compression preview symbol",
+        "hitbox overlay symbol",
+        "motion fallback symbol",
+        "status icons"
+      ],
+      "nextSteps": [
+        "Use this as a visual explanation for runtime-readiness checks",
+        "Create real markdown report separately when final sprites are cropped",
+        "Do not use as runtime UI",
+        "Keep pass/fail status in docs or manifest, not baked into shipped assets"
+      ],
+      "prompt": "Runtime readiness visual QA contact sheet for cyberpunk occult game art assets, no text, no numbers, no letters. Show rows of small asset thumbnails on a dark production board: source PNG icon, transparent checkerboard edge preview, dark background edge preview, light background edge preview, WebP compressed preview symbol, hitbox overlay symbol, motion fallback symbol, license seal symbol. Use only icons, checkmarks, warning triangles without letters, colored dots and geometric dividers. Premium game art handoff board style, purple cyan gold, clean, no readable text, no watermark."
+    },
+    {
+      "id": "p1-side-prop-refinement-sheet",
+      "file": "raw/p1-side-prop-refinement-sheet-v1.png",
+      "harnessIds": ["ART-009", "ART-010", "ART-011", "ART-012", "ART-014", "ART-017"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/fortune-scroll-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/robo-arm-segment-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/data-fish-ambient-sheet-v1.png"
+      ],
+      "role": "refined P1 side prop crop source sheet",
+      "contains": [
+        "fortune stick jars",
+        "loose fortune sticks",
+        "flying stick with trail",
+        "closed scroll",
+        "partially opened scroll",
+        "fully opened blank scroll",
+        "robotic arm segments",
+        "open and closed claw",
+        "servo glow masks",
+        "holographic data fish",
+        "blank neon frames",
+        "purple ring VFX"
+      ],
+      "nextSteps": [
+        "Prefer this sheet over broad atlases for first-pass P1 crop testing",
+        "Crop jars and scrolls as independent clickable props",
+        "Crop robotic arm by joint and record pivots",
+        "Keep all plaques and scroll interiors blank for runtime Chinese text"
+      ],
+      "prompt": "P1 side-prop refinement sheet for a cyberpunk occult fortune-telling Canvas game. Separated crop-ready premium sprites with generous spacing on a dark plain background: three ornate fortune stick jars with blank plaques, loose fortune sticks, one flying stick with purple trail, closed poem scroll, partially opened blank scroll, fully opened blank scroll, segmented robotic arm parts with base joint, shoulder, elbow, wrist, open claw, closed claw, small servo glow masks, two holographic data fish, blank neon sign frames. High-fidelity 2D anime game asset art, purple cyan magenta gold palette, no readable text."
+    },
+    {
+      "id": "ui-nine-slice-refinement-sheet",
+      "file": "raw/ui-nine-slice-refinement-sheet-v1.png",
+      "harnessIds": ["ART-014"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/ui-vfx-atlas-v2.png",
+        "docs/canvas-art-assets/generated/raw/result-panel-state-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/mobile-ui-panel-sheet-v1.png"
+      ],
+      "role": "refined 9-slice UI frame and control crop source sheet",
+      "contains": [
+        "large result panel frame",
+        "compact card frame",
+        "modal backplate",
+        "tooltip frame",
+        "primary button frame",
+        "secondary button frame",
+        "disabled button frame",
+        "corner pieces",
+        "edge strips",
+        "dividers",
+        "tab headers",
+        "icon holders"
+      ],
+      "nextSteps": [
+        "Crop large panels into 9-slice pieces",
+        "Crop button states and keep runtime text separate",
+        "Use circular holders for icon-only controls",
+        "Test frame readability on both desktop and mobile overlays"
+      ],
+      "prompt": "Refined 9-slice UI and modal frame sheet for CyberOracle fortune game. Separated UI pieces on dark plain background: large result panel frame with empty center, compact card frame, modal backplate, tooltip bubble frame, primary button frame, secondary button frame, disabled button frame, corner pieces, edge strips, dividers, tab headers, small circular icon holders. Premium cyberpunk occult game UI, ornate neon purple cyan gold, no readable text."
+    },
+    {
+      "id": "reveal-interaction-vfx-refinement-atlas",
+      "file": "raw/reveal-interaction-vfx-refinement-atlas-v1.png",
+      "harnessIds": ["ART-015", "ART-016", "ART-019"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/particle-vfx-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/interaction-overlays-label-free-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/loading-preloader-ritual-sheet-v1.png"
+      ],
+      "role": "refined reveal, hover, press and ambient VFX crop atlas",
+      "contains": [
+        "white flash masks",
+        "purple energy rings",
+        "cyan focus rings",
+        "gold star particles",
+        "diamond glints",
+        "spark dots",
+        "fog wisps",
+        "crystal shimmer streaks",
+        "card flip glints",
+        "press ripple rings",
+        "hover halos",
+        "scanline strips",
+        "magic dust bursts",
+        "low-motion static glows"
+      ],
+      "nextSteps": [
+        "Crop rings and glints into reusable VFX sprites",
+        "Use gold particles only for reveal/resolution moments",
+        "Use cyan focus rings for hover and selected states",
+        "Create low-motion static variants from the still glows"
+      ],
+      "prompt": "Refined reveal and interaction VFX atlas for CyberOracle Canvas game. Separated crop-ready VFX sprites on dark plain background: white flash masks, purple energy rings, cyan focus rings, gold star particles, diamond glints, small spark dots, fog wisps, crystal shimmer streaks, card flip glints, press ripple rings, hover halos, scanline strips, magic dust bursts, low-motion static glows. No text."
+    },
+    {
+      "id": "cyber-cat-refinement-sheet",
+      "file": "raw/cyber-cat-refinement-sheet-v1.png",
+      "harnessIds": ["ART-008"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/cyber-cat-sprite-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/category-fortune-charm-sheet-v1.png"
+      ],
+      "role": "higher-polish cyber cat companion sprite refinement sheet",
+      "contains": [
+        "sitting cat body",
+        "head close-ups",
+        "open eyes",
+        "blink eyes",
+        "happy eyes",
+        "mischievous eyes",
+        "tail variants",
+        "paw tap pose",
+        "belly-up pose",
+        "collar glow mask",
+        "collar charm",
+        "shadow ellipse",
+        "eye glow pieces"
+      ],
+      "nextSteps": [
+        "Use sitting body and head close-ups for first implementation",
+        "Crop eye variants for blink and hover states",
+        "Crop belly-up pose for multi-click easter egg",
+        "Repair fur/whisker alpha manually after chroma or matte extraction"
+      ],
+      "prompt": "Cyber black cat refinement sheet for CyberOracle. Separated crop-ready sprites on a dark plain background: sitting cyber black cat body, head close-up, open eyes, blink eyes, happy eyes, mischievous eyes, tail straight, tail curved, paw tap pose, belly-up easter egg pose, collar glow mask, small charm, tiny shadow ellipse, purple/cyan eye glow. Premium cute occult anime game companion, no readable text."
+    },
+    {
+      "id": "parallax-environment-layer-sheet",
+      "file": "raw/parallax-environment-layer-sheet-v1.png",
+      "harnessIds": ["ART-002", "ART-012", "ART-017", "ART-019"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/background-plate-clean-v4.png",
+        "docs/canvas-art-assets/generated/raw/ambient-neon-objects-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/neon-signage-atlas-v1.png"
+      ],
+      "role": "background parallax, foreground ornament and ambient layer crop sheet",
+      "contains": [
+        "hanging lantern clusters",
+        "chain talismans",
+        "blank vertical neon signs",
+        "blank horizontal neon signs",
+        "edge curtains",
+        "foreground counter trim",
+        "wet reflection strips",
+        "distant skyline strips",
+        "holographic code rain curtains",
+        "occult wall plaques",
+        "crystal pendants",
+        "small data fish silhouettes",
+        "fog bands",
+        "corner vignette overlays"
+      ],
+      "nextSteps": [
+        "Crop environmental objects for L1 parallax",
+        "Use skyline and fog strips as slow-moving background layers",
+        "Keep sign faces blank and render Chinese labels at runtime",
+        "Use vignette overlays to direct focus toward the crystal"
+      ],
+      "prompt": "Background parallax and foreground ornament refinement sheet for CyberOracle. Separated crop-ready environmental layers and objects on a dark plain background: hanging neon lantern clusters, chain talismans, blank vertical neon signs, blank horizontal neon signs, edge curtains, foreground counter trim, wet reflection strips, distant skyline silhouette strips, holographic code rain curtains, occult wall plaques, crystal pendants, small floating data fish silhouettes, soft fog bands, corner vignette overlays. No readable text."
+    },
+    {
+      "id": "background-plate-clean-v4",
+      "file": "raw/background-plate-clean-v4.png",
+      "harnessIds": ["ART-002", "ART-019", "ART-020"],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/background-plate-clean-v3.png",
+        "docs/canvas-art-assets/generated/raw/master-key-art-v1.png"
+      ],
+      "role": "cleanest desktop background plate candidate with stronger runtime-safe empty center",
+      "contains": [
+        "open darker central stage",
+        "edge lanterns",
+        "blank neon panels",
+        "distant city",
+        "side occult instruments",
+        "wet reflective counter",
+        "subtle ritual circle",
+        "side curtains",
+        "right-side palm panel motif"
+      ],
+      "nextSteps": [
+        "Prefer this over v3 when composing runtime sprites",
+        "Export desktop/tablet WebP variants",
+        "Keep central brightness lower than crystal orb",
+        "Use parallax-environment-layer-sheet-v1 for extra edge motion"
+      ],
+      "prompt": "v4 clean empty-center background plate for CyberOracle runtime composition. Cyberpunk occult fortune-telling booth at night, no main character, no major central props, no crystal orb, no cat, no cards in center. 16:9 landscape, central 60 percent open darker stage/counter area for runtime sprites, rich details only around edges: hanging lanterns, neon signs with blank faces, distant city, side occult instruments, wet reflective counter, subtle floor ritual circle, side curtains, holographic panels. No readable text."
+    },
+    {
+      "id": "runtime-sprite-crop-handoff-sheet",
+      "file": "raw/runtime-sprite-crop-handoff-sheet-v1.png",
+      "harnessIds": [
+        "ART-003",
+        "ART-004",
+        "ART-005",
+        "ART-006",
+        "ART-007",
+        "ART-008",
+        "ART-009",
+        "ART-010",
+        "ART-011",
+        "ART-012",
+        "ART-014",
+        "ART-015",
+        "ART-016",
+        "ART-021"
+      ],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/p0-runtime-sprite-refinement-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/p1-side-prop-refinement-sheet-v1.png",
+        "docs/canvas-art-assets/generated/raw/reveal-interaction-vfx-refinement-atlas-v1.png"
+      ],
+      "role": "label-free visual handoff sheet for runtime crop, anchor, padding and transparent-edge checks",
+      "contains": [
+        "runtime sprite thumbnails",
+        "crop box guides",
+        "anchor crosshair marks",
+        "transparent checkerboard preview strips",
+        "safe padding guides",
+        "hit region geometry"
+      ],
+      "nextSteps": [
+        "Use as visual reference while cropping source sheets into runtime sprites",
+        "Translate anchor and hit region marks into runtime manifest values",
+        "Keep this as a docs-only production reference, not a shipped runtime asset"
+      ],
+      "prompt": "Label-free runtime sprite crop handoff contact sheet for a cyberpunk occult fortune-telling Canvas game. Isolated crop-ready game asset thumbnails arranged on a dark production board: crystal orb, glass highlight, glow halo, five tarot cards, bagua dial, palm panel, cyber cat, fortune jars, poem scroll states, robotic arm segments, holographic data fish, UI panel frames, hover rings and particle VFX. Include visual crop boxes, anchor crosshair marks, transparent checkerboard preview strips, and safe padding guides using only icons and geometry. Absolutely no readable text, no letters, no numbers, no logo, no watermark."
+    },
+    {
+      "id": "desktop-runtime-composition-reference",
+      "file": "raw/desktop-runtime-composition-reference-v1.png",
+      "harnessIds": [
+        "ART-002",
+        "ART-004",
+        "ART-005",
+        "ART-006",
+        "ART-007",
+        "ART-008",
+        "ART-009",
+        "ART-010",
+        "ART-011",
+        "ART-012",
+        "ART-013",
+        "ART-014",
+        "ART-017",
+        "ART-020"
+      ],
+      "referenceImages": [
+        "docs/inspiration.png",
+        "docs/canvas-art-assets/generated/raw/background-plate-clean-v4.png",
+        "docs/canvas-art-assets/generated/raw/master-key-art-v1.png"
+      ],
+      "role": "desktop runtime composition quality reference for ART-020 static composition review",
+      "contains": [
+        "central crystal orb focus",
+        "oracle secondary focus",
+        "tarot cards",
+        "bagua dial",
+        "palm panel",
+        "cyber cat",
+        "fortune jars",
+        "blank poem scroll",
+        "robotic arm",
+        "ambient data fish",
+        "neon booth background"
+      ],
+      "nextSteps": [
+        "Compare first runtime composite against this hierarchy",
+        "Keep orb brighter than background and edge props",
+        "Use as docs-only composition reference, not as a single shipped background"
+      ],
+      "prompt": "Final desktop composition reference for a cyberpunk occult fortune-telling game screen. Central glowing crystal orb is the brightest focus on the counter, white-haired oracle girl behind it as secondary focus, five tarot cards orbiting near the orb, bagua dial at left, holographic palm panel at upper right, cyber black cat near lower side, fortune stick jars and blank poem scroll readable at edges, robotic arm reaching toward orb, subtle data fish and neon signs in the background. No readable text, no letters, no numbers, no logos, no watermark."
+    },
+    {
+      "id": "mobile-touch-hitbox-validation-reference",
+      "file": "raw/mobile-touch-hitbox-validation-reference-v1.png",
+      "harnessIds": ["ART-003", "ART-019", "ART-020", "ART-021"],
+      "referenceImages": [
+        "docs/canvas-art-assets/generated/raw/mobile-background-portrait-v1.png",
+        "docs/canvas-art-assets/generated/raw/mobile-final-composition-reference-v1.png",
+        "docs/canvas-art-assets/generated/raw/runtime-layout-guide-label-free-v1.png"
+      ],
+      "role": "mobile touch-safe composition and hit-region validation reference",
+      "contains": [
+        "9:16 mobile composition",
+        "central touch lane",
+        "safe area borders",
+        "geometric hit regions",
+        "anchor crosshair marks",
+        "blank result panel zones"
+      ],
+      "nextSteps": [
+        "Use as the visual target for mobile hitbox spacing checks",
+        "Translate geometry into responsive manifest values",
+        "Keep as docs-only validation reference"
+      ],
+      "prompt": "Label-free 9:16 mobile validation reference for a cyberpunk occult fortune-telling Canvas game. Show the vertical game composition with central crystal orb in lower middle, oracle bust above, tarot cards arranged around the orb, cyber cat, bagua dial, palm panel, fortune jars, poem scroll, robotic arm and result panel zones. Overlay translucent geometric hit regions, safe-area borders, anchor crosshair marks, and spacing guides using only shapes and icons. Absolutely no readable text, no letters, no numbers, no logo, no watermark."
+    }
+  ]
+}

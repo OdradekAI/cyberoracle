@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
+import { addHistoryEntry } from '../../../lib/history-db';
 
 interface SSEEvent {
   step: string;
@@ -44,6 +45,9 @@ const STUB_SECTIONS: ResultSection[] = [
 export default function ResultPage() {
   const params = useParams();
   const id = params.id as string;
+  const searchParams = useSearchParams();
+  const readingType = (searchParams.get('kind') ?? 'palm') as 'palm' | 'face';
+  const savedRef = useRef(false);
   const [phase, setPhase] = useState('loading');
   const [progress, setProgress] = useState(0);
   const [partialText, setPartialText] = useState('');
@@ -88,6 +92,17 @@ export default function ResultPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  function saveToHistory(summary: string) {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    addHistoryEntry({
+      id,
+      type: readingType,
+      date: new Date().toLocaleDateString('zh-CN'),
+      summary: summary.slice(0, 100),
+    });
+  }
+
   function handleEvent(event: SSEEvent) {
     if (event.error) {
       setError(event.error);
@@ -111,7 +126,19 @@ export default function ResultPage() {
       setProgress(100);
       setResultData(event.data as Record<string, unknown>);
       buildSections(event.data);
+      saveToHistory(extractSummary(event.data));
     }
+  }
+
+  function extractSummary(data: unknown): string {
+    if (!data || typeof data !== 'object') return '';
+    const d = data as Record<string, unknown>;
+    if (d.overview && typeof d.overview === 'object') {
+      const ov = d.overview as Record<string, unknown>;
+      if (typeof ov.body === 'string') return ov.body;
+    }
+    if (typeof d.summary === 'string') return d.summary;
+    return '';
   }
 
   function simulateResult() {
@@ -135,6 +162,7 @@ export default function ResultPage() {
       setProgress(100);
       setSections(STUB_SECTIONS);
       setResultData({ status: 'accepted' });
+      saveToHistory(STUB_SECTIONS[0]?.content ?? '');
     }, 3500);
   }
 

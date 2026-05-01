@@ -1180,3 +1180,31 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `f810f81`
+
+---
+
+### Session 41 — 2026-05-01
+
+**Feature:** M2-041 — Easter eggs (midnight visit + cat belly-up) + rhythm layering verification
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/src/components/canvas/easter-eggs.ts` with EasterEggs class and rhythm verification
+- Midnight egg: visiting between 0:00-3:00 local time applies CSS filter `hue-rotate(20deg) saturate(0.85)` on canvas wrapper + shows "夜半凶兆" text for 3 seconds
+- Cat belly-up egg: 10 consecutive clicks within 30s triggers cat roll-over (rotated 180° for 2s), 60s cooldown
+- Added `setClickCallback(cb)` and `setBellyUp(bool)` to CyberCat for easter egg integration
+- Belly-up does not interfere with normal fortune draw click — both callbacks fire
+- Rhythm verification: dev-only check of 13 animated elements across L0-L5 layers, warns if two elements share same layer with phase≈0
+- Amplitude check: verifies center elements 80-100%, mid 70-95%, edge 60-85%, bg 30-60%
+- Integrated into CanvasStage: midnight filter on wrapper div, cat click tracking, rhythm verification on mount
+
+**Verification (playwright):**
+
+- Midnight: "夜半凶兆" text visible, CSS filter `hue-rotate(20deg) saturate(0.85)` applied ✓
+- Cat belly-up: 10 rapid clicks → cat rendered (4960px, rotated), expires after 2s ✓
+- Non-interference: fortune draw still works during/after belly-up (1 fortune log confirmed) ✓
+- Rhythm: 0 warnings — all layer phases properly separated ✓
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `8ca50ad`

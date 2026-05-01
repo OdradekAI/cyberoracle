@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: '下载桌面版 — 赛博玄学馆',
@@ -151,7 +152,7 @@ export default function DownloadPage() {
       </div>
 
       {/* Back link */}
-      <a
+      <Link
         href="/"
         style={{
           marginTop: 40,
@@ -161,7 +162,7 @@ export default function DownloadPage() {
         }}
       >
         返回首页
-      </a>
+      </Link>
     </div>
   );
 }

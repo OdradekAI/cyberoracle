@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { getHistoryEntries, clearHistory, type HistoryEntry } from '../../lib/history-db';
 
 const TYPE_ICONS: Record<string, string> = {
@@ -51,12 +52,12 @@ export default function HistoryPage() {
         }}
       >
         <h1 style={{ fontSize: 24, margin: 0, color: 'rgba(168, 85, 247, 0.9)' }}>解读记录</h1>
-        <a
+        <Link
           href="/"
           style={{ fontSize: 13, color: 'rgba(168, 85, 247, 0.7)', textDecoration: 'none' }}
         >
           返回首页
-        </a>
+        </Link>
       </div>
 
       {!loaded && (
@@ -68,7 +69,7 @@ export default function HistoryPage() {
           <p style={{ fontSize: 16, marginBottom: 16, color: 'rgba(200, 180, 230, 0.6)' }}>
             还没有解读记录
           </p>
-          <a
+          <Link
             href="/"
             style={{
               display: 'inline-block',
@@ -82,7 +83,7 @@ export default function HistoryPage() {
             }}
           >
             开始第一次解读
-          </a>
+          </Link>
         </div>
       )}
 

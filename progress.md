@@ -81,6 +81,7 @@
 | M2-035  | ✅ Pass | Session 35 |
 | M2-043  | ✅ Pass | Session 43 |
 | M2-044  | ✅ Pass | Session 44 |
+| M2-045  | ✅ Pass | Session 45 |
 
 ### Session 1 — 2026-04-30
 
@@ -1306,3 +1307,37 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `bf556d6`
+
+---
+
+### Session 45 — 2026-05-01
+
+**Feature:** M2-045 — End-to-end user journey verification
+**Status:** Passed
+
+**What was done:**
+
+- Created `apps/web/e2e/e2e-journey.spec.ts` with 4 comprehensive tests:
+  1. Full journey: home (canvas + neon signs verified) → crystal ball click (4-act buildup confirmed via pixel sampling) → result page (stub completes in 4.5s, 4+ sections) → export button verified → history entry created and visible → click entry → result page → share page (CTA bar + iframe) → download page (3 platform buttons)
+  2. Performance: canvas renders <3s, tier config available, no critical console errors
+  3. Mobile (375×812): all pages render correctly at mobile viewport
+  4. Typecheck: all 11 packages pass
+- Fixed stale smoke test: M1-era test checked for `@cyberoracle/core` HTML text on home page, but home page is now a full-screen canvas. Updated to verify canvas layers instead.
+- All 16 Playwright tests pass
+
+**Verification (playwright):**
+
+- Full journey test: 16.8s, all 8 steps verified ✓
+- Performance test: canvas renders in 413ms, tier config present ✓
+- Mobile test: all pages work at 375px ✓
+- Typecheck test: 11/11 packages pass ✓
+- All 16/16 Playwright tests pass (0 failures)
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `77f4b0c`
+
+---
+
+## M2 MILESTONE COMPLETE
+
+**45/45 features pass.** All acceptance criteria verified.

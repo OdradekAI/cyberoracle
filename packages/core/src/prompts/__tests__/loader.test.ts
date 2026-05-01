@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { loadPrompt, fillTemplate } from '../loader';
+import { loadPrompt, fillTemplate, loadJsonPrompt } from '../loader';
+import {
+  PalmReadingResultSchema,
+  FaceReadingResultSchema,
+  DailyFortuneResultSchema,
+} from '../../schemas';
 
 describe('fillTemplate', () => {
   it('replaces {{variable}} with provided value', () => {
@@ -54,5 +59,37 @@ describe('loadPrompt', () => {
 
   it('throws descriptive error for non-existent prompt', () => {
     expect(() => loadPrompt('non-existent-prompt')).toThrow(/prompt.*not found/i);
+  });
+});
+
+describe('loadJsonPrompt', () => {
+  it('extracts all four sections from fallback-soft.md', () => {
+    const data = loadJsonPrompt('fallback-soft');
+    expect(Object.keys(data).sort()).toEqual(['companion', 'daily', 'face', 'palm']);
+  });
+
+  it('palm/face/daily sections satisfy their respective schemas', () => {
+    const data = loadJsonPrompt('fallback-soft');
+    expect(PalmReadingResultSchema.safeParse(data.palm).success).toBe(true);
+    expect(FaceReadingResultSchema.safeParse(data.face).success).toBe(true);
+    // daily.date is a runtime placeholder (empty string), but the rest must validate.
+    expect(DailyFortuneResultSchema.safeParse(data.daily).success).toBe(true);
+  });
+
+  it('companion section is a record of category → non-empty string array', () => {
+    const data = loadJsonPrompt('fallback-soft');
+    const companion = data.companion as Record<string, string[]>;
+    expect(typeof companion).toBe('object');
+    for (const category of ['morning', 'idle', 'tap', 'celebrate', 'sad']) {
+      expect(Array.isArray(companion[category])).toBe(true);
+      expect(companion[category]!.length).toBeGreaterThan(0);
+      for (const line of companion[category]!) {
+        expect(typeof line).toBe('string');
+      }
+    }
+  });
+
+  it('throws descriptive error for non-existent json prompt', () => {
+    expect(() => loadJsonPrompt('does-not-exist')).toThrow(/JSON prompt.*not found/);
   });
 });

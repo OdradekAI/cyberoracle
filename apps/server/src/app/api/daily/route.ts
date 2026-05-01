@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
+import { Lunar } from 'lunar-typescript';
 import {
   loadPrompt,
   fillTemplate,
@@ -19,12 +20,24 @@ function getTodayKey(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
-function getDateContext(): { dateStr: string; ganzhi: string; solarTerm: string } {
-  const now = new Date();
+/**
+ * Resolve real-world Chinese calendar context for the daily-fortune prompt
+ * via the lunar-typescript library (no network, fully local).
+ * Exported for unit testing — call `getDateContext(new Date(2026, 4, 1))`.
+ */
+export function getDateContext(now: Date = new Date()): {
+  dateStr: string;
+  ganzhi: string;
+  solarTerm: string;
+} {
   const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
-  // MVP: basic ganzhi placeholder — LLM generates the real value
-  const ganzhi = `${dateStr}`;
-  const solarTerm = '';
+  const lunar = Lunar.fromDate(now);
+  const ganzhi = `${lunar.getDayInGanZhi()}日`;
+  // The "solar term" for a given day = the most recent JieQi segment the day
+  // falls into (e.g. May 1, 2026 → 谷雨). `getPrevJieQi(true)` includes today
+  // when it's exactly the JieQi day; falls back to empty string defensively.
+  const prev = lunar.getPrevJieQi(true);
+  const solarTerm = prev ? prev.getName() : '';
   return { dateStr, ganzhi, solarTerm };
 }
 
@@ -100,8 +113,9 @@ export async function GET() {
     const data = await generateDaily();
     await writeCache({ date: todayKey, data, cachedAt: new Date().toISOString() });
     return NextResponse.json(data);
-  } catch {
-    // Fallback on any failure
+  } catch (err) {
+    // Fallback on any failure (LLM down, schema mismatch, safety reject, disk error...)
+    console.error('[m2-audit][daily] generation failed, falling back to soft content', err);
     const fallback = getDailyFallback();
     return NextResponse.json(fallback);
   }

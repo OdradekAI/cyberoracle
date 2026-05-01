@@ -14,6 +14,7 @@
   "dependencies": {
     "@cyberoracle/core": "workspace:*",
     "@cyberoracle/poster": "workspace:*",
+    "lunar-typescript": "^1.8.6",
     "nanoid": "^5.1.9",
     "next": "14.2.35",
     "react": "catalog:",

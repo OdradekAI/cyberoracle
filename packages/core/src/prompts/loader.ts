@@ -104,3 +104,58 @@ export async function expandIncludes(text: string): Promise<string> {
   }
   return result;
 }
+
+/**
+ * Load a JSON-payload prompt file (.md with frontmatter + multiple
+ * `## <key>` sections, each containing one fenced ```json block).
+ *
+ * Returns an object mapping section heading → parsed JSON value, e.g.
+ * `loadJsonPrompt('fallback-soft')` → `{ palm: {...}, face: {...}, daily: {...}, companion: {...} }`.
+ *
+ * Throws if any fenced block fails to parse, or if a section heading has
+ * no following ```json block. Frontmatter is consumed but not returned;
+ * callers that need it can use `loadPrompt()` instead.
+ */
+export function loadJsonPrompt(name: string): Record<string, unknown> {
+  const filePath = resolve(promptsDir, `${name}.md`);
+
+  let content: string;
+  try {
+    content = readFileSync(filePath, 'utf-8');
+  } catch {
+    throw new Error(`JSON prompt "${name}" not found at ${filePath}`);
+  }
+
+  // Strip frontmatter if present (same convention as loadPrompt).
+  let body = content;
+  if (body.startsWith('---\n')) {
+    const fmEnd = body.indexOf('\n---', 3);
+    if (fmEnd < 0) {
+      throw new Error(`JSON prompt "${name}" has unclosed frontmatter`);
+    }
+    body = body.slice(fmEnd + 4);
+  }
+
+  const out: Record<string, unknown> = {};
+  // Match `## <key>` followed (after any prose) by a ```json fenced block.
+  // Use a non-greedy gap so one heading binds to its very next fence.
+  const sectionRe = /^##\s+([^\n]+)\n([\s\S]*?)```json\s*\n([\s\S]*?)\n```/gm;
+  let match: RegExpExecArray | null;
+  while ((match = sectionRe.exec(body)) !== null) {
+    const key = match[1]!.trim();
+    const rawJson = match[3]!;
+    try {
+      out[key] = JSON.parse(rawJson);
+    } catch (err) {
+      throw new Error(
+        `JSON prompt "${name}" section "${key}" has invalid JSON: ${(err as Error).message}`,
+      );
+    }
+  }
+
+  if (Object.keys(out).length === 0) {
+    throw new Error(`JSON prompt "${name}" contains no parseable \`\`\`json sections`);
+  }
+
+  return out;
+}

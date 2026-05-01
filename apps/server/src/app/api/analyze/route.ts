@@ -154,8 +154,9 @@ export async function GET(request: NextRequest) {
           ),
           'utf-8',
         );
-      } catch {
-        // Non-fatal: result still sent to client
+      } catch (err) {
+        // Non-fatal: result still sent to client, but log so prod alerts can surface it.
+        console.error('[m2-audit][analyze] failed to persist result file', err);
       }
 
       send({ step: 'complete', status: 'done', data: result.data });

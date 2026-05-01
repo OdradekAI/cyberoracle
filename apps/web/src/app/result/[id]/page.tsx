@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
+import { buildResultSections, type ResultSection } from '@cyberoracle/core/result-sections';
 import { addHistoryEntry } from '../../../lib/history-db';
 
 interface SSEEvent {
@@ -9,11 +10,6 @@ interface SSEEvent {
   status: string;
   data: unknown;
   error?: string;
-}
-
-interface ResultSection {
-  title: string;
-  content: string;
 }
 
 const PHASE_LABELS: Record<string, string> = {
@@ -47,7 +43,10 @@ export default function ResultPage() {
   const id = params.id as string;
   const searchParams = useSearchParams();
   const readingType = (searchParams.get('kind') ?? 'palm') as 'palm' | 'face';
+  const isDemoMode = searchParams.get('demo') === '1';
   const savedRef = useRef(false);
+  const fellBackRef = useRef(false);
+  const stubTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [phase, setPhase] = useState('loading');
   const [progress, setProgress] = useState(0);
   const [partialText, setPartialText] = useState('');
@@ -58,39 +57,55 @@ export default function ResultPage() {
   const esRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
-    // For MVP: if no real upload exists, show stub result after simulated loading
-    const timer = setTimeout(() => {
-      simulateResult();
-    }, 100);
+    if (isDemoMode) {
+      runDemoSimulation();
+      return () => {
+        clearStubTimers();
+      };
+    }
 
-    // Try SSE first
+    let opened = false;
     try {
       const es = new EventSource(`/api/analyze?id=${encodeURIComponent(id)}`);
       esRef.current = es;
+      opened = true;
 
       es.onmessage = (e) => {
         try {
           const event: SSEEvent = JSON.parse(e.data);
           handleEvent(event);
-        } catch {
-          // Ignore parse errors
+        } catch (err) {
+          console.warn('[m2-audit][result] SSE parse error', err);
         }
       };
 
-      es.onerror = () => {
+      es.onerror = (err) => {
+        console.error('[m2-audit][result] EventSource onerror, falling back to demo', err);
         es.close();
-        // SSE failed — stub result already triggered by timeout
+        fallbackToDemo();
       };
-    } catch {
-      // EventSource not supported — stub handles it
+    } catch (err) {
+      console.error('[m2-audit][result] EventSource init failed', err);
+      fallbackToDemo();
     }
 
     return () => {
-      clearTimeout(timer);
-      if (esRef.current) esRef.current.close();
+      clearStubTimers();
+      if (opened && esRef.current) esRef.current.close();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, isDemoMode]);
+
+  function clearStubTimers() {
+    for (const t of stubTimersRef.current) clearTimeout(t);
+    stubTimersRef.current = [];
+  }
+
+  function fallbackToDemo() {
+    if (fellBackRef.current) return;
+    fellBackRef.current = true;
+    runDemoSimulation();
+  }
 
   function saveToHistory(summary: string) {
     if (savedRef.current) return;
@@ -106,13 +121,19 @@ export default function ResultPage() {
   function handleEvent(event: SSEEvent) {
     if (event.error) {
       setError(event.error);
+      fallbackToDemo();
       return;
     }
 
     setPhase(event.step);
 
     if (event.step === 'vlm_observe') {
-      setProgress(20);
+      if (event.status === 'done') {
+        setProgress(40);
+        setPartialText('图像观察完成，正在生成解读...');
+      } else {
+        setProgress(20);
+      }
     } else if (event.step === 'llm_interpret') {
       setProgress(50);
       if (
@@ -122,76 +143,59 @@ export default function ResultPage() {
       ) {
         setPartialText((prev) => prev + ((event.data as { partial: string }).partial ?? ''));
       }
-    } else if (event.step === 'complete' && event.status === 'done') {
+    } else if (event.step === 'complete') {
+      if (event.status === 'error') {
+        fallbackToDemo();
+        return;
+      }
       setProgress(100);
-      setResultData(event.data as Record<string, unknown>);
-      buildSections(event.data);
-      saveToHistory(extractSummary(event.data));
+      const data = event.data as Record<string, unknown> | null;
+      if (data && (data as { status?: string }).status === 'rejected') {
+        setError(`图像未通过校验：${String((data as { reason?: string }).reason ?? '请重新上传')}`);
+        fallbackToDemo();
+        return;
+      }
+      setResultData(data);
+      const built = buildResultSections(readingType, data);
+      if (built) {
+        setSections(built);
+        saveToHistory(built[0]?.content ?? '');
+      } else {
+        console.warn('[m2-audit][result] schema validation failed, using stub sections');
+        setSections(STUB_SECTIONS);
+        saveToHistory(STUB_SECTIONS[0]?.content ?? '');
+      }
     }
   }
 
-  function extractSummary(data: unknown): string {
-    if (!data || typeof data !== 'object') return '';
-    const d = data as Record<string, unknown>;
-    if (d.overview && typeof d.overview === 'object') {
-      const ov = d.overview as Record<string, unknown>;
-      if (typeof ov.body === 'string') return ov.body;
-    }
-    if (typeof d.summary === 'string') return d.summary;
-    return '';
-  }
-
-  function simulateResult() {
-    // Simulate loading phases for demo / no-upload case
+  function runDemoSimulation() {
     setPhase('vlm_observe');
     setProgress(20);
 
-    setTimeout(() => {
-      setPhase('llm_interpret');
-      setProgress(50);
-      setPartialText('正在分析命理数据...');
-    }, 800);
+    stubTimersRef.current.push(
+      setTimeout(() => {
+        setPhase('llm_interpret');
+        setProgress(50);
+        setPartialText('正在分析命理数据...');
+      }, 800),
+    );
 
-    setTimeout(() => {
-      setProgress(80);
-      setPartialText('正在解读卦象...');
-    }, 2000);
+    stubTimersRef.current.push(
+      setTimeout(() => {
+        setProgress(80);
+        setPartialText('正在解读卦象...');
+      }, 2000),
+    );
 
-    setTimeout(() => {
-      setPhase('complete');
-      setProgress(100);
-      setSections(STUB_SECTIONS);
-      setResultData({ status: 'accepted' });
-      saveToHistory(STUB_SECTIONS[0]?.content ?? '');
-    }, 3500);
-  }
-
-  function buildSections(data: unknown) {
-    if (!data || typeof data !== 'object') {
-      setSections(STUB_SECTIONS);
-      return;
-    }
-
-    const d = data as Record<string, unknown>;
-    const built: ResultSection[] = [];
-
-    if (d.overview) built.push({ title: '总览', content: String(d.overview) });
-    if (d.mainLines) {
-      const lines = Array.isArray(d.mainLines) ? d.mainLines : [];
-      for (const line of lines) {
-        const l = line as Record<string, unknown>;
-        if (l.label && l.content) {
-          built.push({ title: String(l.label), content: String(l.content) });
-        }
-      }
-    }
-    if (d.summary) built.push({ title: '总结', content: String(d.summary) });
-
-    if (built.length === 0) {
-      setSections(STUB_SECTIONS);
-    } else {
-      setSections(built);
-    }
+    stubTimersRef.current.push(
+      setTimeout(() => {
+        setPhase('complete');
+        setProgress(100);
+        setSections(STUB_SECTIONS);
+        setResultData({ status: 'accepted' });
+        saveToHistory(STUB_SECTIONS[0]?.content ?? '');
+      }, 3500),
+    );
   }
 
   const isLoading = phase !== 'complete';

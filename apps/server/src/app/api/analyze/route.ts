@@ -79,19 +79,31 @@ export async function GET(request: NextRequest) {
       // Step 1: VLM observe — running
       send({ step: 'vlm_observe', status: 'running', data: null });
 
-      // Step 2: LLM interpret — running (with streaming chunks)
-      send({ step: 'llm_interpret', status: 'running', data: null });
+      let observationEmitted = false;
+      const emitObservationDone = (observation: { observations: Record<string, string> }) => {
+        if (observationEmitted) return;
+        observationEmitted = true;
+        send({
+          step: 'vlm_observe',
+          status: 'done',
+          data: { observations: observation.observations },
+        });
+        // Step 2: LLM interpret — running (with streaming chunks)
+        send({ step: 'llm_interpret', status: 'running', data: null });
+      };
 
       let result: ReadingResult<unknown>;
       try {
         if (meta.kind === 'palm') {
           result = await generatePalmReading(imageDataUrl, {
+            onObservation: emitObservationDone,
             onChunk(chunk: string) {
               send({ step: 'llm_interpret', status: 'running', data: { partial: chunk } });
             },
           });
         } else {
           result = await generateFaceReading(imageDataUrl, {
+            onObservation: emitObservationDone,
             onChunk(chunk: string) {
               send({ step: 'llm_interpret', status: 'running', data: { partial: chunk } });
             },

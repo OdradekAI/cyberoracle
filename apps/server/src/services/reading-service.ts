@@ -8,6 +8,8 @@ import {
   PalmReadingResultSchema,
   FaceReadingResultSchema,
   checkContent,
+  type PalmObservation,
+  type FaceObservation,
 } from '@cyberoracle/core';
 import { callVLM } from '../lib/vlm-client';
 import { callLLMStream } from '../lib/llm-stream-client';
@@ -29,8 +31,18 @@ export interface ReadingFailed {
 
 export type ReadingResult<T> = ReadingRejected | ReadingOk<T> | ReadingFailed;
 
+export type ValidPalmObservation = Extract<PalmObservation, { valid: true }>;
+export type ValidFaceObservation = Extract<FaceObservation, { valid: true }>;
+
 export interface ReadingOptions {
   onChunk?: (chunk: string) => void;
+  /**
+   * Fired exactly once after stage-1 (VLM observation) returns a valid,
+   * schema-checked observation payload — before stage-2 LLM interpretation
+   * begins. Lets transports surface intermediate "vlm_observe:done" events
+   * to clients without re-running stage 1.
+   */
+  onObservation?: (observation: ValidPalmObservation | ValidFaceObservation) => void;
 }
 
 async function runVlmObservation(
@@ -100,6 +112,8 @@ export async function generatePalmReading(
       return { status: 'rejected', reason: obsParsed.data.reason };
     }
 
+    options?.onObservation?.(obsParsed.data);
+
     // Stage 2: LLM interpretation
     const buffer = await runLlmInterpretation(obs.observationJson, 'reading-write-palm', options);
 
@@ -142,6 +156,8 @@ export async function generateFaceReading(
     if (!obsParsed.data.valid) {
       return { status: 'rejected', reason: obsParsed.data.reason };
     }
+
+    options?.onObservation?.(obsParsed.data);
 
     // Stage 2: LLM interpretation
     const buffer = await runLlmInterpretation(obs.observationJson, 'reading-write-face', options);

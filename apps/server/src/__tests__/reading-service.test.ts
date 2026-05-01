@@ -161,6 +161,65 @@ describe('reading-service', () => {
       expect(chunks).toEqual(['{"meta":', '{"title":"手相解读指南"', '}}']);
     });
 
+    it('calls onObservation exactly once on the valid path', async () => {
+      mockCallVLM.mockResolvedValue(makeValidPalmObservation());
+
+      async function* fakeStream() {
+        yield makeValidPalmReadingJSON();
+      }
+      mockCallLLMStream.mockImplementation(fakeStream);
+
+      const onObservation = vi.fn();
+      const result = await generatePalmReading(dataUrl, { onObservation });
+
+      expect(result.status).toBe('ok');
+      expect(onObservation).toHaveBeenCalledTimes(1);
+      const payload = onObservation.mock.calls[0]![0] as {
+        valid: boolean;
+        observations: Record<string, string>;
+      };
+      expect(payload.valid).toBe(true);
+      expect(payload.observations.hand_shape).toBe('掌部偏宽厚');
+    });
+
+    it('does not call onObservation when image is rejected at stage-1', async () => {
+      mockCallVLM.mockResolvedValue(JSON.stringify({ valid: false, reason: 'not_palm' }));
+
+      const onObservation = vi.fn();
+      const result = await generatePalmReading(dataUrl, { onObservation });
+
+      expect(result.status).toBe('rejected');
+      expect(onObservation).not.toHaveBeenCalled();
+    });
+
+    it('does not call onObservation when stage-1 throws', async () => {
+      mockCallVLM.mockRejectedValue(new Error('VLM down'));
+
+      const onObservation = vi.fn();
+      const result = await generatePalmReading(dataUrl, { onObservation });
+
+      expect(result.status).toBe('failed');
+      expect(onObservation).not.toHaveBeenCalled();
+    });
+
+    it('calls onObservation BEFORE the first onChunk (ordering guarantee)', async () => {
+      mockCallVLM.mockResolvedValue(makeValidPalmObservation());
+
+      async function* fakeStream() {
+        yield makeValidPalmReadingJSON();
+      }
+      mockCallLLMStream.mockImplementation(fakeStream);
+
+      const events: string[] = [];
+      await generatePalmReading(dataUrl, {
+        onObservation: () => events.push('observation'),
+        onChunk: () => events.push('chunk'),
+      });
+
+      expect(events[0]).toBe('observation');
+      expect(events).toContain('chunk');
+    });
+
     it('returns failed when VLM throws', async () => {
       mockCallVLM.mockRejectedValue(new Error('All providers failed'));
 
@@ -244,6 +303,37 @@ describe('reading-service', () => {
         expect(result.data.meta.title).toBe('面相解读指南');
         expect(result.data.mainLines.length).toBeGreaterThanOrEqual(3);
       }
+    });
+
+    it('calls onObservation exactly once with face observations on the valid path', async () => {
+      mockCallVLM.mockResolvedValue(makeValidFaceObservation());
+
+      async function* fakeStream() {
+        yield makeValidFaceReadingJSON();
+      }
+      mockCallLLMStream.mockImplementation(fakeStream);
+
+      const onObservation = vi.fn();
+      const result = await generateFaceReading(dataUrl, { onObservation });
+
+      expect(result.status).toBe('ok');
+      expect(onObservation).toHaveBeenCalledTimes(1);
+      const payload = onObservation.mock.calls[0]![0] as {
+        valid: boolean;
+        observations: Record<string, string>;
+      };
+      expect(payload.valid).toBe(true);
+      expect(payload.observations.face_shape).toBe('轮廓偏椭圆');
+    });
+
+    it('does not call onObservation when face image is rejected', async () => {
+      mockCallVLM.mockResolvedValue(JSON.stringify({ valid: false, reason: 'multiple_faces' }));
+
+      const onObservation = vi.fn();
+      const result = await generateFaceReading(dataUrl, { onObservation });
+
+      expect(result.status).toBe('rejected');
+      expect(onObservation).not.toHaveBeenCalled();
     });
   });
 });

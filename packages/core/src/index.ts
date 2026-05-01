@@ -4,3 +4,4 @@ export * from './schemas';
 export * from './prompts';
 export * from './content-safety';
 export * from './fallbacks';
+export * from './result-sections';

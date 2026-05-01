@@ -79,6 +79,7 @@
 | M2-033  | ✅ Pass | Session 33 |
 | M2-034  | ✅ Pass | Session 34 |
 | M2-035  | ✅ Pass | Session 35 |
+| M2-043  | ✅ Pass | Session 43 |
 
 ### Session 1 — 2026-04-30
 
@@ -1240,3 +1241,36 @@
 - `pnpm typecheck`: 11/11 workspace projects pass
 
 **Commit:** `bedf0b1`
+
+---
+
+### Session 43 — 2026-05-01
+
+**Feature:** M2-043 — History page (/history) with IndexedDB storage via Dexie.js
+**Status:** Passed
+
+**What was done:**
+
+- Added `dexie` dependency to `apps/web`
+- Created `apps/web/src/lib/history-db.ts` with Dexie schema: `id` (string), `type` ('palm'|'face'), `date` (string), `summary` (string)
+- `addHistoryEntry()`: inserts entry, auto-deletes oldest when count > 20
+- `getHistoryEntries()`: returns entries sorted by date descending
+- `clearHistory()`: wipes all entries
+- Created `apps/web/src/app/history/page.tsx` — lists entries with type icon, date, summary excerpt
+- Each item click navigates to `/result/{id}`
+- Empty state: "还没有解读记录" message + CTA link to home
+- Clear history button at bottom
+- Updated `apps/web/src/app/result/[id]/page.tsx` to save to IndexedDB on completion (both SSE and stub paths)
+- Reads `?kind=palm|face` query param for reading type; extracts summary from overview or data
+- `savedRef` prevents double-save (SSE + stub race)
+- Playwright test: 4/4 pass (empty state, save+display, clear, navigation)
+
+**Verification (playwright):**
+
+- Empty state shows "还没有解读记录" + CTA link ✓
+- Result page saves entry → history page shows entry with type + summary ✓
+- Click entry → navigates to /result/{id} ✓
+- Clear button removes all entries → shows empty state ✓
+- `pnpm typecheck`: 11/11 workspace projects pass
+
+**Commit:** `604e64f`

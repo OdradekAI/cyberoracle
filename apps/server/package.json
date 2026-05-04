@@ -15,7 +15,7 @@
     "@cyberoracle/core": "workspace:*",
     "@cyberoracle/poster": "workspace:*",
     "lunar-typescript": "^1.8.6",
-    "nanoid": "^5.1.9",
+    "nanoid": "^5.1.11",
     "next": "14.2.35",
     "react": "catalog:",
     "react-dom": "catalog:",
